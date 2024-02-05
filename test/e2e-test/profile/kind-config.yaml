@@ -11,4 +11,7 @@ nodes:
     containerPath:  /run/ccnp
   - hostPath:  /run/ccnp-eventlog
     containerPath:  /run/ccnp-eventlog
+  - hostPath:   /sys/kernel/security
+    containerPath:    /sys/kernel/security
+
 
