@@ -149,17 +149,17 @@ _Note: This is pre-production software and, as such, it may be substantially mod
         </a>
     </td>
     <td align="center">
-        <a href="https://github.com/hjh189">
-            <img src="https://avatars.githubusercontent.com/u/88485603?v=4" width="100;" alt="hjh189"/>
-            <br />
-            <sub><b>Jiahao  Huang</b></sub>
-        </a>
-    </td>
-    <td align="center">
         <a href="https://github.com/ruomengh">
             <img src="https://avatars.githubusercontent.com/u/90233733?v=4" width="100;" alt="ruomengh"/>
             <br />
             <sub><b>Ruomeng Hao</b></sub>
+        </a>
+    </td>
+    <td align="center">
+        <a href="https://github.com/hjh189">
+            <img src="https://avatars.githubusercontent.com/u/88485603?v=4" width="100;" alt="hjh189"/>
+            <br />
+            <sub><b>Jiahao  Huang</b></sub>
         </a>
     </td>
     <td align="center">
@@ -214,6 +214,13 @@ _Note: This is pre-production software and, as such, it may be substantially mod
     </td></tr>
 <tr>
     <td align="center">
+        <a href="https://github.com/wenhuizhang">
+            <img src="https://avatars.githubusercontent.com/u/2313277?v=4" width="100;" alt="wenhuizhang"/>
+            <br />
+            <sub><b>Wenhui Zhang</b></sub>
+        </a>
+    </td>
+    <td align="center">
         <a href="https://github.com/rdower">
             <img src="https://avatars.githubusercontent.com/u/15023397?v=4" width="100;" alt="rdower"/>
             <br />
@@ -225,13 +232,6 @@ _Note: This is pre-production software and, as such, it may be substantially mod
             <img src="https://avatars.githubusercontent.com/u/4101246?v=4" width="100;" alt="zhlsunshine"/>
             <br />
             <sub><b>Steve Zhang</b></sub>
-        </a>
-    </td>
-    <td align="center">
-        <a href="https://github.com/wenhuizhang">
-            <img src="https://avatars.githubusercontent.com/u/2313277?v=4" width="100;" alt="wenhuizhang"/>
-            <br />
-            <sub><b>Wenhui Zhang</b></sub>
         </a>
     </td></tr>
 </table>
