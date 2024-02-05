@@ -11,11 +11,7 @@ RUN addgroup -S -g $GID $GROUP && adduser -S -u $UID -D -G $GROUP $USER
 RUN chown -R  $USER:$GROUP  ./
 
 RUN apk update && apk add bash vim
-<<<<<<< HEAD
 RUN pip install -r sdk/python3/requirements.txt && pip install pytest pytdxattest
-=======
-RUN pip install -r sdk/python3/requirements.txt && pip install pytest
->>>>>>> ddd915b (update e2e test)
 
 USER $UID
 
