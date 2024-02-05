@@ -5,18 +5,19 @@ This is a script for setting up the CCNP ci environment. If you want to run the 
 1 According to the CCNP documentation, create a TDVM
 2 Install helm and kind on the TDVM
 3 Follow the CCNP documentation to pre-configure the TDVM,including modifying the file "/etc/udev/rules.d/90-tdx.rules" and creating the folder "/run/ccnp/uds"
-4 Git clone CCNP and run this script
+4 Run this script
 '
 
 CLUSTER_NAME=my-cluster
-KIND_CONFIG=kind-config.yaml
+KIND_CONFIG=profile/kind-config.yaml
 DEVICE_PLUGIN=localhost:5001/ccnp-device-plugin:latest
 QUOTE=localhost:5001/ccnp-quote-server:latest
 MEASUREMENT=localhost:5001/ccnp-measurement-server:latest
 EVENTLOG=localhost:5001/ccnp-eventlog-server:latest
+TEST_NODE=localhost:5001/ccnp-test-node:latest
 REG_NAME=kind-registry
 REG_PORT=5001
-REPO_CONFIGMAP=repo-configmap.yaml
+REPO_CONFIGMAP=profile/repo-configmap.yaml
 LOCAL_REPO=localhost:5001
 DOCKER_REPO=docker.io/library
 NFD_URL=https://kubernetes-sigs.github.io/node-feature-discovery/charts
@@ -37,7 +38,6 @@ create_file(){
         if [ ! -e "$1" ];then
                  touch  "$1"
         fi
-
 }
 
 
@@ -79,15 +79,20 @@ docker build --build-arg http_proxy="$HTTP_PROXY" --build-arg https_proxy="$HTTP
         --build-arg no_proxy="$NO_PROXY" -t $EVENTLOG -f container/ccnp-eventlog-server/Dockerfile .
 docker build  --build-arg http_proxy="$HTTP_PROXY" --build-arg https_proxy="$HTTPS_PROXY" \
         --build-arg no_proxy="$NO_PROXY" -t $DEVICE_PLUGIN -f container/ccnp-device-plugin/Dockerfile .
+docker build  --build-arg http_proxy="$HTTP_PROXY" --build-arg https_proxy="$HTTPS_PROXY" \
+        --build-arg no_proxy="$NO_PROXY" -t $TEST_NODE -f test/e2e-test/profile/Dockerfile .
 
 
 docker push ${DEVICE_PLUGIN}
 docker push ${QUOTE}
 docker push ${MEASUREMENT}
 docker push ${EVENTLOG}
+docker push ${TEST_NODE}
 
 sed -i  "s#${DOCKER_REPO}#${LOCAL_REPO}#g" deployment/manifests/*
 sed -i  "s#${DOCKER_REPO}#${LOCAL_REPO}#g" device-plugin/ccnp-device-plugin/deploy/helm/ccnp-device-plugin/values.yaml
+sed -i  "s#${DOCKER_REPO}#${LOCAL_REPO}#g" test/e2e-test/profile/ccnp-test-node.yaml
+
 
 #Deploy CCNP Dependencies
 helm repo add nfd $NFD_URL
@@ -101,14 +106,8 @@ kubectl create -f deployment/manifests/namespace.yaml
 kubectl create -f deployment/manifests/eventlog-server-deployment.yaml
 kubectl create -f deployment/manifests/measurement-server-deployment.yaml
 kubectl create -f deployment/manifests/quote-server-deployment.yaml
-
+kubectl create -f test/e2e-test/profile/ccnp-test-node.yaml
 #Wait for all pods and services to be ready
-sleep 2m
+sleep 1m
 
-#Install SDK
-pushd sdk/python3/
-pip install -r requirements.txt
-pip install .
 popd
-popd
-
