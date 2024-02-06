@@ -1,1 +1,0 @@
-A rust crate to retrieve TD Report and TDX quote via ioctl

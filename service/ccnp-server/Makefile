@@ -10,9 +10,9 @@ DESTDIR ?= $(PREFIX)/bin
 DEBUG ?=
 
 TARGET_DIR := target
-BIN_NAME := pod_quote
+BIN_NAME := ccnp_server
 
-CARGO := /usr/local/cargo/bin/cargo
+CARGO := cargo
 
 ifdef DEBUG
     release :=

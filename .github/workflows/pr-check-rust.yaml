@@ -30,12 +30,10 @@ jobs:
           sudo apt update && yes | DEBIAN_FRONTEND=noninteractive sudo apt install -y libcryptsetup-dev clang protobuf-compiler protobuf-c-compiler libprotobuf-c-dev libprotobuf-c1 build-essential pkg-config libssl-dev
       - name: Run cargo check
         run: |
-          cd service/quote-server
+          cd service/ccnp-server
           cargo test
           cargo check
           cargo fmt -- --check
           cargo clippy
           cargo install --locked cargo-deny
           cargo deny check
-          cd tdx_attest
-          cargo test
