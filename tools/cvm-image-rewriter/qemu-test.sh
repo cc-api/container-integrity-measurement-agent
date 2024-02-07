@@ -21,6 +21,8 @@
 # - To get consistent TD_REPORT within guest cross power cycle, please keep
 #   consistent configurations for TDX guest such as same MAC address.
 #
+set -m 
+set -x
 
 CURR_DIR=$(readlink -f "$(dirname "$0")")
 
@@ -35,8 +37,9 @@ else
 fi
 
 # VM configurations
-CPUS=4
-MEM=16G
+CPUS=1
+MEM=4G
+SGX_EPC_SIZE=64M
 
 # Installed from the package of intel-mvp-tdx-tdvf
 OVMF="/usr/share/qemu/OVMF.fd"
@@ -44,8 +47,8 @@ GUEST_IMG=""
 DEFAULT_GUEST_IMG="${CURR_DIR}/output.qcow2"
 KERNEL=""
 DEFAULT_KERNEL="${CURR_DIR}/vmlinuz"
-VM_TYPE="legacy"
-BOOT_TYPE="grub"
+VM_TYPE="td-1.0"
+BOOT_TYPE="direct"
 DEBUG=false
 USE_VSOCK=false
 USE_SERIAL_CONSOLE=false
@@ -60,7 +63,7 @@ NET_CIDR="10.0.2.0/24"
 DHCP_START="10.0.2.15"
 
 # Just log message of serial into file without input
-HVC_CONSOLE="-chardev stdio,id=mux,mux=on,logfile=$CURR_DIR/vm_log_$(date +"%FT%H%M").log \
+HVC_CONSOLE="-chardev stdio,id=mux,mux=on,logfile=/tmp/vm_log_$(date +"%FT%H%M").log \
              -device virtio-serial,romfile= \
              -device virtconsole,chardev=mux -monitor chardev:mux \
              -serial chardev:mux -nographic"
@@ -82,25 +85,26 @@ PARAM_MACHINE=" -machine q35"
 usage() {
     cat << EOM
 Usage: $(basename "$0") [OPTION]...
-  -i <guest image file>     Default is td-guest.qcow2 under current directory
-  -k <kernel file>          Default is vmlinuz under current directory
-  -t [legacy|efi|td]        VM Type, default is "legacy"
-  -b [direct|grub]          Boot type, default is "direct" which requires kernel binary specified via "-k"
-  -p <Monitor port>         Monitor via telnet
-  -f <SSH Forward port>     Host port for forwarding guest SSH
-  -o <OVMF file>            BIOS firmware device file, for "td" and "efi" VM only
-  -m <11:22:33:44:55:66>    MAC address, impact TDX measurement RTMR
-  -q [tdvmcall|vsock]       Support for TD quote using tdvmcall or vsock
-  -c <number>               Number of CPUs, default is 1
-  -r <root partition>       root partition for direct boot, default is /dev/vda1
-  -n <network CIDR>         Network CIDR for TD VM, default is "10.0.2.0/24"
-  -a <DHCP start>           Network started address, default is "10.0.2.15"
-  -e <extra kernel cmd>     Extra kernel command needed in VM boot
-  -w <sha384 hex string>    pass customiszed 48*2 bytes MROWNERCONFIG to the vm, only support td
-  -v                        Flag to enable vsock
-  -d                        Flag to enable "debug=on" for GDB guest
-  -s                        Flag to use serial console instead of HVC console
-  -h                        Show this help
+  -i <guest image file>     		Default is td-guest.qcow2 under current directory
+  -k <kernel file>          		Default is vmlinuz under current directory
+  -t [legacy|efi|td-1.0|td-1.5|sgx]     VM Type, default is "td-1.0"
+  -b [direct|grub]          		Boot type, default is "direct" which requires kernel binary specified via "-k"
+  -p <Monitor port>         		Monitor via telnet
+  -f <SSH Forward port>     		Host port for forwarding guest SSH
+  -o <OVMF file>            		BIOS firmware device file, for "td" and "efi" VM only
+  -m <11:22:33:44:55:66>    		MAC address, impact TDX measurement RTMR
+  -q [tdvmcall|vsock]       		Support for TD quote using tdvmcall or vsock
+  -c <number>               		Number of CPUs, default is 1
+  -r <root partition>       		root partition for direct boot, default is /dev/vda1
+  -n <network CIDR>         		Network CIDR for TD VM, default is "10.0.2.0/24"
+  -a <DHCP start>           		Network started address, default is "10.0.2.15"
+  -e <extra kernel cmd>     		Extra kernel command needed in VM boot
+  -w <sha384 hex string>    		pass customiszed 48*2 bytes MROWNERCONFIG to the vm, only support td
+  -u <hugepage mount path>  		mount path of hugepages  
+  -v                        		Flag to enable vsock
+  -d                        		Flag to enable "debug=on" for GDB guest
+  -s                        		Flag to use serial console instead of HVC console
+  -h                        		Show this help
 EOM
 }
 
@@ -114,7 +118,7 @@ warn() {
 }
 
 process_args() {
-    while getopts ":i:k:t:b:p:f:o:a:m:vdshq:c:r:n:s:e:w:" option; do
+    while getopts ":i:k:t:b:p:f:o:a:m:vdshq:c:r:n:s:e:w:u:" option; do
         case "$option" in
             i) GUEST_IMG=$OPTARG;;
             k) KERNEL=$OPTARG;;
@@ -133,6 +137,7 @@ process_args() {
             n) NET_CIDR=$OPTARG;;
             a) DHCP_START=$OPTARG;;
             w) MROWNERCONFIG=$OPTARG;;
+	    u) HUGEPAGE_PATH=$OPTARG;;
             e) EXTRA_KERNEL_CMD=$OPTARG;;
             h) usage
                exit 0
@@ -211,13 +216,13 @@ process_args() {
     fi
 
     case ${VM_TYPE} in
-        "td")
+        "td-1.0")
             cpu_tsc=$(grep 'cpu MHz' /proc/cpuinfo | head -1 | awk -F: '{print $2/1024}')
             if (( $(echo "$cpu_tsc < 1" |bc -l) )); then
                 PARAM_CPU+=",tsc-freq=1000000000"
             fi
             # Note: "pic=no" could only be used in TD mode but not for non-TD mode
-            PARAM_MACHINE+=",kernel_irqchip=split,memory-encryption=tdx,memory-backend=ram1"
+            PARAM_MACHINE+=",kernel_irqchip=split,confidential-guest-support=tdx"
             QEMU_CMD+=" -bios ${OVMF}"
             QEMU_CMD+=" -object tdx-guest,sept-ve-disable=on,id=tdx"
             if [[ ${QUOTE_TYPE} == "tdvmcall" ]]; then
@@ -229,9 +234,34 @@ process_args() {
             if [[ ${DEBUG} == true ]]; then
                 QEMU_CMD+=",debug=on"
             fi
-	    QEMU_CMD+=" -object memory-backend-ram,id=ram1,size=${MEM},private=on"
             ;;
-        "efi")
+    	"td-1.5")
+            cpu_tsc=$(grep 'cpu MHz' /proc/cpuinfo | head -1 | awk -F: '{print $2/1024}')
+            if (( $(echo "$cpu_tsc < 1" |bc -l) )); then
+                PARAM_CPU+=",tsc-freq=1000000000"
+            fi
+            # Note: "pic=no" could only be used in TD mode but not for non-TD mode
+            PARAM_MACHINE+=",kernel_irqchip=split,confidential-guest-support=tdx,memory-backend=ram1"
+            QEMU_CMD+=" -bios ${OVMF}"
+            QEMU_CMD+=" -object tdx-guest,sept-ve-disable=on,id=tdx"
+            if [[ ${QUOTE_TYPE} == "tdvmcall" ]]; then
+                QEMU_CMD+=",quote-generation-service=vsock:2:4050"
+            fi
+            if [[ -n ${MROWNERCONFIG} ]]; then
+                QEMU_CMD+=",mrownerconfig=${MROWNERCONFIG}"
+            fi
+            if [[ ${DEBUG} == true ]]; then
+                QEMU_CMD+=",debug=on"
+            fi
+            # When user specify a hugepage path, it will set hugetlb=on and use the user-defined path.
+            if [[ ${HUGEPAGE_PATH} == "" ]]; then
+                QEMU_CMD+=" -object memory-backend-memfd-private,id=ram1,size=${MEM}"
+            else
+                QEMU_CMD+=" -object memory-backend-memfd,id=ramhuge,size=${MEM},hugetlb=on,hugetlbsize=2M"
+                QEMU_CMD+=" -object memory-backend-memfd-private,id=ram1,size=${MEM},path=${HUGEPAGE_PATH},shmemdev=ramhuge"
+            fi
+            ;;
+    	"efi")
             PARAM_MACHINE+=",kernel_irqchip=split"
             QEMU_CMD+=" -bios ${OVMF}"
             ;;
@@ -241,8 +271,13 @@ process_args() {
             fi
             QEMU_CMD+=" -bios ${LEGACY_BIOS} "
             ;;
+        "sgx")
+            PARAM_MACHINE+=",sgx-epc.0.memdev=mem0,sgx-epc.0.node=0"
+            QEMU_CMD+=" -cpu host,+sgx-provisionkey,+sgxlc,+sgx1"
+            QEMU_CMD+=" -object memory-backend-epc,id=mem0,size=${SGX_EPC_SIZE},prealloc=on"
+            ;;
         *)
-            error "Invalid ${VM_TYPE}, must be [legacy|efi|td]"
+            error "Invalid ${VM_TYPE}, must be [legacy|efi|td-1.0|td-1.5|sgx]"
             ;;
     esac
 
@@ -255,7 +290,7 @@ process_args() {
         QEMU_CMD+=",mac=${MAC_ADDR}"
     fi
 
-    # Set the network cidr, DHCP start address, and forward SSH port to the host
+    # Set the network cidr, DHCP start address, and forward SSH port to the host 
     QEMU_CMD+=" -netdev user,id=mynet0,net=$NET_CIDR,dhcpstart=$DHCP_START,hostfwd=tcp::$FORWARD_PORT-:22 "
 
     # Specify the number of CPUs
@@ -281,7 +316,7 @@ process_args() {
             fi
 
             QEMU_CMD+=" -kernel $(readlink -f "${KERNEL}") "
-            if [[ ${VM_TYPE} == "td" ]]; then
+            if [[ ${VM_TYPE} == "td-1.0" ]]; then
                 # shellcheck disable=SC2089
                 QEMU_CMD+=" -append \"${KERNEL_CMD_TD}\" "
             else
