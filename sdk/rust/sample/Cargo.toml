@@ -1,0 +1,27 @@
+[package]
+name = "cctrusted-ccnp-sample"
+version = "0.1.0"
+edition = "2021"
+license = "Apache-2.0"
+
+[[bin]]
+name = "cc-sample-quote"
+path = "src/cc-sample-quote.rs"
+
+[[bin]]
+name = "cc-sample-measurement"
+path = "src/cc-sample-measurement.rs"
+
+[[bin]]
+name = "cc-sample-eventlog"
+path = "src/cc-sample-eventlog.rs"
+
+[dependencies]
+cctrusted_ccnp = { path = "../cctrusted_ccnp" }
+cctrusted_base = { git="https://github.com/cc-api/cc-trusted-api" }
+anyhow = "1.0"
+log = "0.4.20"
+env_logger = "0.10.1"
+base64 = "0.13.0"
+rand = "0.8.5"
+tokio = { version = "1.0", features = ["macros", "rt-multi-thread"] }
