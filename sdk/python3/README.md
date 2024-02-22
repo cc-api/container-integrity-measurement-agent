@@ -36,66 +36,48 @@ pip install -e .
 ## Key concepts and usage
 There are three major functionalities provided in this SDK:
 
-* [Quote fetching](#quote)
+* [CC report fetching](#cc-report)
 * [Measurement fetching](#measurement)
 * [Event log fetching](#event-log)
 
-### Quote
+### CC Report
 
-Using this SDK, user could fetch the quote from different platforms, the service detect the platform automatically and return the type and the quote.
+Using this SDK, user could fetch the report from different platforms, the service detect the platform automatically and return the report.
 
-#### Quote type for platform
+#### Example usage of the SDK
 
-* TYPE_TDX - This provides the quote fetching based on Intel TDX.
-* TYPE_TPM - This provides the quote fetching based on TPM.
+The interface input of CC report is `nonce` and `user_data`, both of them are optional and will be measured in the report.
+Here are the example usages of the SDK:
 
-#### Example usage of quote SDK
-
-The interface input of quote is `nonce` and `user_data`, both of them are optional and will be measured in quote.
-Here are the example usages of quote SDK:
-
-* Fetch quote without any inputs
+* Fetch report without any inputs
 ```python
-from ccnp import Quote
+from ccnp import CcnpSdk
 
-quote = Quote.get_quote()
-
-print(quote.quote_type)
-print(quote.quote)
+CcnpSdk.inst().get_cc_report().dump()
 
 ```
 
-* Fetch quote with a `nonce`
+* Fetch report with a `nonce`
 ```python
 import base64
 import secrets
-from ccnp import Quote
+from ccnp import CcnpSdk
 
 nonce = base64.b64encode(secrets.token_urlsafe().encode())
-quote = Quote.get_quote(nonce=nonce)
-
-print(quote.quote_type)
-print(quote.quote)
+CcnpSdk.inst().get_cc_report(nonce=nonce).dump()
 
 ```
 
-* Fetch quote with a `nonce` and `user_data`
+* Fetch report with a `nonce` and `user_data`
 ```python
 import base64
 import secrets
-from ccnp import Quote
+from ccnp import CcnpSdk
 
 nonce = base64.b64encode(secrets.token_urlsafe().encode())
 user_data = base64.b64encode(b'This data should be measured.')
-quote = Quote.get_quote(nonce=nonce, user_data=user_data)
+CcnpSdk.inst().get_cc_report(nonce=nonce, data=user_data).dump()
 
-print(quote.quote_type)
-print(quote.quote)
-
-# For TD quote, it includes RTMRs, TD report, etc.
-if quote.quote_type == Quote.TYPE_TDX:
-  print(quote.rtmrs)
-  print(quote.tdreport)
 ```
 
 ### Measurement
@@ -104,49 +86,18 @@ Using this SDK, user could fetch various measurements from different perspective
 Basic support on measurement focus on the platform measurements, including TEE report, values within TDX RTMR registers or values reside in TPM PCR registers.
 There's also advanced support to provide measurement for a certain workload or container. The feature is still developing in progress.
 
-#### MeasurementType for platform
-
-The measurement SDK supports fetching different types of evidence depending on the environment.
-Currently, CCNP supports the following categories of measurements:
-
-* TYPE_TEE_REPORT - This provides the report fetching on various Trusted Execution Environment from all kinds of vendors, including Intel TDX, AMD SEV (Working in Progress), etc.
-* TYPE_TDX_RTMR - This provides the measurement fetching on TDX RTMR. Users could fetch the measurement from one single RTMR register with its index.
-* TYPE_TPM_PCR - This provides th measurement fetching on TPM PCR. Users could fetch measurement from one single PCR register with its index.
-
-#### Example usage of measurement SDK
+#### Example usage of the SDK
 
 Here are the example usages for measurement SDK:
 
-* Fetch TEE report base on platform
+* Fetch TEE measurement base on platform
 ```python
-from ccnp import Measurement
-from ccnp import MeasurementType
+from ccnp import CcnpSdk
 
-# Fetch TEE report without user data
-report = Measurement.get_platform_measurement()
+for i in [0, 1, 3]:
+    m = CcnpSdk.inst().get_cc_measurement([i, 12])
+    print("IMR index: %d, hash: %s"%(i, m.hash.hex()))
 
-# Fetch TEE report with user data
-data = "testing"
-report = Measurement.get_platform_measurement(MeasurementType.TYPE_TEE_REPORT, data)
-
-```
-
-* Fetch single RTMR measurement for platform
-```python
-from ccnp import Eventlog
-from ccnp import Measurement
-from ccnp import MeasurementType
-
-# Fetch the value reside in register 1 of RTMR
-rtmr_measurement = Measurement.get_platform_measurement(MeasurementType.TYPE_TDX_RTMR, None, 1)
-```
-
-* Fetch container measurement (Working in Progress)
-```python
-from ccnp import Measurement
-from ccnp import MeasurementType
-
-container_measurement = Measurement.get_container_measurement()
 ```
 
 ### Event log
@@ -154,59 +105,34 @@ container_measurement = Measurement.get_container_measurement()
 Using this SDK, user can fetch the event logs to assist the attestation/verification process. It also enables two different categories of event logs - for the platform or for a single workload/container.
 From platform perspective, it can support different Trusted Execution Environment and TPM. This sdk can also do fetching on certain number of event logs.
 
-#### EventlogType for platform
+#### Example usage of the SDK
 
-* TYPE_TDX - This provides the event log fetching based on Intel TDX.
-* TYPE_TPM - This provides the event log fetching based on TPM.
+Here are the example usages of the SDK:
 
-#### Example usage of Eventlog SDK
-
-Here are the example usages of eventlog SDK:
-
-* Fetch event log of Intel TDX platform for platform and check the information inside
+* Fetch event log of platform and check the information inside
 ```python
-from ccnp import Eventlog
-from ccnp import EventlogType
+from ccnp import CcnpSdk
 
-# default type for get_platform_eventlog() is 'TYPE_TDX'
-logs = Eventlog.get_platform_eventlog()
-# same as setting type as 'TYPE_TDX'
-logs = Eventlog.get_platform_eventlog(EventlogType.TYPE_TDX)
+evt = CcnpSdk.inst().get_cc_eventlog()
+for e in evt:
+    e.dump()
 
-# show total length
-print(len(logs))
-
-# fetch event log attributes
-print(logs[2].evt_type)
-print(logs[2].evt_type_str)
-print(logs[2].evt_size)
-print(logs[2].reg_idx)
-print(logs[2].alg_id)
-print(logs[2].event)
-print(logs[2].digest)
-
-# fetch 5 event logs from the second one
-logs = Eventlog.get_platform_eventlog(EventlogType.TYPE_TDX, 2, 5)
-
-# show log length, which shall equal to 5
-print(len(logs))
 ```
 
-* Fetch event log of TPM platform (Working in Progress)
+* Replay the event logs
 ```python
-from ccnp import Eventlog
-from ccnp import EventlogType
+from ccnp import CcnpSdk
 
-# set type for get_platform_eventlog() as 'TYPE_TPM'
-logs = Eventlog.get_platform_eventlog(EventlogType.TYPE_TPM)
-```
-
-* Fetch event log for certain container (Working in Progress)
-```python
-from ccnp import Eventlog
-from ccnp import EventlogType
-
-logs = Eventlog.get_container_eventlog()
+evt = CcnpSdk.inst().get_cc_eventlog()
+replay = CcnpSdk.inst().replay_cc_eventlog(evt)
+for r in replay:
+    print("Replay IMR[%d]: %s"%(r, replay[r][12].hex()))
+    m = CcnpSdk.inst().get_cc_measurement([r, 12])
+    print("Read IMR[%d]: %s"%(r, m.hash.hex()))
+    if m.hash != replay[r][12]:
+        print("Replay IMR value does not match real IMR.")
+    else:
+        print("Verify event log replay value successfully.")
 ```
 
 ## End-to-end examples
@@ -231,6 +157,6 @@ See [CONTRIBUTING.md](../../CONTRIBUTING.md) for details on building, testing, a
 If you encounter any bugs or have suggestions, please file an issue in the Issues section of the project.
 
 <!-- LINKS -->
-[source_code]: https://github.com/intel/confidential-cloud-native-primitives/tree/main/sdk/python3
+[source_code]: https://github.com/cc-api/confidential-cloud-native-primitives/tree/main/sdk/python3
 [ccnp_pypi]: https://pypi.org/project/ccnp/
 [api_doc]: https://intel.github.io/confidential-cloud-native-primitives/_rst/sdk.readme.html

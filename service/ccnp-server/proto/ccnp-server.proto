@@ -38,8 +38,9 @@ message GetMeasurementCountResponse {
 }
 
 message GetCcReportRequest {
-    string user_data = 1;
-    string nonce = 2;
+    string container_id = 1;
+    optional string user_data = 2;
+    optional string nonce = 3;
 }
 
 message GetCcReportResponse {
@@ -48,8 +49,9 @@ message GetCcReportResponse {
 }
 
 message GetCcMeasurementRequest {
-    uint32 index = 1;
-    uint32 algo_id = 2;
+    string container_id = 1;
+    uint32 index = 2;
+    uint32 algo_id = 3;
 }
 
 message GetCcMeasurementResponse {
@@ -57,8 +59,9 @@ message GetCcMeasurementResponse {
 }
 
 message GetCcEventlogRequest {
-    uint32 start = 1;
-    uint32 count = 2;
+    string container_id = 1;
+    optional uint32 start = 2;
+    optional uint32 count = 3;
 }
 
 message TcgDigest {

@@ -1,0 +1,19 @@
+backend: ima
+hashAlgorithm: sha384
+measure:
+  system:
+    withParameter: true
+    processes:
+      - /usr/bin/containerd
+      - /usr/bin/kubelet
+      - /usr/bin/containerd-shim-runc-v2
+  container:
+    isolated: true
+  kubernetes:
+    withParameter: true
+    pods:
+      - kube-apiserver
+      - kube-scheduler
+      - kube-proxy
+      - kube-scheduler
+      - kube-controller-manager
