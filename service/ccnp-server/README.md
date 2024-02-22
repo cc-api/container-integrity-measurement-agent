@@ -8,8 +8,10 @@ Run the command:
 
 ```
 sudo ./ccnp_server
-[2024-02-06T02:06:18Z INFO  ccnp_server] [ccnp-server]: set sock file permissions: /run/ccnp/uds/ccnp-server.sock
-[2024-02-06T02:06:18Z INFO  ccnp_server] [ccnp-server]: staring the service...
+[2024-02-22T07:18:29Z INFO  ccnp_server] [ccnp-server]: set sock file permissions: /run/ccnp/uds/ccnp-server.sock
+[2024-02-22T07:18:29Z INFO  ccnp_server] [ccnp-server]: staring the service...
+[2024-02-22T07:18:29Z INFO  ccnp_server::agent] The system has been measured as the policy defined.
+[2024-02-22T07:19:03Z INFO  ccnp_server::agent] Loaded ... event logs.
 ```
 
 ## Query Information
@@ -19,7 +21,7 @@ sudo ./ccnp_server
 Run the command:
 
 ```
-grpcurl -authority "dummy"  -plaintext -d '{ "user_data": "MTIzNDU2NzgxMjM0NTY3ODEyMzQ1Njc4MTIzNDU2NzgxMjM0NTY3ODEyMzQ1Njc4", "nonce":"IXUKoBO1UM3c1wopN4sY" }'  -unix /run/ccnp/uds/ccnp-server.sock ccnp_server_pb.ccnp.GetCcReport
+grpcurl -authority "dummy"  -plaintext -d '{ "container_id": "29134314a2...", "user_data": "MTIzNDU2NzgxMjM0NTY3ODEyMzQ1Njc4MTIzNDU2NzgxMjM0NTY3ODEyMzQ1Njc4", "nonce":"IXUKoBO1UM3c1wopN4sY" }'  -unix /run/ccnp/uds/ccnp-server.sock ccnp_server_pb.ccnp.GetCcReport
 ```
 
 The output looks like this:
@@ -36,7 +38,7 @@ The output looks like this:
 Run the command:
 
 ```
-grpcurl -authority "dummy"  -plaintext -d '{ "index": 0, "algo_id": 12}'  -unix /run/ccnp/uds/ccnp-server.sock ccnp_server_pb.ccnp.GetCcMeasurement
+grpcurl -authority "dummy"  -plaintext -d '{ "container_id": "29134314a2...", "index": 0, "algo_id": 12}'  -unix /run/ccnp/uds/ccnp-server.sock ccnp_server_pb.ccnp.GetCcMeasurement
 ```
 
 The output looks like:
@@ -55,7 +57,7 @@ The output looks like:
 Run the command:
 
 ```
-grpcurl -authority "dummy"  -plaintext -d '{"start": 0, "count": 3}'  -unix /run/ccnp/uds/ccnp-server.sock ccnp_server_pb.ccnp.GetCcEventlog
+grpcurl -authority "dummy"  -plaintext -d '{"container_id": "29134314a2...", "start": 0, "count": 3}'  -unix /run/ccnp/uds/ccnp-server.sock ccnp_server_pb.ccnp.GetCcEventlog
 ```
 
 The output looks like:

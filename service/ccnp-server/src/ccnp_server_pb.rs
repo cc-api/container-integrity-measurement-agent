@@ -77,9 +77,11 @@ pub struct GetMeasurementCountResponse {
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct GetCcReportRequest {
     #[prost(string, tag = "1")]
-    pub user_data: ::prost::alloc::string::String,
-    #[prost(string, tag = "2")]
-    pub nonce: ::prost::alloc::string::String,
+    pub container_id: ::prost::alloc::string::String,
+    #[prost(string, optional, tag = "2")]
+    pub user_data: ::core::option::Option<::prost::alloc::string::String>,
+    #[prost(string, optional, tag = "3")]
+    pub nonce: ::core::option::Option<::prost::alloc::string::String>,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
@@ -92,9 +94,11 @@ pub struct GetCcReportResponse {
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct GetCcMeasurementRequest {
-    #[prost(uint32, tag = "1")]
-    pub index: u32,
+    #[prost(string, tag = "1")]
+    pub container_id: ::prost::alloc::string::String,
     #[prost(uint32, tag = "2")]
+    pub index: u32,
+    #[prost(uint32, tag = "3")]
     pub algo_id: u32,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
@@ -106,10 +110,12 @@ pub struct GetCcMeasurementResponse {
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct GetCcEventlogRequest {
-    #[prost(uint32, tag = "1")]
-    pub start: u32,
-    #[prost(uint32, tag = "2")]
-    pub count: u32,
+    #[prost(string, tag = "1")]
+    pub container_id: ::prost::alloc::string::String,
+    #[prost(uint32, optional, tag = "2")]
+    pub start: ::core::option::Option<u32>,
+    #[prost(uint32, optional, tag = "3")]
+    pub count: ::core::option::Option<u32>,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]

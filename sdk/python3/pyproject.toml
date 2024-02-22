@@ -1,6 +1,6 @@
 [project]
 name = "ccnp"
-version = "0.0.2"
+version = "0.3.1"
 authors = [
   { name="Lu, Ken", email="ken.lu@intel.com" },
   { name="Ying, Ruoyu", email="ruoyu.ying@intel.com" },

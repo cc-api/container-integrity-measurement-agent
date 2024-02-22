@@ -11,26 +11,21 @@ use crate::{
         GetDefaultAlgorithmRequest, GetDefaultAlgorithmResponse, GetMeasurementCountRequest,
         GetMeasurementCountResponse,
     },
+    policy::PolicyConfig,
 };
 
 lazy_static! {
-    static ref AGENT: Mutex<Agent> = Mutex::new(Agent { event_logs: None });
+    static ref AGENT: Mutex<Agent> = Mutex::new(Agent::new());
 }
 
 pub struct Service;
 impl Service {
-    pub fn new() -> Service {
-        match AGENT.lock().expect("Agent lock() failed.").init() {
+    pub fn new(policy: PolicyConfig) -> Service {
+        match AGENT.lock().expect("Agent lock() failed.").init(policy) {
             Err(e) => panic!("Server panic {:?}", e),
             Ok(_v) => _v,
         }
         Service {}
-    }
-}
-
-impl Default for Service {
-    fn default() -> Self {
-        Self::new()
     }
 }
 
@@ -76,7 +71,7 @@ impl Ccnp for Service {
         let measurement = match AGENT
             .lock()
             .expect("Agent lock() failed.")
-            .get_cc_measurement(req.index, req.algo_id)
+            .get_cc_measurement(req.container_id, req.index, req.algo_id)
         {
             Ok(v) => v,
             Err(e) => return Err(Status::internal(e.to_string())),
@@ -92,11 +87,11 @@ impl Ccnp for Service {
         request: Request<GetCcEventlogRequest>,
     ) -> Result<Response<GetCcEventlogResponse>, Status> {
         let req = request.into_inner();
-        let event_logs = match AGENT
-            .lock()
-            .expect("Agent lock() failed.")
-            .get_cc_eventlog(req.start, req.count)
-        {
+        let event_logs = match AGENT.lock().expect("Agent lock() failed.").get_cc_eventlog(
+            req.container_id,
+            req.start,
+            req.count,
+        ) {
             Ok(v) => v,
             Err(e) => return Err(Status::internal(e.to_string())),
         };
@@ -109,11 +104,11 @@ impl Ccnp for Service {
         request: Request<GetCcReportRequest>,
     ) -> Result<Response<GetCcReportResponse>, Status> {
         let req = request.into_inner();
-        let (cc_report, cc_type) = match AGENT
-            .lock()
-            .expect("Agent lock() failed.")
-            .get_cc_report(req.nonce, req.user_data)
-        {
+        let (cc_report, cc_type) = match AGENT.lock().expect("Agent lock() failed.").get_cc_report(
+            req.container_id,
+            req.nonce,
+            req.user_data,
+        ) {
             Ok(v) => v,
             Err(e) => return Err(Status::internal(e.to_string())),
         };
