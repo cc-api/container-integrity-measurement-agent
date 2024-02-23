@@ -1,6 +1,6 @@
 apiVersion: v2
-name: measurement-server
-description: A Helm chart for Kubernetes
+name: ccnp-server
+description: A Helm chart for CCNP server deployment in Kubernetes
 
 # A chart can be either an 'application' or a 'library' chart.
 #

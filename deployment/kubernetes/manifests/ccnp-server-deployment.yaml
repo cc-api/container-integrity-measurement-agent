@@ -1,0 +1,72 @@
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: ccnp-server
+  namespace: ccnp
+  labels:
+    app: ccnp-server
+spec:
+  selector:
+    matchLabels:
+      app: ccnp-server
+  template:
+    metadata:
+      labels:
+        app: ccnp-server
+    spec:
+      tolerations:
+      - key: node-role.kubernetes.io/control-plane
+        operator: Exists
+        effect: NoSchedule
+      - key: node-role.kubernetes.io/master
+        operator: Exists
+        effect: NoSchedule
+      containers:
+      - name: ccnp-server
+        image: docker.io/library/ccnp-server:latest
+        imagePullPolicy: IfNotPresent
+        securityContext:
+          privileged: true
+        livenessProbe:
+          exec:
+            command: ["/usr/bin/grpc-health-probe", "-addr=unix:/run/ccnp/uds/ccnp-server.sock"]
+          initialDelaySeconds: 10
+          periodSeconds: 10
+        readinessProbe:
+          exec:
+            command: ["/usr/bin/grpc-health-probe", "-addr=unix:/run/ccnp/uds/ccnp-server.sock"]
+          initialDelaySeconds: 5
+          periodSeconds: 10
+          failureThreshold: 10
+        resources:
+          limits:
+            tdx.intel.com/tdx-guest: 1
+        volumeMounts:
+          - name: proc
+            mountPath: /proc
+          - name: eventlog-entry
+            mountPath: /sys/firmware/acpi/tables/CCEL
+          - name: eventlog-data
+            mountPath: /sys/firmware/acpi/tables/data/CCEL
+          - name: ima-data
+            mountPath: /sys/kernel/security/
+      volumes:
+        - name: proc
+          hostPath:
+            path: /proc
+            type: Directory
+        - name: eventlog-data
+          hostPath:
+            path: /sys/firmware/acpi/tables/data/CCEL
+            type: File
+        - name: eventlog-entry
+          hostPath:
+            path: /sys/firmware/acpi/tables/CCEL
+            type: File
+        - name: ima-data
+          hostPath:
+            path: /sys/kernel/security/
+            type: Directory
+      nodeSelector:
+        intel.feature.node.kubernetes.io/tdx-guest: "enabled"
