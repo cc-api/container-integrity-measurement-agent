@@ -6,20 +6,20 @@ CCNP is designed for collecting confidential computing primitives in cloud nativ
 
 Before moving forward, please make sure you have a TD booted. The CCNP service installation will happen in the TD.
 
-You can use [cvm image rewriter](../../tools/cvm-image-rewriter/README.md) to prepare a TD enlightened guest image.
+You can use [cvm image rewriter](../tools/cvm-image-rewriter/README.md) to prepare a TD enlightened guest image.
 
 **NOTE:**
- - If your initial guest image already has a TDX kernel, it's required to run [plugin](../../tools/cvm-image-rewriter/pre-stage/) 08 and 09 to set device access permission.
- - If your initial guest image is a normal Ubuntu guest image, it's required to run [plugin](../../tools/cvm-image-rewriter/pre-stage/) 05 to install TDX kernel and then 08, 09 to set device access permission.
+ - If your initial guest image already has a TDX kernel, it's required to run [plugin](../tools/cvm-image-rewriter/plugins/) 07 and 08 to set device access permission.
+ - If your initial guest image is a normal Ubuntu guest image, it's required to run [plugin](../tools/cvm-image-rewriter/plugins/) 06 to install TDX kernel and then 07, 08 to set device access permission.
  
-Start a TD using [qemu-test.sh](../../tools/cvm-image-rewriter/qemu-test.sh) or [start-virt.sh](../../tools/cvm-image-rewriter/start-virt.sh).
+Start a TD using [qemu-test.sh](../tools/cvm-image-rewriter/qemu-test.sh) or [start-virt.sh](../tools/cvm-image-rewriter/start-virt.sh).
 
  - Use `qemu-test.sh`, please use `-q <vsock/tdvmcall>` to make sure get quote works for the TD.
     ```
     $ sudo ./qemu-test.sh -i output.qcow2 -t td -p <qemu monitor port> -f <ssh_forward port> -q tdvmcall
     ```
 
-- Use `start-virt.sh`. The Libvirt XML template is [tdx-libvirt-ubuntu-host.xml.template](../../tools/cvm-image-rewriter/tdx-libvirt-ubuntu-host.xml.template). It uses `vsock` for getting quote.
+- Use `start-virt.sh`. The Libvirt XML template is [tdx-libvirt-ubuntu-host.xml.template](../tools/cvm-image-rewriter/tdx-libvirt-ubuntu-host.xml.template). It uses `vsock` for getting quote.
     ```
     $ sudo ./start-virt.sh -i <guest image>
     ```
@@ -28,7 +28,7 @@ Start a TD using [qemu-test.sh](../../tools/cvm-image-rewriter/qemu-test.sh) or 
 
 Run script [build.sh](../container/build.sh) to generate CCNP images. It will generate 5 images and push them to user specific registry.
 
-Learn more details in the [README.md](../../container/README.md).
+Learn more details in the [README.md](../container/README.md).
 
 _NOTE: The scripts need to run on a server with docker installed._
 
