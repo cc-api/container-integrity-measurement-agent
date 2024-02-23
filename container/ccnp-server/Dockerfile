@@ -1,11 +1,10 @@
-FROM rust:1.71-alpine3.18 AS quote-server-builder
+FROM rust:1.74.1-alpine3.17 AS ccnp-server-builder
 
 RUN apk update \
-    && apk add --no-cache make protobuf-dev musl-dev wget
+    && apk add --no-cache make protobuf-dev musl-dev wget openssl-dev openssl-libs-static
 
-COPY service/quote-server /quote-server
-COPY api /quote-server/api
-RUN cd /quote-server && make build
+COPY service/ccnp-server /ccnp-server
+RUN cd /ccnp-server && make build
 
 # add rediness and liveness probe command
 WORKDIR /usr/bin
@@ -15,17 +14,20 @@ RUN GRPC_HEALTH_PROBE_VERSION=v0.4.22 && \
 
 # ======================================================================================================================
 
-From alpine:3.18.5
+From alpine:3.17
 ARG USER=ccnp
 ARG GROUP=ccnp
 ARG UID=1000
 ARG GID=1000
 
+RUN apk update && apk add --no-cache openssl-libs-static
+
 RUN addgroup -S -g $GID $GROUP \
     && adduser -S -u $UID -D -G $GROUP $USER
 
-COPY --from=quote-server-builder /quote-server/target/release/quote_server /bin
-COPY --from=quote-server-builder /usr/bin/grpc-health-probe /usr/bin
+COPY --from=ccnp-server-builder /ccnp-server/target/release/ccnp_server /usr/bin
+COPY --from=ccnp-server-builder /ccnp-server/configs/policy.yaml /etc
+COPY --from=ccnp-server-builder /usr/bin/grpc-health-probe /usr/bin
 
 USER $UID
-CMD ["/bin/quote_server"]
+CMD ["/usr/bin/ccnp_server", "-p", "/etc/policy.yaml"]

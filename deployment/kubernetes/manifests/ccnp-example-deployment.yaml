@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ccnp-example
+spec:
+  selector:
+    matchLabels:
+      app: ccnp-example
+  template:
+    metadata:
+      labels:
+        app: ccnp-example
+    spec:
+      containers:
+      - name: ccnp-example
+        image: "docker.io/library/ccnp-example:latest"
+        imagePullPolicy: Always
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "100m"
+            tdx.intel.com/tdx-guest: 1
+          requests:
+              tdx.intel.com/tdx-guest: 1
+      nodeSelector:
+        intel.feature.node.kubernetes.io/tdx-guest: enabled

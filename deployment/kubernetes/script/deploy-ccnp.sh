@@ -58,14 +58,8 @@ function delete_ccnp {
     helm uninstall $NFD_NAME --namespace $NFD_NS
     helm uninstall ccnp-device-plugin
 
-    echo "-----------Delete ccnp eventlog server..."
-    kubectl delete -f deployment/manifests/eventlog-server-deployment.yaml
-
-    echo "-----------Delete ccnp measurement server..."
-    kubectl delete -f deployment/manifests/measurement-server-deployment.yaml
-
-    echo "-----------Delete ccnp quote server..."
-    kubectl delete -f deployment/manifests/quote-server-deployment.yaml
+    echo "-----------Delete ccnp server..."
+    kubectl delete -f deployment/manifests/ccnp-server-deployment.yaml
 
     echo "-----------Delete ccnp namespace..."
     kubectl delete -f deployment/manifests/namespace.yaml
@@ -74,11 +68,11 @@ function delete_ccnp {
 
 function deploy_ccnp {
     pushd "${WORK_DIR}/../.." || exit
-    
+
     # Generate temporary yaml files for deployment
     mkdir -p temp_manifests
     cp deployment/manifests/* temp_manifests/
-    
+
     #If private repo is used, modify the images' names in the yaml files
 
     if [[ -n "$registry" ]]; then
@@ -95,7 +89,7 @@ function deploy_ccnp {
     helm repo add nfd $NFD_URL
     helm repo update
     helm install $NFD_NAME  nfd/node-feature-discovery --namespace $NFD_NS --create-namespace
-    
+
     kubectl apply -f  device-plugin/ccnp-device-plugin/deploy/node-feature-rules.yaml
     helm install ccnp-device-plugin  device-plugin/ccnp-device-plugin/deploy/helm/ccnp-device-plugin
 
@@ -103,14 +97,8 @@ function deploy_ccnp {
     echo "-----------Deploy ccnp namespace..."
     kubectl create -f temp_manifests/namespace.yaml
 
-    echo "-----------Deploy ccnp eventlog server..."
-    kubectl create -f temp_manifests/eventlog-server-deployment.yaml
-
-    echo "-----------Deploy ccnp measurement server..."
-    kubectl create -f temp_manifests/measurement-server-deployment.yaml
-
-    echo "-----------Deploy ccnp quote server..."
-    kubectl create -f temp_manifests/quote-server-deployment.yaml
+    echo "-----------Deploy ccnp server..."
+    kubectl create -f temp_manifests/ccnp-server-deployment.yaml
 
     # rm -rf temp_manifests
     popd || exit

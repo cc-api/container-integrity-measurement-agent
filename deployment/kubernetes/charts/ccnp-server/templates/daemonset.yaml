@@ -1,14 +1,14 @@
 apiVersion: apps/v1
 kind: DaemonSet
 metadata:
-  name: {{ include "measurement-server.fullname" . }}
+  name: {{ include "ccnp-server.fullname" . }}
   namespace: {{ .Values.namespace }}
   labels:
-    {{- include "measurement-server.labels" . | nindent 4 }}
+    {{- include "ccnp-server.labels" . | nindent 4 }}
 spec:
   selector:
     matchLabels:
-      {{- include "measurement-server.selectorLabels" . | nindent 6 }}
+      {{- include "ccnp-server.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       {{- with .Values.podAnnotations }}
@@ -16,9 +16,9 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:
-        {{- include "measurement-server.selectorLabels" . | nindent 8 }}
+        {{- include "ccnp-server.selectorLabels" . | nindent 8 }}
     spec:
-      serviceAccountName: {{ include "measurement-server.serviceAccountName" . }}
+      serviceAccountName: {{ include "ccnp-server.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
@@ -35,12 +35,12 @@ spec:
 {{- end }}
           livenessProbe:
             exec:
-              command: ["/usr/bin/grpc_health_probe", "-addr=unix:/run/ccnp/uds/measurement.sock"]
+              command: ["/usr/bin/grpc-health-probe", "-addr=unix:/run/ccnp/uds/ccnp-server.sock"]
             initialDelaySeconds: 10
             periodSeconds: 10
           readinessProbe:
             exec:
-              command: ["/usr/bin/grpc_health_probe", "-addr=unix:/run/ccnp/uds/measurement.sock"]
+              command: ["/usr/bin/grpc-health-probe", "-addr=unix:/run/ccnp/uds/ccnp-server.sock"]
             initialDelaySeconds: 5
             periodSeconds: 10
             failureThreshold: 10
