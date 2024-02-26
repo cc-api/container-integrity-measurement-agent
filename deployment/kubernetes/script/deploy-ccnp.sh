@@ -52,26 +52,26 @@ function check_env {
 }
 
 function delete_ccnp {
-    pushd "${WORK_DIR}/../.." || exit
+    pushd "${WORK_DIR}/../../.." || exit
 
     echo "-----------Delete ccnp device plugin and NFD..."
     helm uninstall $NFD_NAME --namespace $NFD_NS
     helm uninstall ccnp-device-plugin
 
     echo "-----------Delete ccnp server..."
-    kubectl delete -f deployment/manifests/ccnp-server-deployment.yaml
+    kubectl delete -f deployment/kubernetes/manifests/ccnp-server-deployment.yaml
 
     echo "-----------Delete ccnp namespace..."
-    kubectl delete -f deployment/manifests/namespace.yaml
+    kubectl delete -f deployment/kubernetes/manifests/namespace.yaml
     popd || exit
 }
 
 function deploy_ccnp {
-    pushd "${WORK_DIR}/../.." || exit
+    pushd "${WORK_DIR}/../../.." || exit
 
     # Generate temporary yaml files for deployment
     mkdir -p temp_manifests
-    cp deployment/manifests/* temp_manifests/
+    cp deployment/kubernetes/manifests/* temp_manifests/
 
     #If private repo is used, modify the images' names in the yaml files
 
