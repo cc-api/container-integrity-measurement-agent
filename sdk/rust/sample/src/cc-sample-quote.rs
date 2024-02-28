@@ -19,7 +19,7 @@ fn main() {
     let data = base64::encode(rand::thread_rng().gen::<[u8; 32]>());
 
     // retrieve cc report with API "get_cc_report"
-    info!("call cc trusted API [get_cc_report] to retrieve cc report!");
+    info!("call cc trusted API [get_cc_report] to retrieve cc report with nonce and data!");
     let report = match API::get_cc_report(Some(nonce), Some(data), ExtraArgs {}) {
         Ok(q) => q,
         Err(e) => {
@@ -37,6 +37,38 @@ fn main() {
     // parse the cc report with API "parse_cc_report"
     if report.cc_type == TeeType::TDX {
         let tdx_quote: TdxQuote = match CcReport::parse_cc_report(report.cc_report) {
+            Ok(q) => q,
+            Err(e) => {
+                info!("error parse tdx quote: {:?}", e);
+                return;
+            }
+        };
+        info!(
+            "version = {}, report_data = {}",
+            tdx_quote.header.version,
+            base64::encode(tdx_quote.body.report_data)
+        );
+
+        // show data of the struct TdxQuoteHeader
+        info!("call struct show function to show data of the struct TdxQuoteHeader!");
+        tdx_quote.header.show();
+    }
+
+    // retrieve cc report with API "get_cc_report"
+    info!("call cc trusted API [get_cc_report] to retrieve cc report with no nonce and data!");
+    let report1 = match API::get_cc_report(None, None, ExtraArgs {}) {
+        Ok(q) => q,
+        Err(e) => {
+            info!("error getting cc report: {:?}", e);
+            return;
+        }
+    };
+
+    info!("length of the cc report: {}", report1.cc_report.len());
+
+    // parse the cc report with API "parse_cc_report"
+    if report1.cc_type == TeeType::TDX {
+        let tdx_quote: TdxQuote = match CcReport::parse_cc_report(report1.cc_report) {
             Ok(q) => q,
             Err(e) => {
                 info!("error parse tdx quote: {:?}", e);

@@ -37,17 +37,31 @@ impl CCTrustedApi for API {
         })
     }
 
-    // CCTrustedApi trait function: dump report of a CVM in hex and char format
+    // CCTrustedApi trait function: dump report of in hex and char format
     fn dump_cc_report(report: &Vec<u8>) {
         dump_data(report)
     }
 
-    // CCTrustedApi trait function: get max number of CVM IMRs
+    // CCTrustedApi trait function: get max number of IMRs
     fn get_measurement_count() -> Result<u8, anyhow::Error> {
-        todo!()
+        let mut ccnp_service_client = CcnpServiceClient {
+            ccnp_uds_path: UDS_PATH.to_string(),
+        };
+
+        let response = match ccnp_service_client.get_cc_measurement_count_from_server() {
+            Ok(r) => r,
+            Err(e) => {
+                return Err(anyhow!(
+                    "[get_measurement_count] err get cc measurement count: {:?}",
+                    e
+                ));
+            }
+        };
+
+        Ok(response.count.try_into().unwrap())
     }
 
-    // CCTrustedApi trait function: get measurements of a CVM
+    // CCTrustedApi trait function: get measurements
     fn get_cc_measurement(index: u8, algo_id: u16) -> Result<TcgDigest, anyhow::Error> {
         let mut ccnp_service_client = CcnpServiceClient {
             ccnp_uds_path: UDS_PATH.to_string(),
@@ -74,7 +88,7 @@ impl CCTrustedApi for API {
         })
     }
 
-    // CCTrustedApi trait function: get eventlogs of a CVM
+    // CCTrustedApi trait function: get eventlogs
     fn get_cc_eventlog(
         start: Option<u32>,
         count: Option<u32>,
@@ -122,15 +136,33 @@ impl CCTrustedApi for API {
         Ok(event_logs)
     }
 
-    // CCTrustedApi trait function: replay eventlogs of a CVM
+    // CCTrustedApi trait function: replay eventlogs
     fn replay_cc_eventlog(
         eventlogs: Vec<EventLogEntry>,
     ) -> Result<Vec<ReplayResult>, anyhow::Error> {
         EventLogs::replay(eventlogs)
     }
 
-    // CCTrustedApi trait function: get default algorithm of a CVM
+    // CCTrustedApi trait function: get default algorithm
     fn get_default_algorithm() -> Result<Algorithm, anyhow::Error> {
-        todo!()
+        let mut ccnp_service_client = CcnpServiceClient {
+            ccnp_uds_path: UDS_PATH.to_string(),
+        };
+
+        let response = match ccnp_service_client.get_cc_default_algorithm_from_server() {
+            Ok(r) => r,
+            Err(e) => {
+                return Err(anyhow!(
+                    "[get_default_algorithm] err get cc get default algorithm: {:?}",
+                    e
+                ));
+            }
+        };
+
+        let algo_id = response.algo_id as u16;
+        Ok(Algorithm {
+            algo_id,
+            algo_id_str: ALGO_NAME_MAP.get(&algo_id).unwrap().to_owned(),
+        })
     }
 }
