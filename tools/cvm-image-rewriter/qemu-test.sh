@@ -41,7 +41,6 @@ CPUS=1
 MEM=4G
 SGX_EPC_SIZE=64M
 
-# Installed from the package of intel-mvp-tdx-tdvf
 OVMF="/usr/share/qemu/OVMF.fd"
 GUEST_IMG=""
 DEFAULT_GUEST_IMG="${CURR_DIR}/output.qcow2"
@@ -222,7 +221,7 @@ process_args() {
                 PARAM_CPU+=",tsc-freq=1000000000"
             fi
             # Note: "pic=no" could only be used in TD mode but not for non-TD mode
-            PARAM_MACHINE+=",kernel_irqchip=split,confidential-guest-support=tdx"
+            PARAM_MACHINE+=",kernel_irqchip=split,confidential-guest-support=tdx,memory-backend=ram1"
             QEMU_CMD+=" -bios ${OVMF}"
             QEMU_CMD+=" -object tdx-guest,sept-ve-disable=on,id=tdx"
             if [[ ${QUOTE_TYPE} == "tdvmcall" ]]; then
@@ -234,6 +233,7 @@ process_args() {
             if [[ ${DEBUG} == true ]]; then
                 QEMU_CMD+=",debug=on"
             fi
+            QEMU_CMD+=" -object memory-backend-ram,id=ram1,size=${MEM},private=on"
             ;;
     	"td-1.5")
             cpu_tsc=$(grep 'cpu MHz' /proc/cpuinfo | head -1 | awk -F: '{print $2/1024}')
