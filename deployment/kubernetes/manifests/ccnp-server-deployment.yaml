@@ -26,8 +26,6 @@ spec:
       - name: ccnp-server
         image: docker.io/library/ccnp-server:latest
         imagePullPolicy: IfNotPresent
-        securityContext:
-          privileged: true
         livenessProbe:
           exec:
             command: ["/usr/bin/grpc-health-probe", "-addr=unix:/run/ccnp/uds/ccnp-server.sock"]
@@ -46,11 +44,11 @@ spec:
           - name: proc
             mountPath: /proc
           - name: eventlog-entry
-            mountPath: /sys/firmware/acpi/tables/CCEL
+            mountPath: /run/firmware/acpi/tables/CCEL
           - name: eventlog-data
-            mountPath: /sys/firmware/acpi/tables/data/CCEL
+            mountPath: /run/firmware/acpi/tables/data/CCEL
           - name: ima-data
-            mountPath: /sys/kernel/security/
+            mountPath: /run/kernel/security/
       volumes:
         - name: proc
           hostPath:
