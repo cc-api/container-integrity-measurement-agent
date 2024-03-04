@@ -156,9 +156,7 @@ impl Agent {
             return Ok(());
         }
 
-        if cgpath[1].starts_with("/kubepods.slice/kubepods")
-            || cgpath[1].starts_with("/system.slice/docker-")
-        {
+        if cgpath[1].contains("kubepods.slice") || cgpath[1].contains("system.slice/docker-") {
             let container_id = match Container::parse_id(cgpath) {
                 Ok(v) => v,
                 Err(e) => return Err(e),
