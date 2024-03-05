@@ -41,7 +41,6 @@ CPUS=1
 MEM=4G
 SGX_EPC_SIZE=64M
 
-# Installed from the package of intel-mvp-tdx-tdvf
 OVMF="/usr/share/qemu/OVMF.fd"
 GUEST_IMG=""
 DEFAULT_GUEST_IMG="${CURR_DIR}/output.qcow2"
@@ -52,8 +51,6 @@ BOOT_TYPE="direct"
 DEBUG=false
 USE_VSOCK=false
 USE_SERIAL_CONSOLE=false
-FORWARD_PORT=10026
-MONITOR_PORT=9001
 ROOT_PARTITION="/dev/vda1"
 KERNEL_CMD_NON_TD="root=${ROOT_PARTITION} rw console=hvc0"
 KERNEL_CMD_TD="${KERNEL_CMD_NON_TD}"
@@ -61,6 +58,10 @@ MAC_ADDR=""
 QUOTE_TYPE=""
 NET_CIDR="10.0.2.0/24"
 DHCP_START="10.0.2.15"
+
+# Generate random ports to avoid conflict with other TDs
+FORWARD_PORT=$((RANDOM % 200 + 10026))
+MONITOR_PORT=$((RANDOM % 200 + 9001))
 
 # Just log message of serial into file without input
 HVC_CONSOLE="-chardev stdio,id=mux,mux=on,logfile=/tmp/vm_log_$(date +"%FT%H%M").log \
@@ -78,9 +79,9 @@ QEMU_CMD="${QEMU_EXEC} -accel kvm \
           -name process=tdxvm,debug-threads=on \
           -m $MEM -vga none \
           -monitor pty \
-          -no-hpet -nodefaults"
+          -nodefaults"
 PARAM_CPU=" -cpu host,-kvm-steal-time,pmu=off"
-PARAM_MACHINE=" -machine q35"
+PARAM_MACHINE=" -machine q35,hpet=off"
 
 usage() {
     cat << EOM
@@ -222,7 +223,7 @@ process_args() {
                 PARAM_CPU+=",tsc-freq=1000000000"
             fi
             # Note: "pic=no" could only be used in TD mode but not for non-TD mode
-            PARAM_MACHINE+=",kernel_irqchip=split,confidential-guest-support=tdx"
+            PARAM_MACHINE+=",kernel_irqchip=split,memory-encryption=tdx,memory-backend=ram1"
             QEMU_CMD+=" -bios ${OVMF}"
             QEMU_CMD+=" -object tdx-guest,sept-ve-disable=on,id=tdx"
             if [[ ${QUOTE_TYPE} == "tdvmcall" ]]; then
@@ -234,6 +235,7 @@ process_args() {
             if [[ ${DEBUG} == true ]]; then
                 QEMU_CMD+=",debug=on"
             fi
+            QEMU_CMD+=" -object memory-backend-ram,id=ram1,size=${MEM},private=on"
             ;;
     	"td-1.5")
             cpu_tsc=$(grep 'cpu MHz' /proc/cpuinfo | head -1 | awk -F: '{print $2/1024}')
@@ -298,7 +300,9 @@ process_args() {
 
     # Enable vsock
     if [[ ${USE_VSOCK} == true ]]; then
-        QEMU_CMD+=" -device vhost-vsock-pci,guest-cid=3 "
+        # Generate a random guest-cid to avoid conflict with other TDs
+        random_cid=$((RANDOM % 128 + 1))
+        QEMU_CMD+=" -device vhost-vsock-pci,guest-cid=${random_cid} "
     fi
 
     # Specify extra kernel cmdline to be added for vm boot
