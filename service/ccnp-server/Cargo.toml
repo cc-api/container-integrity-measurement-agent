@@ -27,9 +27,11 @@ regex = "1.10.3"
 serde = { version = "1.0", features = ["derive"] }
 serde_yaml = "0.9.30"
 openssl = "0.10.63"
+rand = "0.8.5"
 
 [dev-dependencies]
 serial_test = { version ="2.0.0" }
+tower = { version = "0.4", features = ["util"] }
 
 [build-dependencies]
 tonic-build = "0.9"
