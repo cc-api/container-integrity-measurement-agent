@@ -49,6 +49,7 @@ There are following customization plugins in Plugins providing customization to 
 | 06-install-tdx-guest-kernel | Install MVP TDX guest kernel | Y |
 | 07-device-permission | Fix the permission for device node | Y |
 | 08-ccnp-uds-directory-permission | Fix the permission for CCNP UDS directory | Y |
+| 09-ccnp-vsock-port | Prepare a VM sockets port for CCNP | Y |
 | 60-initrd-update | Update the initrd image | N |
 | 97-sample | plugin customization example | N |
 | 98-ima-enable-simple | Enable IMA (Integrity Measurement Architecture) feature | N |
@@ -142,15 +143,15 @@ For example:
 
 If the guest image is used for CCNP deployment, it's recommended to run the below plugin combination depending on which guest image type is used.
 Others are not required by CCNP and can be skipped.
-|  Base image | 01  | 02  | 03  | 04  | 05 | 06 | 07 | 08 | 60 | 98 |
-|---|---|---|---|---|---|---|---|---|---|---|
-|  Ubuntu base image | | | | | | Y| Y| Y| | |
-| TD enlightened image | | | | | | | Y| Y| | |
+|  Base image | 01  | 02  | 03  | 04  | 05 | 06 | 07 | 08 | 09 | 60 | 98 |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+|  Ubuntu base image | | | | | | Y| Y| Y| Y| | |
+| TD enlightened image | | | | | | | Y| Y| Y| | |
 
 **NOTE:**
   - All plugins need to be executed in numerical order.
   - TD enlightened image means the image already has a TDX kernel. If not, plugin 06 is required to install a TDX kernel.
-  - Plugin 7 and Plugin 8 need to be executed before deploying CCNP to provide device permissions for CCNP.
+  - Plugin 7, Plugin 8 and Plugin 9 need to be executed before deploying CCNP to provide device permissions for CCNP.
   - Plugin 60 requires copying or generating all files to the root directory first. When users customize plugins, please ensure that the plugin number with this requirement is placed before 60.
   - Plugin 98 needs to be executed after all other plugins have completed. The number of the user-customized plugin must be before 98.
   - Other plugins are optional for CCNP deployment. 

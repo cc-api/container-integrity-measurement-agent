@@ -39,6 +39,7 @@
         "kubevirt",
         "distro",
         "virt",
-        "containerized"
+        "containerized",
+        "vsock"
     ]
 }

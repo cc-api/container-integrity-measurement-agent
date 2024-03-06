@@ -14,7 +14,8 @@ power_state:
   condition: True
 
 runcmd:
-  - sed -i 's/PasswordAuthentication no/PasswordAuthentication yes/g' /etc/ssh/sshd_config
+  - sed -i 's/#PasswordAuthentication yes/PasswordAuthentication yes/g' /etc/ssh/sshd_config
+  - sed -i 's/KbdInteractiveAuthentication no/KbdInteractiveAuthentication yes/g' /etc/ssh/sshd_config
   - sed -i 's/console=tty1 console=ttyS0/console=hvc0/g' /etc/default/grub.d/50-cloudimg-settings.cfg
   # copy stuff into initrd
   - update-initramfs -u -k all

@@ -22,7 +22,7 @@ if [[ ! -d "$CVM_TDX_GUEST_REPO" ]]; then
 fi
 
 # Check if it is a valid TDX repo
-if ! compgen -G "$CVM_TDX_GUEST_REPO/jammy/amd64/linux-image-*mvp*.deb"; then
+if ! compgen -G "$CVM_TDX_GUEST_REPO/linux-image-*intel-opt*.deb"; then
     warn "SKIP: $CVM_TDX_GUEST_REPO is invalid."
     exit 0
 fi
@@ -38,10 +38,10 @@ mkdir -p "${CURR_DIR}/../cloud-init/x-shellscript/"
 cat > "${CURR_DIR}/../cloud-init/x-shellscript/07-install-tdx-guest-kernel.sh" << EOL
 #!/bin/bash
 
-PACKAGE_DIR=""$ARTIFACTS_GUEST"/$(basename "$CVM_TDX_GUEST_REPO")/jammy/"
+PACKAGE_DIR=""$ARTIFACTS_GUEST"/$(basename "$CVM_TDX_GUEST_REPO")/"
 pushd \$PACKAGE_DIR || exit 0
-apt install ./amd64/linux-image-unsigned-*.deb ./amd64/linux-modules-*.deb \
-        ./amd64/linux-headers-*.deb ./all/linux-headers-*.deb --allow-downgrades -y
+apt install ./linux-image-unsigned-*.deb ./linux-modules-*.deb \
+        ./linux-headers-*.deb ./linux-intel-opt-headers-*.deb --allow-downgrades -y
 popd || exit 0
 EOL
 
