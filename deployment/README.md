@@ -9,8 +9,8 @@ Before moving forward, please make sure you have a TD booted. The CCNP service i
 You can use [cvm image rewriter](../tools/cvm-image-rewriter/README.md) to prepare a TD enlightened guest image.
 
 **NOTE:**
- - If your initial guest image already has a TDX kernel, it's required to run [plugin](../tools/cvm-image-rewriter/plugins/) 07 and 08 to set device access permission.
- - If your initial guest image is a normal Ubuntu guest image, it's required to run [plugin](../tools/cvm-image-rewriter/plugins/) 06 to install TDX kernel and then 07, 08 to set device access permission.
+ - If your initial guest image already has a TDX kernel, it's required to run [plugin](../tools/cvm-image-rewriter/plugins/) 07, 08 and 09 to set device access permission.
+ - If your initial guest image is a normal Ubuntu guest image, it's required to run [plugin](../tools/cvm-image-rewriter/plugins/) 06 to install TDX kernel and then 07, 08, 09 to set device access permission.
  
 Start a TD using [qemu-test.sh](../tools/cvm-image-rewriter/qemu-test.sh) or [start-virt.sh](../tools/cvm-image-rewriter/start-virt.sh).
 

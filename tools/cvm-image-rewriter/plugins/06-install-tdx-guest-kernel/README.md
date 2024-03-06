@@ -4,7 +4,7 @@ This plugin is used to install a TDX guest kernel from a given local repository.
 
 # Prerequisite
 
-Prepare the local repository and confirm that there are Debian packages related to the TDX kernel in the `/jammy/amd64/` directory of this repository. It is recommended to place this local repository in the `pre-stage/artifacts/` directory.
+Prepare the local repository and confirm that there are Debian packages related to the TDX kernel in this repository. It is recommended to place this local repository in the `pre-stage/artifacts/` directory.
 ```
 mkdir -p ./pre-stage/artifacts
 mv <your guest repo> ./pre-stage/artifacts/
