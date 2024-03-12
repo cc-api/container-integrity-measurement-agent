@@ -27,31 +27,38 @@ impl Container {
     }
 
     pub fn parse_id(cgpath: Vec<&str>) -> Result<String, Error> {
-        if cgpath[1].starts_with("/kubepods") {
-            let id_regex1 = Regex::new(r"kubepods-pod|.slice").unwrap();
-            let id_regex2 = Regex::new(r"kubepods-besteffort-pod|.slice").unwrap();
-
-            let cgroup: Vec<&str> = cgpath[1].split('/').collect();
-            let id = match cgroup.len() {
-                4 => id_regex1.replace_all(cgroup[2], "").to_string(),
-                5 => id_regex2.replace_all(cgroup[3], "").to_string(),
-                _ => {
+        let path = match cgpath[1].find("kubepods.slice") {
+            Some(v) => cgpath[1].get(v..),
+            None => match cgpath[1].find("system.slice") {
+                Some(v) => cgpath[1].get(v..),
+                None => {
                     return Err(anyhow!(
-                        "The container id parse failed, unknown cgpath format."
+                        "The container id parse failed, system.slice/kubepods.slice not found."
                     ))
                 }
-            };
+            },
+        };
 
-            Ok(id)
-        } else {
-            let id_regex = Regex::new(r"/system.slice/docker-|.scope").unwrap();
-            let id = id_regex.replace_all(cgpath[1], "").to_string();
-            if id.is_empty() {
-                return Err(anyhow!("The container id parse failed, id is empty."));
-            }
+        let id = match path {
+            Some(v) => match Regex::new(
+                r"[[:xdigit:]_]{36}.slice|[[:xdigit:]]{32}.slice|[[:xdigit:]]{64}.scope",
+            ) {
+                Ok(re) => match re.find(v) {
+                    Some(v) => v.as_str().replace(".slice", "").replace(".scope", ""),
+                    None => {
+                        return Err(anyhow!("The container id parse failed, pattern not found."))
+                    }
+                },
+                Err(_) => {
+                    return Err(anyhow!(
+                        "The container id parse failed, regex return errors."
+                    ))
+                }
+            },
+            None => return Err(anyhow!("The container id parse failed, path is None.")),
+        };
 
-            Ok(id)
-        }
+        Ok(id.to_string())
     }
 
     pub fn imr(&self) -> &TcgDigest {
