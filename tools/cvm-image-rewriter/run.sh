@@ -5,7 +5,7 @@ set -e
 # Common Definitions
 TOP_DIR=$(dirname "$(readlink -f "$0")")
 SCRIPTS_DIR="${TOP_DIR}/scripts"
-TARGET_FILES_DIR="$(mktemp -d /tmp/cvm_target_files.XXXXXX)"
+TARGET_FILES_DIR="$(mktemp -d /tmp/cvm_target_files)"
 INPUT_IMG=""
 OUTPUT_IMG="output.qcow2"
 TIMEOUT=6
@@ -280,7 +280,7 @@ do_cloud_init() {
         --connect ${CONNECT_URI} \
         --disk /tmp/ciiso.iso,device=cdrom \
         --os-type Linux \
-        --os-variant ubuntu18.10 \
+        --os-variant ubuntu22.04 \
         --graphics none \
         --import \
         --wait=$TIMEOUT \
