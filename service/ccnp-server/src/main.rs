@@ -312,7 +312,7 @@ mod ccnp_server_test{
         let request = tonic::Request::new(GetCcMeasurementRequest {
             container_id: container_id,
             index: IMR::CONTAINER as u32,
-            algo_id: tcg::TPM_ALG_SHA512.into(),
+            algo_id: tcg::TPM_ALG_SHA384.into(),
         });
 
         let result = client.get_cc_measurement(request).await;
