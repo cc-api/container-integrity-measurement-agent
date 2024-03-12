@@ -46,9 +46,9 @@ There are following customization plugins in Plugins providing customization to 
 | 03-netplan | Customize the netplan.yaml | N |
 | 04-user-authkey | Add auth key for user login instead of password | N |
 | 05-readonly-data | Fix some file permission to ready-only | N |
-| 06-install-tdx-guest-kernel | Install MVP TDX guest kernel | Y |
-| 07-device-permission | Fix the permission for device node | Y |
-| 08-ccnp-uds-directory-permission | Fix the permission for CCNP UDS directory | Y |
+| 06-install-tdx-guest-kernel | Install user-specified TDX guest kernel | Y |
+| 07-device-permission | Set the permission for device node | Y |
+| 08-ccnp-uds-directory-permission | Set the permission for CCNP UDS directory | Y |
 | 09-ccnp-vsock-port | Prepare a VM sockets port for CCNP | Y |
 | 60-initrd-update | Update the initrd image | N |
 | 97-sample | plugin customization example | N |
@@ -151,7 +151,7 @@ Others are not required by CCNP and can be skipped.
 **NOTE:**
   - All plugins need to be executed in numerical order.
   - TD enlightened image means the image already has a TDX kernel. If not, plugin 06 is required to install a TDX kernel.
-  - Plugin 7, Plugin 8 and Plugin 9 need to be executed before deploying CCNP to provide device permissions for CCNP.
+  - Plugin 07, Plugin 08 and Plugin 09 need to be executed before deploying CCNP to provide device permissions for CCNP.
   - Plugin 60 requires copying or generating all files to the root directory first. When users customize plugins, please ensure that the plugin number with this requirement is placed before 60.
   - Plugin 98 needs to be executed after all other plugins have completed. The number of the user-customized plugin must be before 98.
   - Other plugins are optional for CCNP deployment. 
