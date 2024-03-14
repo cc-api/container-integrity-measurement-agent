@@ -1,9 +1,6 @@
 <domain type='kvm' xmlns:qemu='http://libvirt.org/schemas/domain/qemu/1.0'>
   <name>tdx-guest</name>
   <memory unit='GiB'>REPLACE_MEM_SIZE</memory>
-  <memoryBacking>
-    <source type='memfd-private'/>
-  </memoryBacking>
   <vcpu placement="static">REPLACE_VCPU_NUM</vcpu>
   <os>
     <type arch='x86_64' machine='q35'>hvm</type>
