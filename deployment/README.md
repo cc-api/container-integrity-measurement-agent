@@ -51,10 +51,8 @@ After the script is successful, it's supposed to see below docker images for CCN
 
 ```
 $ sudo docker images
-ccnp-node-measurement-example   <your image tag>
-ccnp-eventlog-server            <your image tag>
-ccnp-measurement-server         <your image tag>
-ccnp-quote-server               <your image tag>
+ccnp-example                    <your image tag>
+ccnp-server                     <your image tag>
 ccnp-device-plugin              <your image tag>
 ```
 
@@ -62,7 +60,7 @@ ccnp-device-plugin              <your image tag>
 
 Below diagram illustrates CCNP deployment process in a Kubernetes cluster. If you want to install CCNP services as DamonSets in the Kubernetes cluster, please refer to [CCNP deployment in Kubernetes](./kubernetes/README.md).
 
-![Deployment diagram](../docs/ccnp-deployment-process.png)
+![Deployment diagram](../docs/ccnp-deployment-k8s.png)
 
 
 ## Deploy CCNP in Docker

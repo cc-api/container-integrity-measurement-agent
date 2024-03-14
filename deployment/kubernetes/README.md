@@ -2,7 +2,7 @@
 
 Below diagram illustrates CCNP deployment process. In this document, it will use Intel TDX guest(TD) as an example of CVM and deploy CCNP on Intel TD nodes.
 
-![Deployment diagram](../../docs/ccnp-deployment-process.png)
+![Deployment diagram](../../docs/ccnp-deployment-k8s.png)
 
 
 ## Prepare a K8S cluster with TD as worker nodes
@@ -83,14 +83,10 @@ NAME                    NAMESPACE       REVISION        UPDATED                 
 ccnp-device-plugin      default         1               2023-12-27 08:12:05.814766198 +0000 UTC deployed        ccnp-device-plugin-0.1.0        latest
 $ sudo kubectl get ds -n ccnp
 NAME                 DESIRED   CURRENT   READY   UP-TO-DATE   AVAILABLE   NODE SELECTOR                                        AGE
-eventlog-server      1         1         1       1            1           intel.feature.node.kubernetes.io/tdx-guest=enabled   24h
-quote-server         1         1         1       1            1           intel.feature.node.kubernetes.io/tdx-guest=enabled   24h
-measurement-server   1         1         1       1            1           intel.feature.node.kubernetes.io/tdx-guest=enabled   24h
+ccnp-server          1         1         1       1            1           intel.feature.node.kubernetes.io/tdx-guest=enabled   24h
 $ sudo kubectl get pods -n ccnp
 NAME                       READY   STATUS    RESTARTS      AGE
-eventlog-server-bk2g5      1/1     Running   2 (39s ago)   24h
-quote-server-6lhf6         1/1     Running   0             26s
-measurement-server-4q9v7   1/1     Running   0             26s
+ccnp-server-mqfjx          1/1     Running   2 (39s ago)   24h
 ```
 
 ## Install CCNP SDK

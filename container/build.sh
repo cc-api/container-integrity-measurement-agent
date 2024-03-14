@@ -98,9 +98,6 @@ function build_a_image {
     cd "${top_dir}"
     if [[ -n "${docker_build_clean_param}" ]]; then
         docker build \
-             --build-arg http_proxy \
-             --build-arg https_proxy \
-             --build-arg no_proxy \
              --build-arg pip_mirror \
              -f container/"${1}"/Dockerfile \
              . \
@@ -109,9 +106,6 @@ function build_a_image {
              { echo "Fail to build docker ${registry}/${1}:${tag}"; exit 1; }
     else
         docker build \
-             --build-arg http_proxy \
-             --build-arg https_proxy \
-             --build-arg no_proxy \
              --build-arg pip_mirror \
              -f container/"${1}"/Dockerfile \
              . \
