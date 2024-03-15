@@ -40,6 +40,11 @@ function check_env {
         CCNP_UDS=flase
         echo "Skip: CCNP uds dir has been prepared."
     fi
+
+    # Set read permission of CCEL table and IMA measurement
+    chmod 444 /sys/firmware/acpi/tables/data/CCEL
+    chmod 444 /sys/kernel/security/ima/ascii_runtime_measurements
+    chmod 444 /sys/firmware/acpi/tables/CCEL
 }
 
 function install_docker {

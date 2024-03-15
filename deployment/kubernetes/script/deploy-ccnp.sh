@@ -72,20 +72,18 @@ function deploy_ccnp {
     # Generate temporary yaml files for deployment
     mkdir -p temp_manifests
     cp deployment/kubernetes/manifests/* temp_manifests/
+    cp device-plugin/ccnp-device-plugin/deploy/helm/ccnp-device-plugin/values.yaml temp_manifests/
 
-    #If private repo is used, modify the images' names in the yaml files
-
+    # If private repo is used, modify the images' names in the yaml files
     if [[ -n "$registry" ]]; then
         sed -i  "s#${DOCKER_REPO}#${registry}#g" temp_manifests/*
-        sed -i  "s#${DOCKER_REPO}#${registry}#g" device-plugin/ccnp-device-plugin/deploy/helm/ccnp-device-plugin/values.yaml
     fi
 
     if [[ "$tag" != "latest" ]]; then
         sed -i  "s#latest#${tag}#g" temp_manifests/*
-        sed -i  "s#latest#${tag}#g" device-plugin/ccnp-device-plugin/deploy/helm/ccnp-device-plugin/values.yaml
     fi
 
-    #Deploy CCNP Dependencies
+    # Deploy CCNP Dependencies
     helm repo add nfd $NFD_URL
     helm repo update
     helm install $NFD_NAME  nfd/node-feature-discovery --namespace $NFD_NS --create-namespace
@@ -93,14 +91,14 @@ function deploy_ccnp {
     kubectl apply -f  device-plugin/ccnp-device-plugin/deploy/node-feature-rules.yaml
     helm install ccnp-device-plugin  device-plugin/ccnp-device-plugin/deploy/helm/ccnp-device-plugin
 
-    #Deploy CCNP services
+    # Deploy CCNP services
     echo "-----------Deploy ccnp namespace..."
     kubectl create -f temp_manifests/namespace.yaml
 
     echo "-----------Deploy ccnp server..."
     kubectl create -f temp_manifests/ccnp-server-deployment.yaml
 
-    # rm -rf temp_manifests
+    rm -rf temp_manifests
     popd || exit
 }
 
