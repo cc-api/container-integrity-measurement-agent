@@ -115,7 +115,7 @@ SUCCESS: Example Container Deleted
 
 ```
 
-The example container will launch and stop automatically, and save the measurement log in `/tmp/docker_ccnp/measurement.log`. The log file is similar to the [sample file](../../docs/sample-output-for-node-measurement-tool-full.txt).
+The example container will launch and stop automatically, and save the measurement log in `/tmp/docker_ccnp/measurement.log`. The log file is similar to the [sample file](../../docs/sample-output-for-container-measurement.txt).
 
 The script provides some options. 
 

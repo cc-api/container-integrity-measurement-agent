@@ -25,7 +25,8 @@ The following scripts can help to generate CCNP images and deploy them in the TD
 
 - [build.sh](../../container/build.sh): The tool will build docker images and push them to remote registry if required.
 - [deploy-ccnp.sh](../kubernetes/script/deploy-ccnp.sh): The tool will deploy CCNP services as DaemonSet on TDs in the K8S cluster.
-- [deploy-and-exec-ccnp-example.sh](../kubernetes/script/deploy-and-exec-ccnp-example.sh): The tool will deploy an example pod and show getting event logs, measurement and perform verification using CCNP in the pod.
+- [deploy-ccnp-example.sh](../kubernetes/script/deploy-ccnp-example.sh): The tool will deploy an example pod with CCNP SDK installed.
+- [exec-ccnp-example.sh](../kubernetes/script/exec-ccnp-example.sh): The tool will show getting event logs, measurement and perform verification using CCNP in the pod.
 - [prerequisite.sh](../kubernetes/script/prerequisite.sh): This tool will complete the prerequisites for deploying CCNP on Ubuntu. For other platforms, you can follow the section below.
 
 ### Prerequisite
@@ -106,16 +107,33 @@ At this step, CCNP has been installed successfully. For more detailed informatio
 
 
 ## CCNP Usage Example
-The script [deploy-and-exec-ccnp-example.sh](../kubernetes/script/deploy-and-exec-ccnp-example.sh) is an example of using CCNP to collect event log, measurement and perform verification in a pod.
+The script [deploy-ccnp-example.sh](../kubernetes/script/deploy-ccnp-example.sh) will deploy an example pod with CCNP SDK installed.
+The script [exec-ccnp-example.sh](../kubernetes/script/exec-ccnp-example.sh) will use CCNP SDK to collect event log, measurement and perform verification in the example pod.
+
+- Deploy example pod
 ```
 $ cd script
-# Specify the registry name and tag used in image building
-$ sudo ./deploy-and-exec-ccnp-example.sh -r <remote-registry> -g <tag>
 
-# You can also specify which integrity measurement register (RTMR in the case of Intel TD) to verify
-# e.g. Show RTMR[1] and RTMR[2] using below command
-$ sudo ./deploy-and-exec-ccnp-example.sh -r <remote-registry> -g <tag> -i '1 2'
+# Deploy CCNP example pod
+$ sudo ./deploy-ccnp-example.sh -r <remote-registry> -g <tag>
 ```
 
-The example output of verification can be found at [sample-output-for-node-measurement-tool-full.txt](../../docs/sample-output-for-node-measurement-tool-full.txt) and
-[sample-output-for-node-measurement-tool-selected.txt](../../docs/sample-output-for-node-measurement-tool-selected.txt).
+- Get Pod measurement, event logs, CC report and verify event logs using CCNP SDK.
+
+```
+# Get measurement
+$ sudo ./exec-ccnp-example.sh -m
+
+# Get event logs
+$ sudo ./exec-ccnp-example.sh -e
+
+# Get CC report
+$ sudo ./exec-ccnp-example.sh -r
+
+# Verify event logs with measurements
+$ sudo ./exec-ccnp-example.sh -v
+
+```
+
+The example output of verification can be found at [sample-output-for-container-measurement.txt](../../docs/sample-output-for-container-measurement.txt) and
+[sample-output-for-container-eventlog.txt](../../docs/sample-output-for-container-eventlog.txt).

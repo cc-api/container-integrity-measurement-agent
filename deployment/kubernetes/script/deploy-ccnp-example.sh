@@ -1,6 +1,5 @@
 #!/bin/bash
-# Script to deploy and execute CCNP example container
-# Attach the RTMR index after the script during execution to verify selected register
+# Script to deploy CCNP example pod
 
 set -e
 
@@ -9,12 +8,12 @@ DEFAULT_TAG=latest
 TEMP_MANIFEST_FILE=/tmp/ccnp-example-deployment.yaml
 DELETE_DEPLOYMENT=false
 
-usage() { echo "Usage: $0 [-r <registry-prefix>] [-g <image-tag>] [-d delete existing deployment] [-i <register-index-to-verify>]"; exit 1; }
-while getopts ":r:g:i:dh" option; do
+
+usage() { echo "Usage: $0 [-r <registry-prefix>] [-g <image-tag>] [-d delete existing deployment] [-m get measurement] [-e get event logs] [-q get cc report] [-v verify event logs]"; exit 1; }
+while getopts ":r:g:i:dmervh" option; do
         case "${option}" in
             r) registry=${OPTARG};;
             g) tag=${OPTARG};;
-            i) index=${OPTARG};;
             d) DELETE_DEPLOYMENT=true;;
             h) usage;;
             *) echo "Invalid option: -${OPTARG}" >&2
@@ -23,7 +22,7 @@ while getopts ":r:g:i:dh" option; do
         esac
     done
 
-echo "Step 1:  Deploy CCNP example for container measurement in Kubernetes"
+echo "Deploy CCNP example for container measurement in Kubernetes"
 # replace registry and image tag according to user input
 cp ../manifests/ccnp-example-deployment.yaml $TEMP_MANIFEST_FILE
 if [[ -n "$registry" ]]; then
@@ -57,8 +56,3 @@ if [[ -z "$POD_NAME" ]]; then
     echo "No ccnp-example pod with status running! Please check your deployment."
     exit 1
 fi
-echo ""
-
-echo "Step 2:  Execute ccnp_example.py"
-IFS=' ' read -r -a arr <<< "${index}"
-kubectl exec -it "$POD_NAME" -- ccnp_example.py "${arr[@]}"

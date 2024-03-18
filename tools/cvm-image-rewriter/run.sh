@@ -5,7 +5,7 @@ set -e
 # Common Definitions
 TOP_DIR=$(dirname "$(readlink -f "$0")")
 SCRIPTS_DIR="${TOP_DIR}/scripts"
-TARGET_FILES_DIR="$(mktemp -d /tmp/cvm_target_files)"
+TARGET_FILES_DIR="$(mktemp -d /tmp/cvm_target_files.XXXXXX)"
 INPUT_IMG=""
 OUTPUT_IMG="output.qcow2"
 TIMEOUT=6
