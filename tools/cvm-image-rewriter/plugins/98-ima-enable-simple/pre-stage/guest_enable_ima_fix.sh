@@ -17,7 +17,8 @@ sed -i 's/rootflags=i_version//' $GRUB_FILE
 sed -i 's/console=tty1 console=ttyS0//' $GRUB_FILE
 sed -i 's/console=hvc0//' $GRUB_FILE 
 
-awk '{if($1 ~ /GRUB_CMDLINE_LINUX_DEFAULT/) sub("=\"","=\"console=tty1 console=ttyS0 ima_appraise=fix ima_hash=sha384 rootflags=i_version "); print}' \
+# ima_template=ima-cgpath is required for container measurement
+awk '{if($1 ~ /GRUB_CMDLINE_LINUX_DEFAULT/) sub("=\"","=\"console=tty1 console=ttyS0 ima_appraise=fix ima_hash=sha384 rootflags=i_version ima_template=ima-cgpath"); print}' \
     $GRUB_FILE \
     > $GRUB_FILE_NEW
 mv $GRUB_FILE_NEW $GRUB_FILE
