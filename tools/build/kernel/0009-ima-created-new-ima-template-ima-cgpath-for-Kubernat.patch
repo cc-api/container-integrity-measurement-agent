@@ -1,0 +1,125 @@
+From cba5b74b4d2c7c4dd3c51a7c33de71398431c4fc Mon Sep 17 00:00:00 2001
+From: Enrico Bravi <enrico.bravi@polito.it>
+Date: Sat, 24 Dec 2022 17:28:31 +0100
+Subject: [PATCH 09/16] ima: created new ima template ima-cgpath for
+ Kubernates' pods attestation
+
+This patch depends on patch "created new ima template ima-dep-cgn for
+OCI containers attestation".
+Created a new ima template ima-cgpath (dep|cg-path|d-ng|n-ng) based on a
+new ima template field:
+	- cgpath: subsys_id=1 cgroup complete path (cgroup_path()) of
+		  the process that generated a specific measurement event.
+		  In the case of containerized processes created by Kubernetes
+		  this field contains both the identifier of the container in
+		  which the process runs, and the identifier of the pod to which
+		  the container belongs.
+
+This template permits to separately attest the host system and the Kubernetes' pods
+running on it. In this way the verifier will be able to communicate the pod ID, in
+case of compromission, to Kubernetes in order to reschedule it.
+
+Signed-off-by: Silvia Sisinni <silvia.sisinni@polito.it>
+Signed-off-by: Enrico Bravi <enrico.bravi@polito.it>
+---
+ security/integrity/ima/Kconfig            |  3 +++
+ security/integrity/ima/ima_template.c     |  3 +++
+ security/integrity/ima/ima_template_lib.c | 31 +++++++++++++++++++++++
+ security/integrity/ima/ima_template_lib.h |  2 ++
+ 4 files changed, 39 insertions(+)
+
+diff --git a/security/integrity/ima/Kconfig b/security/integrity/ima/Kconfig
+index f0b5ef851f6c..e93254189b45 100644
+--- a/security/integrity/ima/Kconfig
++++ b/security/integrity/ima/Kconfig
+@@ -78,6 +78,8 @@ choice
+ 		bool "ima-sig"
+ 	config IMA_DEP_CGN_TEMPLATE
+ 		bool "ima-dep-cgn"
++	config IMA_CGPATH_TEMPLATE
++		bool "ima-cgpath"
+ endchoice
+ 
+ config IMA_DEFAULT_TEMPLATE
+@@ -86,6 +88,7 @@ config IMA_DEFAULT_TEMPLATE
+ 	default "ima-ng" if IMA_NG_TEMPLATE
+ 	default "ima-sig" if IMA_SIG_TEMPLATE
+ 	default "ima-dep-cgn" if IMA_DEP_CGN_TEMPLATE
++	default "ima-cgpath" if IMA_CGPATH_TEMPLATE
+ 
+ choice
+ 	prompt "Default integrity hash algorithm"
+diff --git a/security/integrity/ima/ima_template.c b/security/integrity/ima/ima_template.c
+index 0862a5e8efc4..301d14e4c650 100644
+--- a/security/integrity/ima/ima_template.c
++++ b/security/integrity/ima/ima_template.c
+@@ -27,6 +27,7 @@ static struct ima_template_desc builtin_templates[] = {
+ 	{.name = "evm-sig",
+ 	 .fmt = "d-ng|n-ng|evmsig|xattrnames|xattrlengths|xattrvalues|iuid|igid|imode"},
+ 	{.name = "ima-dep-cgn", .fmt = "dep|cgn|d-ng|n-ng"},
++	{.name = "ima-cgpath", .fmt = "dep|cg-path|d-ng|n-ng"},
+ 	{.name = "", .fmt = ""},	/* placeholder for a custom format */
+ };
+ 
+@@ -74,6 +75,8 @@ static const struct ima_template_field supported_fields[] = {
+ 	 .field_show = ima_show_template_string},
+ 	{.field_id = "dep", .field_init = ima_eventdep_init,
+ 	 .field_show = ima_show_template_string},
++	{.field_id = "cg-path", .field_init = ima_eventcg_path_init,
++	 .field_show = ima_show_template_string},
+ };
+ 
+ /*
+diff --git a/security/integrity/ima/ima_template_lib.c b/security/integrity/ima/ima_template_lib.c
+index 45e4bed78b73..520a5f804311 100644
+--- a/security/integrity/ima/ima_template_lib.c
++++ b/security/integrity/ima/ima_template_lib.c
+@@ -838,3 +838,34 @@ int ima_eventdep_init(struct ima_event_data *event_data,
+ 
+ 	return rc;
+ }
++
++/*
++ * ima_eventcg_path_init - include the current task's subsys_id=1 cgroup path as part of the
++ * template data
++ */
++int ima_eventcg_path_init(struct ima_event_data *event_data,
++				struct ima_field_data *field_data)
++{
++	char *cgroup_path_str = NULL;
++	struct cgroup *cgroup = NULL;
++	int rc = 0;
++
++	cgroup_path_str = kmalloc(PATH_MAX, GFP_KERNEL);
++
++	if (!cgroup_path_str)
++		return -ENOMEM;
++
++	cgroup = task_cgroup(current, 1);
++	if (!cgroup)
++		goto out;
++
++	rc = cgroup_path(cgroup, cgroup_path_str, PATH_MAX);
++	if (!rc)
++		goto out;
++
++	rc = ima_write_template_field_data(cgroup_path_str, strlen(cgroup_path_str), DATA_FMT_STRING, field_data);
++	kfree(cgroup_path_str);
++	return rc;
++out:
++	return ima_write_template_field_data("-", 1, DATA_FMT_STRING, field_data);
++}
+diff --git a/security/integrity/ima/ima_template_lib.h b/security/integrity/ima/ima_template_lib.h
+index e5b1166d7ca4..7d58c34ca639 100644
+--- a/security/integrity/ima/ima_template_lib.h
++++ b/security/integrity/ima/ima_template_lib.h
+@@ -70,4 +70,6 @@ int ima_eventcgn_init(struct ima_event_data *event_data,
+ 			struct ima_field_data *field_data);
+ int ima_eventdep_init(struct ima_event_data *event_data,
+ 			struct ima_field_data *field_data);
++int ima_eventcg_path_init(struct ima_event_data *event_data,
++				struct ima_field_data *field_data);
+ #endif /* __LINUX_IMA_TEMPLATE_LIB_H */
+-- 
+2.40.1
+

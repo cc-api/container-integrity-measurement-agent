@@ -1,0 +1,209 @@
+From e2ed977b2a4e565fbd109c0f40f1fb65e0c218e7 Mon Sep 17 00:00:00 2001
+From: Enrico Bravi <enrico.bravi@polito.it>
+Date: Sat, 24 Dec 2022 17:09:13 +0100
+Subject: [PATCH 08/16] ima: created new ima template ima-dep-cgn for OCI
+ containers attestation
+
+Created new ima template ima-dep-cgn (dep|cgn|d-ng|n-ng) based on two
+new fields:
+	- dep: list of dependencies of the process that generated
+               the measurement event. It is the concatenation,
+               column separated, of the execuatble's paths of all
+               ancestors of a specific task.
+	       For processes belonging to containers, the dependecies list
+	       contains the shim process that manages the container
+	       lifecylcle. This ensures that a specifc process is
+	       containerized.
+        - cgn: the subsys_id=1 cgroup name (cgroup_name()) of the process
+               that generated the measurement event.
+	       In the case of conainerized processes this field contains the
+	       full identifier assigned by the container runtime to the
+	       specific container the process is executed in. This allows a
+	       verifier to easily identify the the measurements related to a
+	       specific container.
+
+This template permits to separately attest the host system and each specific
+container.
+
+This patch has been created starting from the master branch of the main tree:
+<git://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git>
+
+Signed-off-by: Silvia Sisinni <silvia.sisinni@polito.it>
+Signed-off-by: Enrico Bravi <enrico.bravi@polito.it>
+---
+ security/integrity/ima/Kconfig            |  3 +
+ security/integrity/ima/ima_template.c     |  5 ++
+ security/integrity/ima/ima_template_lib.c | 95 +++++++++++++++++++++++
+ security/integrity/ima/ima_template_lib.h |  4 +
+ 4 files changed, 107 insertions(+)
+
+diff --git a/security/integrity/ima/Kconfig b/security/integrity/ima/Kconfig
+index 60a511c6b583..f0b5ef851f6c 100644
+--- a/security/integrity/ima/Kconfig
++++ b/security/integrity/ima/Kconfig
+@@ -76,6 +76,8 @@ choice
+ 		bool "ima-ng (default)"
+ 	config IMA_SIG_TEMPLATE
+ 		bool "ima-sig"
++	config IMA_DEP_CGN_TEMPLATE
++		bool "ima-dep-cgn"
+ endchoice
+ 
+ config IMA_DEFAULT_TEMPLATE
+@@ -83,6 +85,7 @@ config IMA_DEFAULT_TEMPLATE
+ 	depends on IMA
+ 	default "ima-ng" if IMA_NG_TEMPLATE
+ 	default "ima-sig" if IMA_SIG_TEMPLATE
++	default "ima-dep-cgn" if IMA_DEP_CGN_TEMPLATE
+ 
+ choice
+ 	prompt "Default integrity hash algorithm"
+diff --git a/security/integrity/ima/ima_template.c b/security/integrity/ima/ima_template.c
+index 04c49f05cb74..0862a5e8efc4 100644
+--- a/security/integrity/ima/ima_template.c
++++ b/security/integrity/ima/ima_template.c
+@@ -26,6 +26,7 @@ static struct ima_template_desc builtin_templates[] = {
+ 	{.name = "ima-modsig", .fmt = "d-ng|n-ng|sig|d-modsig|modsig"},
+ 	{.name = "evm-sig",
+ 	 .fmt = "d-ng|n-ng|evmsig|xattrnames|xattrlengths|xattrvalues|iuid|igid|imode"},
++	{.name = "ima-dep-cgn", .fmt = "dep|cgn|d-ng|n-ng"},
+ 	{.name = "", .fmt = ""},	/* placeholder for a custom format */
+ };
+ 
+@@ -69,6 +70,10 @@ static const struct ima_template_field supported_fields[] = {
+ 	{.field_id = "xattrvalues",
+ 	 .field_init = ima_eventinodexattrvalues_init,
+ 	 .field_show = ima_show_template_sig},
++	{.field_id = "cgn", .field_init = ima_eventcgn_init,
++	 .field_show = ima_show_template_string},
++	{.field_id = "dep", .field_init = ima_eventdep_init,
++	 .field_show = ima_show_template_string},
+ };
+ 
+ /*
+diff --git a/security/integrity/ima/ima_template_lib.c b/security/integrity/ima/ima_template_lib.c
+index 6cd0add524cd..45e4bed78b73 100644
+--- a/security/integrity/ima/ima_template_lib.c
++++ b/security/integrity/ima/ima_template_lib.c
+@@ -12,6 +12,11 @@
+ #include "ima_template_lib.h"
+ #include <linux/xattr.h>
+ #include <linux/evm.h>
++#include <linux/types.h>
++#include <linux/sched.h>
++#include <linux/string.h>
++#include <linux/cgroup.h>
++#include <uapi/linux/limits.h>
+ 
+ static bool ima_template_hash_algo_allowed(u8 algo)
+ {
+@@ -743,3 +748,93 @@ int ima_eventinodexattrvalues_init(struct ima_event_data *event_data,
+ {
+ 	return ima_eventinodexattrs_init_common(event_data, field_data, 'v');
+ }
++
++/*
++ * ima_eventcgn_init - inclue the current task's subsys_id=1 cgroup name as part of the
++ * template data
++ */
++int ima_eventcgn_init(struct ima_event_data *event_data,
++			struct ima_field_data *field_data)
++{
++	char *cgroup_name_str = NULL;
++	struct cgroup *cgroup = NULL;
++	int rc = 0;
++
++	cgroup_name_str = kmalloc(NAME_MAX, GFP_KERNEL);
++	if (!cgroup_name_str)
++		return -ENOMEM;
++
++	cgroup = task_cgroup(current, 1);
++	if (!cgroup)
++		goto out;
++	rc = cgroup_name(cgroup, cgroup_name_str, NAME_MAX);
++	if (!rc)
++		goto out;
++
++	rc = ima_write_template_field_data(cgroup_name_str, strlen(cgroup_name_str),  DATA_FMT_STRING, field_data);
++
++	kfree(cgroup_name_str);
++
++	return rc;
++out:
++	return ima_write_template_field_data("-", 1, DATA_FMT_STRING, field_data);
++}
++
++/*
++ * ima_eventdep_init - include the executable's path, colon separated, for all the ancestors of the current task as part of the
++ * template data
++ */
++int ima_eventdep_init(struct ima_event_data *event_data,
++			struct ima_field_data *field_data)
++{
++	int count = 0, rc;
++	char *paths_buf = NULL, *pathbuf = NULL;
++	const char *pathname = NULL;
++	char filename[NAME_MAX];
++	struct task_struct *curr_task = NULL;
++	struct file *exe_file = NULL;
++	char comm[TASK_COMM_LEN];
++
++	//get number of ancestors for current task
++	for (curr_task = current; curr_task && curr_task->pid; curr_task = curr_task->real_parent)
++		count++;
++
++	if (curr_task)
++		count++;
++
++	paths_buf = kmalloc(PATH_MAX*count+count-1, GFP_KERNEL);
++	if (!paths_buf)
++		return -ENOMEM;
++
++	paths_buf[0] = '\0';
++	for (curr_task = current; curr_task && curr_task->pid; curr_task = curr_task->real_parent) {
++		exe_file = get_task_exe_file(curr_task);
++		if (!exe_file) {
++			get_task_comm(comm, curr_task);
++			strcat(paths_buf, comm);
++			strcat(paths_buf, ":");
++			continue;
++		}
++
++		pathname = ima_d_path(&exe_file->f_path, &pathbuf, filename);
++
++		strcat(paths_buf, pathname);
++		strcat(paths_buf, ":");
++	}
++	if (curr_task) {
++		exe_file = get_task_exe_file(curr_task);
++		if (!exe_file) {
++			get_task_comm(comm, curr_task);
++			strcat(paths_buf, comm);
++		} else {
++			pathname = ima_d_path(&exe_file->f_path, &pathbuf, filename);
++			strcat(paths_buf, pathname);
++		}
++	}
++
++	rc = ima_write_template_field_data(paths_buf, strlen(paths_buf), DATA_FMT_STRING,  field_data);
++
++	kfree(paths_buf);
++
++	return rc;
++}
+diff --git a/security/integrity/ima/ima_template_lib.h b/security/integrity/ima/ima_template_lib.h
+index 9f7c335f304f..e5b1166d7ca4 100644
+--- a/security/integrity/ima/ima_template_lib.h
++++ b/security/integrity/ima/ima_template_lib.h
+@@ -66,4 +66,8 @@ int ima_eventinodexattrlengths_init(struct ima_event_data *event_data,
+ 				    struct ima_field_data *field_data);
+ int ima_eventinodexattrvalues_init(struct ima_event_data *event_data,
+ 				   struct ima_field_data *field_data);
++int ima_eventcgn_init(struct ima_event_data *event_data,
++			struct ima_field_data *field_data);
++int ima_eventdep_init(struct ima_event_data *event_data,
++			struct ima_field_data *field_data);
+ #endif /* __LINUX_IMA_TEMPLATE_LIB_H */
+-- 
+2.40.1
+

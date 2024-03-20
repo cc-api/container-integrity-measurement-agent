@@ -1,0 +1,32 @@
+From 1a78cc4e03b03df602d6d802cefdaa8c70dfc590 Mon Sep 17 00:00:00 2001
+From: Ruoyu Ying <ruoyu.ying@intel.com>
+Date: Fri, 30 Jun 2023 07:42:13 -0400
+Subject: [PATCH 03/16] fix: remove comparison on RTMR[2] measurement
+
+Due to changes in commit 'efi/libstub: Add EFI_CC_MEASUREMENT_PROTOCOL
+support', now there would be pre-boot measurements extended to RTMR[2]
+in direct boot mode. So no more comparison needed.
+---
+ security/integrity/ima/ima_crypto.c | 6 ------
+ 1 file changed, 6 deletions(-)
+
+diff --git a/security/integrity/ima/ima_crypto.c b/security/integrity/ima/ima_crypto.c
+index 2d51ef1bacf5..b62ab0c6a8bb 100644
+--- a/security/integrity/ima/ima_crypto.c
++++ b/security/integrity/ima/ima_crypto.c
+@@ -837,12 +837,6 @@ static int ima_calc_boot_aggregate_tfm(char *digest, u16 alg_id,
+ 		/* update num of boot digest into shash*/
+ 		int num = sizeof(boot_digests.boot_digest)/sizeof(boot_digests.boot_digest[0]);
+ 		for (i = 0; i < num; i++) {
+-	    		/* check if rtmr register is all zero, if yes, skip update*/
+-	    		u8 cmp_array[48] = {0};
+-	    		if (!memcmp(boot_digests.boot_digest[i], cmp_array, sizeof(cmp_array))) {
+-				continue;
+-	    		}
+-
+ 	    		rc = crypto_shash_update(shash, boot_digests.boot_digest[i],
+ 		    			crypto_shash_digestsize(tfm));
+ 	    		if (rc != 0)
+-- 
+2.40.1
+
