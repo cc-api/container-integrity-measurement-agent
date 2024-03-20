@@ -21,7 +21,7 @@ After TDs are started, users can let the TDs join an existing K8S cluster. Pleas
 
 ## Deploy CCNP
 
-The following scripts can help to generate CCNP images and deploy them in the TD nodes.
+The following scripts can help to generate CCNP images and deploy them in the TD nodes. `build.sh` can run on either host or TD. Other scripts are supposed to run in the TD.
 
 - [build.sh](../../container/build.sh): The tool will build docker images and push them to remote registry if required.
 - [deploy-ccnp.sh](../kubernetes/script/deploy-ccnp.sh): The tool will deploy CCNP services as DaemonSet on TDs in the K8S cluster.
@@ -30,13 +30,16 @@ The following scripts can help to generate CCNP images and deploy them in the TD
 - [prerequisite.sh](../kubernetes/script/prerequisite.sh): This tool will complete the prerequisites for deploying CCNP on Ubuntu. For other platforms, you can follow the section below.
 
 ### Prerequisite
-The prerequisite steps are required for CCNP deployment. You can run prerequisite.sh for Ubuntu host. 
+The prerequisite steps are required for CCNP deployment. Run `prerequisite.sh` in the TD. 
 ```
 $ cd script
 $ sudo ./prerequisite.sh
 ```
 
-You can also complete the steps following below guide manually.
+__NOTE: Below are manual Steps of Prerequisite for your reference. They can be skipped if prerequisite.sh is run successfully.__
+
+Basically the `prerequisite.sh` complete below steps to ensure `helm`, `docker` and `pip` are installed and check whether file permission is set correctly.
+You can also complete them following below steps  manually.
 - Install Helm on the TD nodes. Please refer to the [HELM quick start](https://helm.sh/docs/intro/quickstart/).
 - Install docker on the TD nodes. Please refer to [Get Docker](https://docs.docker.com/get-docker/).
 - Install python3-pip on the TD nodes. Please refer to [pip document](https://pip.pypa.io/en/stable/installation/).
@@ -90,7 +93,7 @@ NAME                       READY   STATUS    RESTARTS      AGE
 ccnp-server-mqfjx          1/1     Running   2 (39s ago)   24h
 ```
 
-## Install CCNP SDK
+## Install CCNP SDK in the TD
 
 There are two options to install CCNP SDK.  
 Option 1: Users can run the following command on each work node to install CCNP client library for Python with PyPI.

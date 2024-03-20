@@ -49,6 +49,8 @@ spec:
             mountPath: /run/firmware/acpi/tables/data/CCEL
           - name: ima-data
             mountPath: /run/kernel/security/
+          - name: vsock-port
+            mountPath: /etc/tdx-attest.conf
       volumes:
         - name: proc
           hostPath:
@@ -66,5 +68,9 @@ spec:
           hostPath:
             path: /sys/kernel/security/
             type: Directory
+        - name: vsock-port
+          hostPath:
+            path: /etc/tdx-attest.conf
+            type: File
       nodeSelector:
         intel.feature.node.kubernetes.io/tdx-guest: "enabled"
