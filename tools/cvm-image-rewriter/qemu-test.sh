@@ -300,8 +300,9 @@ process_args() {
 
     # Enable vsock
     if [[ ${USE_VSOCK} == true ]]; then
-        # Generate a random guest-cid to avoid conflict with other TDs
-        random_cid=$((RANDOM % 128 + 1))
+        # Generate a random guest-cid between 3 ~ 128 to avoid conflict with other TDs. 
+        # guest-cid property must be greater than 2.
+        random_cid=$((RANDOM % 126 + 3))
         QEMU_CMD+=" -device vhost-vsock-pci,guest-cid=${random_cid} "
     fi
 

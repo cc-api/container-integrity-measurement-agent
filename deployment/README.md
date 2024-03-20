@@ -56,6 +56,12 @@ ccnp-server                     <your image tag>
 ccnp-device-plugin              <your image tag>
 ```
 
+## Setup QGS and PCCS on the Host
+
+Intel Quote Generation Service(QGS) and Provisioning Certification Caching Service(PCCS) should be installed and configured on the host for getting TD Quote. Please refer to Section 4.3.2, 4.3.3 and 4.3.4 of [guide](https://www.intel.com/content/www/us/en/content-details/789198/whitepaper-linux-stacks-for-intel-trust-domain-extensions-1-5.html)
+for QGS and PCCS installation.
+
+
 ## Deployment CCNP in Kubernetes
 
 Below diagram illustrates CCNP deployment process in a Kubernetes cluster. If you want to install CCNP services as DamonSets in the Kubernetes cluster, please refer to [CCNP deployment in Kubernetes](./kubernetes/README.md).

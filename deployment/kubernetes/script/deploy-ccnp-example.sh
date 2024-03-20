@@ -42,7 +42,7 @@ echo "==> Creating ccnp-example deployment"
 kubectl apply -f $TEMP_MANIFEST_FILE
 for i in {1..5}
 do
-    POD_NAME=$(kubectl get po | grep ccnp-example | grep Running | awk '{ print $1 }')
+    POD_NAME=$(kubectl get po -n ccnp | grep ccnp-example | grep Running | awk '{ print $1 }')
     if [[ -z "$POD_NAME" ]]
     then
         sleep 3
