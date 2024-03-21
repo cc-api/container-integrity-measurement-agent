@@ -1,0 +1,153 @@
+From 439e0b83834509075968765b42617aaf74af9e6f Mon Sep 17 00:00:00 2001
+From: Ruoyu Ying <ruoyu.ying@intel.com>
+Date: Thu, 4 May 2023 04:41:37 -0400
+Subject: [PATCH 02/16] ima: initialize fake TPM device for TDX RTMR
+
+Currently, kernel IMA only supports hardware Trusted Platform Module (TPM)
+as the anchor point for the runtime measurement. Here, TDX RTMR is introduced
+as another choice for the measurement. This patch mainly focus on providing
+the option in the init stage.
+
+* Check TDX RTMR available if TDX Guest flag set while IMA init
+* Change the default index to store measurement from 10 to 2(RTMR for OS application measurement)
+* Create fake tpm device for IMA usage at IMA init
+
+Signed-off-by: Ruoyu Ying <ruoyu.ying@intel.com>
+---
+ security/integrity/ima/ima.h      |  4 ++++
+ security/integrity/ima/ima_api.c  |  9 +++++++--
+ security/integrity/ima/ima_init.c | 28 +++++++++++++++++++++++++---
+ security/integrity/ima/ima_main.c |  6 ++++++
+ 4 files changed, 42 insertions(+), 5 deletions(-)
+
+diff --git a/security/integrity/ima/ima.h b/security/integrity/ima/ima.h
+index 53f794b75bf9..36262fd9252b 100644
+--- a/security/integrity/ima/ima.h
++++ b/security/integrity/ima/ima.h
+@@ -21,6 +21,7 @@
+ #include <linux/tpm.h>
+ #include <linux/audit.h>
+ #include <crypto/hash_info.h>
++#include <asm/tdx-rtmr.h>
+ 
+ #include "../integrity.h"
+ 
+@@ -43,6 +44,8 @@ enum tpm_pcrs { TPM_PCR0 = 0, TPM_PCR8 = 8, TPM_PCR10 = 10 };
+ 
+ #define NR_BANKS(chip) ((chip != NULL) ? chip->nr_allocated_banks : 0)
+ 
++#define IMA_TDX_RTMR_IDX 2
++
+ /* current content of the policy */
+ extern int ima_policy_flag;
+ 
+@@ -56,6 +59,7 @@ extern int ima_hash_algo_idx __ro_after_init;
+ extern int ima_extra_slots __ro_after_init;
+ extern int ima_appraise;
+ extern struct tpm_chip *ima_tpm_chip;
++extern struct tpm_chip *ima_tdx_device;
+ extern const char boot_aggregate_name[];
+ 
+ /* IMA event related data */
+diff --git a/security/integrity/ima/ima_api.c b/security/integrity/ima/ima_api.c
+index cc58149f1238..46a618ca3ac6 100644
+--- a/security/integrity/ima/ima_api.c
++++ b/security/integrity/ima/ima_api.c
+@@ -151,8 +151,13 @@ void ima_add_violation(struct file *file, const unsigned char *filename,
+ 		result = -ENOMEM;
+ 		goto err_out;
+ 	}
+-	result = ima_store_template(entry, violation, inode,
+-				    filename, CONFIG_IMA_MEASURE_PCR_IDX);
++
++	if(ima_tdx_device)
++		result = ima_store_template(entry, violation,
++				inode, filename, IMA_TDX_RTMR_IDX);
++	else
++		result = ima_store_template(entry, violation, inode,
++				filename, CONFIG_IMA_MEASURE_PCR_IDX);
+ 	if (result < 0)
+ 		ima_free_template_entry(entry);
+ err_out:
+diff --git a/security/integrity/ima/ima_init.c b/security/integrity/ima/ima_init.c
+index 63979aefc95f..c9b6c119b8f0 100644
+--- a/security/integrity/ima/ima_init.c
++++ b/security/integrity/ima/ima_init.c
+@@ -23,6 +23,7 @@
+ /* name for boot aggregate entry */
+ const char boot_aggregate_name[] = "boot_aggregate";
+ struct tpm_chip *ima_tpm_chip;
++struct tpm_chip *ima_tdx_device;
+ 
+ /* Add the boot aggregate to the IMA measurement list and extend
+  * the PCR register.
+@@ -83,9 +84,16 @@ static int __init ima_add_boot_aggregate(void)
+ 		goto err_out;
+ 	}
+ 
+-	result = ima_store_template(entry, violation, NULL,
++	if (ima_tdx_device) {
++		result = ima_store_template(entry, violation, NULL,
++				    boot_aggregate_name,
++				    IMA_TDX_RTMR_IDX);
++	} else {
++		result = ima_store_template(entry, violation, NULL,
+ 				    boot_aggregate_name,
+ 				    CONFIG_IMA_MEASURE_PCR_IDX);
++	}
++
+ 	if (result < 0) {
+ 		ima_free_template_entry(entry);
+ 		audit_cause = "store_entry";
+@@ -118,8 +126,22 @@ int __init ima_init(void)
+ 	int rc;
+ 
+ 	ima_tpm_chip = tpm_default_chip();
+-	if (!ima_tpm_chip)
+-		pr_info("No TPM chip found, activating TPM-bypass!\n");
++	if (!ima_tpm_chip) {
++#ifdef CONFIG_INTEL_TDX_GUEST
++		pr_info("No TPM chip found, Checking TDX instead!\n");
++		/* Only support RTMR case while setting ima_hash=sha384
++		 * in kernel cmdline
++		 */
++		if (ima_hash_algo == HASH_ALGO_SHA384)
++			ima_tpm_chip = tdx_rtmr_device();
++#endif
++		if (!ima_tpm_chip) {
++		        pr_info("No TPM chip found, activating TPM-bypass!\n");
++		} else {
++			pr_info("TDX found.\n");
++			ima_tdx_device = ima_tpm_chip;
++		}
++	}
+ 
+ 	rc = integrity_init_keyring(INTEGRITY_KEYRING_IMA);
+ 	if (rc)
+diff --git a/security/integrity/ima/ima_main.c b/security/integrity/ima/ima_main.c
+index 9feb1d3fa6dc..4ddc12261107 100644
+--- a/security/integrity/ima/ima_main.c
++++ b/security/integrity/ima/ima_main.c
+@@ -225,6 +225,9 @@ static int process_measurement(struct file *file, const struct cred *cred,
+ 	if (!ima_policy_flag || !S_ISREG(inode->i_mode))
+ 		return 0;
+ 
++	if (ima_tdx_device)
++		pcr = IMA_TDX_RTMR_IDX;
++
+ 	/* Return an IMA_MEASURE, IMA_APPRAISE, IMA_AUDIT action
+ 	 * bitmask based on the appraise/audit/measurement policy.
+ 	 * Included is the appraise submask.
+@@ -965,6 +968,9 @@ int process_buffer_measurement(struct mnt_idmap *idmap,
+ 	if (!pcr)
+ 		pcr = CONFIG_IMA_MEASURE_PCR_IDX;
+ 
++	if (ima_tdx_device)
++		pcr = IMA_TDX_RTMR_IDX;
++
+ 	iint.ima_hash = &hash.hdr;
+ 	iint.ima_hash->algo = ima_hash_algo;
+ 	iint.ima_hash->length = hash_digest_size[ima_hash_algo];
+-- 
+2.40.1
+
