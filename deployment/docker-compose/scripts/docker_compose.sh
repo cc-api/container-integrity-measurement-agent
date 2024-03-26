@@ -7,21 +7,14 @@ DIR=$(dirname "$(readlink -f "$0")")
 CONFIG_DIR="$DIR/configs"
 
 create_composes() {
-    EVENTLOG_IMAGE=$1
-    MEASUREMENT_IMAGE=$2
-    QUOTE_IMAGE=$3
+    CCNP_SERVER_IMAGE=$1
 
     DEV_TDX=$(check_dev_tdx)
 
-    sed "s@\#EVENTLOG_IMAGE@$EVENTLOG_IMAGE@g" "$CONFIG_DIR"/eventlog-compose.yaml.template \
-        > "$COMPOSE_CACHE_DIR"/eventlog-compose.yaml
-    sed "s@\#MEASUREMENT_IMAGE@$MEASUREMENT_IMAGE@g" "$CONFIG_DIR"/measurement-compose.yaml.template \
-        > "$COMPOSE_CACHE_DIR"/measurement-compose.yaml
-    sed "s@\#QUOTE_IMAGE@$QUOTE_IMAGE@g" "$CONFIG_DIR"/quote-compose.yaml.template \
-        > "$COMPOSE_CACHE_DIR"/quote-compose.yaml
+    sed "s@\#CCNP_SERVER_IMAGE@$CCNP_SERVER_IMAGE@g" "$CONFIG_DIR"/ccnp-compose.yaml.template \
+        > "$COMPOSE_CACHE_DIR"/ccnp-compose.yaml
     
-    sed -i "s@\#DEV_TDX@$DEV_TDX@g" "$COMPOSE_CACHE_DIR"/measurement-compose.yaml
-    sed -i "s@\#DEV_TDX@$DEV_TDX@g" "$COMPOSE_CACHE_DIR"/quote-compose.yaml
+    sed -i "s@\#DEV_TDX@$DEV_TDX@g" "$COMPOSE_CACHE_DIR"/ccnp-compose.yaml
 
 }
 
