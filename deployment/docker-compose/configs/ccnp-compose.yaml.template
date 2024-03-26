@@ -1,0 +1,42 @@
+name: ccnp-server-ctr
+services:
+  init-ccnp-server:
+    image: busybox
+    deploy:
+      resources:
+        limits:
+          cpus: '0.1'
+          memory: 128M
+    command: >
+      sh -c " chmod -R 0444 /run/firmware/acpi/tables/CCEL &&
+              chmod -R 0444 /run/firmware/acpi/tables/data/CCEL &&
+              chmod -R 0444 /run/kernel/security/integrity/ima/ascii_runtime_measurements &&
+              chmod -R 0757 /run/ccnp/uds &&
+              chmod -R 0444 /etc/tdx-attest.conf"
+    volumes:
+      - /sys/firmware/acpi/tables/CCEL:/run/firmware/acpi/tables/CCEL
+      - /sys/firmware/acpi/tables/data/CCEL:/run/firmware/acpi/tables/data/CCEL
+      - /sys/kernel/security/integrity/ima/ascii_runtime_measurements:/run/kernel/security/integrity/ima/ascii_runtime_measurements
+      - /run/ccnp/uds:/run/ccnp/uds
+      - /etc/tdx-attest.conf:/etc/tdx-attest.conf
+
+  ccnp-server:
+    image: #CCNP_SERVER_IMAGE
+    deploy:
+      resources:
+        limits:
+          cpus: '0.1'
+          memory: 128M
+    depends_on:
+      init-ccnp-server:
+        condition: service_completed_successfully
+    volumes:
+      - /sys/firmware/acpi/tables/CCEL:/run/firmware/acpi/tables/CCEL
+      - /sys/firmware/acpi/tables/data/CCEL:/run/firmware/acpi/tables/data/CCEL
+      - /sys/kernel/security/integrity/ima/ascii_runtime_measurements:/run/kernel/security/integrity/ima/ascii_runtime_measurements
+      - /run/ccnp/uds:/run/ccnp/uds
+      - /etc/tdx-attest.conf:/etc/tdx-attest.conf
+    devices:
+      - #DEV_TDX:#DEV_TDX
+    security_opt:
+      - seccomp:unconfined

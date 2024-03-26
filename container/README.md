@@ -57,9 +57,7 @@ After the script is running successfully, it's supposed to see corresponding CCN
 
 ```
 $ sudo docker images
-ccnp-node-measurement-example   <your image tag>
-ccnp-eventlog-server            <your image tag>
-ccnp-measurement-server         <your image tag>
-ccnp-quote-server               <your image tag>
+ccnp-example                    <your image tag>
+ccnp-server                     <your image tag>
 ccnp-device-plugin              <your image tag>
 ```

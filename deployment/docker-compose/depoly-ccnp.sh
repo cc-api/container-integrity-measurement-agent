@@ -3,9 +3,7 @@
 set -e
 
 TAG="latest"
-EVENTLOG_IMAGE="ccnp-eventlog-server"
-MEASUREMENT_IMAGE="ccnp-measurement-server"
-QUOTE_IMAGE="ccnp-quote-server"
+CCNP_SERVER_IMAGE="ccnp-server"
 REGISTRY=""
 
 DIR=$(dirname "$(readlink -f "$0")")
@@ -40,17 +38,13 @@ process_args() {
         esac
     done
 
-    EVENTLOG_IMAGE="$EVENTLOG_IMAGE:$TAG"
-    MEASUREMENT_IMAGE="$MEASUREMENT_IMAGE:$TAG"
-    QUOTE_IMAGE="$QUOTE_IMAGE:$TAG"
+    CCNP_SERVER_IMAGE="$CCNP_SERVER_IMAGE:$TAG"
 
     if [[ ${REGISTRY: -1} == "/" ]]; then
         REGISTRY="${REGISTRY%/}"
     fi
     if [[ $REGISTRY != "" ]]; then
-        EVENTLOG_IMAGE="$REGISTRY/$EVENTLOG_IMAGE"
-        MEASUREMENT_IMAGE="$REGISTRY/$MEASUREMENT_IMAGE"
-        QUOTE_IMAGE="$REGISTRY/$QUOTE_IMAGE"
+        CCNP_SERVER_IMAGE="$REGISTRY/$CCNP_SERVER_IMAGE"
     fi
 }
 
@@ -62,6 +56,6 @@ create_cache_dir
 
 # shellcheck disable=SC1091
 . "$DIR"/scripts/docker_compose.sh
-create_composes "$EVENTLOG_IMAGE" "$MEASUREMENT_IMAGE" "$QUOTE_IMAGE"
+create_composes "$CCNP_SERVER_IMAGE"
 
 docker_compose_up
