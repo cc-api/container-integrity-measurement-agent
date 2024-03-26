@@ -1,0 +1,9 @@
+
+CONFIG_TSM_REPORTS                              policy<{'amd64': 'm'}>
+CONFIG_TSM_REPORTS                              note<'Required for ConfigFS TSM support'>
+
+CONFIG_IMA_CGPATH_TEMPLATE                      policy<{'amd64': 'n'}>
+CONFIG_IMA_CGPATH_TEMPLATE                      note<'CGPATH for CCNP container measurement'>
+
+CONFIG_IMA_DEP_CGN_TEMPLATE                     policy<{'amd64': 'n'}>
+CONFIG_IMA_DEP_CGN_TEMPLATE                     note<'CGN for CCNP container measurement'>
