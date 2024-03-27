@@ -37,8 +37,8 @@ else
 fi
 
 # VM configurations
-CPUS=1
-MEM=4G
+CPUS=4
+MEM=16G
 SGX_EPC_SIZE=64M
 
 OVMF="/usr/share/qemu/OVMF.fd"

@@ -23,6 +23,6 @@ runcmd:
   - update-grub
 
 # Uncomment this section if you plan to change user/password
-# user: tdx
-# password: 123456
-# chpasswd: { expire: False }
+user: tdx
+password: 123456
+chpasswd: { expire: False }
