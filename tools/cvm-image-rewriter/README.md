@@ -1,43 +1,8 @@
 # Confidential VM Customization Tool
 
-This tool is used to customize the confidential VM guest including guest image,
-config, OVMF firmware etc.
+This tool is plugin-based and used to customize the confidential VM guest to meet user-specific requirements and CCNP deployment requirements.
 
-## 1. Overview
-
-The confidential VM guest can be customized as follows:
-
-![](/docs/cvm-customizations.png)
-
-| Name | Type/Scope | Description |
-| ---- | ---------- | ----------- |
-| Launch Identity | Config | MROwner, MRConfig, MROwnerConfig |
-| VM Configuration | Config | vCPU, memory, network config |
-| Secure Boot Key | OVMF | the PK/DB/KEK for secure boot or Linux MoK |
-| Config Variable | OVMF | the configurations in variable |
-| Grub | Boot Loader | Grub kernel command, Grub modules |
-| initrd | Boot Loader | Customize build-in binaries |
-| IMA Policy | OS | Policy via loading systemd |
-| Root File System | OS | RootFS customization |
-
-## 2. Design
-
-It is based on the [cloud-init](https://cloudinit.readthedocs.io/en/latest/)
-framework, and the whole flow was divided into three stages:
-
-- **Pre Stage**: prepare to run cloud-init. It will collect the files for target
-  image, meta-data/x-shellscript/user-data for cloud-init's input.
-- **Cloud-Init Stage**: it will run cloud init in sequences of
-  - Generate meta files via `cloud-init make-mime`
-  - Generate `ciiso.iso` via `genisoimage`
-  - Run cloud-init via `virt-install`
-- **Post Stage**: clean up and run post check
-
-![](/docs/cvm-image-rewriter-flow.png)
-
-### 2.1 Existing Plugins
-
-There are following customization plugins in Plugins providing customization to base image.
+It provides below plugins with different functions supported.
 
 | Name | Descriptions | Required for CCNP deployment |
 | ---- | ------------ | ------------ |
@@ -51,36 +16,19 @@ There are following customization plugins in Plugins providing customization to 
 | 08-ccnp-uds-directory-permission | Set the permission for CCNP UDS directory | Y |
 | 09-ccnp-vsock-port | Prepare a VM sockets port for CCNP | Y |
 | 60-initrd-update | Update the initrd image | N |
-| 97-sample | plugin customization example | N |
+| 97-sample | Plugin customization example | N |
 | 98-ima-enable-simple | Enable IMA (Integrity Measurement Architecture) feature | N |
 
-### 2.2 Design a new plugin
 
-A plugin is put into the directory of [`plugins`](/tools/cvm-image-rewriter/plugins/),
-with the number as directory name's prefix. So the execution of plugin will be
-dispatched according to number sequence for example `99-byebye` is the final one.
+## How to Run the tool
 
-A plugin includes several customization approaches:
+### Prerequisite
 
-1. File override: all files under `<plugin directory>/files` will be copied into the
-corresponding directory in the target guest image.
-2. Pre-stage execution on the host: the `<plugin directory>/pre-stage/host_run.sh` will be
-executed before cloud-init stage.
-3. cloud-init customization: please put the config yaml in `<plugin directory>/cloud-init/cloud-config`,
-and put the scripts in `<plugin directory>/cloud-init/x-shellscript`.
+1. This tool has been tested on `Ubuntu 22.04`, `Ubuntu 23.10` and `Debian 10`. It is recommend to run the tool on the TDX host prepared following [Configuration](../../README.md/#configuration).
 
-Please refer to [the sample plugin](/tools/cvm-image-rewriter/plugins/97-sample/).
+2. This tool can run on bare metal or within a virtual machine with steps described in the section [Run in Nested VM](#run-in-nested-vm-optional).
 
-## 3. How to Run the tool
-
-### 3.1 Prerequisite
-
-1. This tool has been tested on `Ubuntu 22.04` and `Debian 10`. It is recommend to use
-`Ubuntu 22.04`.
-
-2. This tool can run on bare metal or within a virtual machine using nesting as detailed in [Section 3.4](#3.4-Run-in-Nested-VM-(Optional)).
-
-3. Please install the following packages on Ubuntu/Debian.
+3. Please install the following packages on Ubuntu/Debian host.
 
     ```
     sudo apt install qemu-utils guestfs-tools virtinst genisoimage libvirt-daemon-system libvirt-daemon
@@ -130,31 +78,7 @@ steps:
     virsh net-start default
     ```
 
-### 3.2 Run the tool
-
-The tool provides several plugins to customize the initial image. It will generate an `output.qcow2` under current directory.
-
-Before running the tool, please choose the plugins that are needed.You can skip any plugin by creating a file "NOT_RUN" under the current directory.
-For example:
-
-    ```
-    touch plugins/01-resize-image/NOT_RUN
-    ```
-
-If the guest image is used for CCNP deployment, it's recommended to run the below plugin combination depending on which guest image type is used.
-Others are not required by CCNP and can be skipped.
-|  Base image | 01  | 02  | 03  | 04  | 05 | 06 | 07 | 08 | 09 | 60 | 98 |
-|---|---|---|---|---|---|---|---|---|---|---|---|
-|  Ubuntu base image | | | | | | Y| Y| Y| Y| | |
-| TD enlightened image | | | | | | | Y| Y| Y| | |
-
-**NOTE:**
-  - All plugins need to be executed in numerical order.
-  - TD enlightened image means the image already has a TDX kernel. If not, plugin 06 is required to install a TDX kernel.
-  - Plugin 07, Plugin 08 and Plugin 09 need to be executed before deploying CCNP to provide device permissions for CCNP.
-  - Plugin 60 requires copying or generating all files to the root directory first. When users customize plugins, please ensure that the plugin number with this requirement is placed before 60.
-  - Plugin 98 needs to be executed after all other plugins have completed. The number of the user-customized plugin must be before 98.
-  - Other plugins are optional for CCNP deployment. 
+### Run the tool
 
 The tool supports parameters as below.
 ```
@@ -172,32 +96,50 @@ Optional
   -h                        Show usage
 ```
 
-For example:
+Run below commands to generate an `output.qcow2` under current directory. The default user name is `tdx`. The password is `123456`.
+
+If you want to skip some plugins, create a file named "NOT_RUN" in the directory of the plugin.
+
 ```
+# E.g. Skip plugin 98
+$ touch plugins/98-ima-enable-simple/NOT_RUN
+
 # Run the tool with an initial guest image and set timeout as 10 minutes.
 $ ./run.sh -i <initial guest image> -t 10
 ```
 
-### 3.3 Boot a VM
+**NOTE:**
+  - All plugins need to be executed in numerical order.
+  - Plugin 06, 07, 08 and 09 are required for CCNP deployment.
+  - Plugin 60 requires copying or generating all files to the root directory first. When users customize plugins, please ensure that the plugin number with this requirement is placed before 60.
+  - Plugin 98 needs to be executed after all other plugins have completed. The number of the user-customized plugin must be before 98.
 
-After above tool is running successfully, you can boot a VM using the generated `output.qcow2` using `qemu-test.sh` or `start-virt.sh`.
+
+After the tool is executed successfully, the output will be as below.
+
+```
+SUCCESS: Complete cloud-init...
+...
+SUCCESS: Success to create guest image tools/cvm-image-rewriter/output.qcow2...
+...
+SUCCESS: Complete.
+```
+
+
+### Boot a VM
+
+After  is running successfully, you can boot a VM using the generated `output.qcow2` using `qemu-test.sh` or `start-virt.sh`.
 
 - Boot TD or normal VM using `qemu-test.sh`.
-  ```
-  $ sudo ./qemu-test.sh -h
-  Usage: qemu-test.sh [OPTION]...
-  Required
-    -i <guest image>          Specify initial guest image file
-  ```
 
-  For example:
   ```
   # Boot a TD
-  $ sudo ./qemu-test.sh -i output.qcow2 -t td -p <qemu monitor port> -f <ssh_forward port>
+  $ sudo ./qemu-test.sh -i output.qcow2 -b grub -q vsock
 
   # Boot a normal VM
-  $ sudo ./qemu-test.sh -i output.qcow2 -p <qemu monitor port> -f <ssh_forward port>
+  $ sudo ./qemu-test.sh -i output.qcow2 -b grub -t efi
   ```
+
 - Boot TD using `start-virt.sh`.
 
   ```
@@ -218,7 +160,7 @@ After above tool is running successfully, you can boot a VM using the generated 
   $ sudo ./qemu-test.sh -i output.qcow2 -n <libvirt domain name> -v <vCPU number> -m <memory size in GiB>
   ```
 
-### 3.4 Run in Nested VM (Optional)
+### Run in Nested VM (Optional)
 
 This tool can also be run in a guest VM on the host, in case that users need to prepare a clean host environment.  
 

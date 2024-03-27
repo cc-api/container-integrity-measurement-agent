@@ -5,54 +5,34 @@ The CCNP can be deployed in the confidential VMs using docker compose. In this d
 ![Deployment diagram](../../docs/ccnp-deployment-docker.png)
 
 
-## Prerequisite
-
-For deploying the CCNP in the TDX environment, the measurement dependencies should be installed on the host and the guest. This section only emphasizes some key points briefly. If you never use the TDX measurement before, please refer to the section `Measurement & Attesation` in the [White Paper](https://www.intel.com/content/www/us/en/content-details/790888/whitepaper-linux-stacks-for-intel-trust-domain-extensions-1-5.html) to setup it.
-
-
-### Host Side 
-
-The host should enable TDX, and setup service PCCS & service QGS which help generate TDX quote in the guest.
-
-### Guest Side
-
-The TDX device in the guest has different names in certain versions
-- `/dev/tdx-attest`: the very early name, the version is not supported. 
-- `/dev/tdx-guest` or `/dev/tdx_guest`: the name for newer version, it is supported.
-
-To enable the containers read and write the TDX device, change the access privilege of the TDX device.
-
-```
-$ chmod 0666 $(find /dev/ -name "tdx*")
-```
-
-This tool will generate files to create some docker composes which are place in `/tmp/docker_ccnp`. Please make sure the directory clear.
-
-For convenience, run the script `prepare.sh` directly as root.
-
-```
-$ sudo ./prepare.sh
-```
-
 ## Deploy CCNP
 
-### Deploy CCNP Services
+The following scripts can help to generate CCNP images and deploy them in the TD nodes. `build.sh` can run on either host or TD. Other scripts are supposed to run in the TD.
+
+- [build.sh](../../container/build.sh): The tool will build docker images and push them to remote registry if required. Skip it if you already have docker images prepared.
+- [prerequisite.sh](./prerequisite.sh): This tool will complete the prerequisites for deploying CCNP on Ubuntu. For other distributions, you can follow the manual steps in [Prerequisite Manually](#optional-ccnp-prerequisite-manual-steps).
+- [deploy-ccnp.sh](./deploy-ccnp.sh): The tool will deploy CCNP service using docker compose.
+- [exec-ccnp-example.sh](./exec-ccnp-example.sh): The tool will create a docker container, getting container event logs, measurement and performing verification using CCNP SDK.
+
+### Prerequisite
+
+Run the script `prerequisite.sh` as below.
+
+```
+$ sudo ./prerequisite.sh
+```
+
+### Deploy CCNP Service
 
 Use the script [deploy-ccnp.sh](./depoly-ccnp.sh) to deploy the CCNP services. 
-
 ```
-$ ./deploy-ccnp.sh
+# Deploy CCNP with user specified remote registry and image tag
+$ sudo ./deploy-ccnp.sh -r <remote registry> -g <tag>
+e.g.
+$ sudo ./deploy-ccnp.sh -r test-registry.intel.com/test -g 0.3
 ```
 
-By default, the script will launch three containerized services.
-- eventlog server: from image `ccnp-eventlog-server:latest`
-- measurement server: from image `ccnp-measurement-server:latest`
-- quote server: from image `quote-server:latest`
-
-Please make sure these container images exist on the guest. If you want to build the images in local, read the [README.md](../../container/README.md).
-
-This script has some options.
-
+This script has some options as below.
 ```
 Usage: $(basename "$0") [OPTION]...
     -r <registry prefix>    the prefix string for registry
@@ -60,108 +40,56 @@ Usage: $(basename "$0") [OPTION]...
     -h                      show help info
 ```
 
-Specify the registry and tag if necessary.
-
-Typically, some successful message will log as below.
-
+You will see below container running after the deployment.
 ```
-INFO: Cache Dir Being Created: /tmp/docker_ccnp
-SUCCESS: Cache Dir Created: /tmp/docker_ccnp
-INFO: Compose /tmp/docker_ccnp/composes/eventlog-compose.yaml Being Deployed
-[+] Running 3/3
- ✔ Network eventlog-server-ctr_default                   Created           0.1s
- ✔ Container eventlog-server-ctr-init-eventlog-server-1  Exited            0.2s
- ✔ Container eventlog-server-ctr-eventlog-server-1       Started           0.1s
-SUCCESS: Compose /tmp/docker_ccnp/composes/eventlog-compose.yaml Deployed
-INFO: Compose /tmp/docker_ccnp/composes/measurement-compose.yaml Being Deployed
-[+] Running 2/2
- ✔ Network measuerment-server-ctr_default                 Created          0.1s
- ✔ Container measuerment-server-ctr-measurement-server-1  Started          0.1s
-SUCCESS: Compose /tmp/docker_ccnp/composes/measurement-compose.yaml Deployed
-INFO: Compose /tmp/docker_ccnp/composes/quote-compose.yaml Being Deployed
-[+] Running 2/2
- ✔ Network quote-server-ctr_default           Created                      0.1s
- ✔ Container quote-server-ctr-quote-server-1  Started                      0.1s
-SUCCESS: Compose /tmp/docker_ccnp/composes/quote-compose.yaml Deployed
-
+$ sudo docker ps
+CONTAINER ID   IMAGE             COMMAND               CREATED        STATUS      PORTS     NAMES
+3a9de1a9c7d7  ccnp-server:0.3  "/usr/bin/ccnp_serve…" 36 seconds ago  Up 34 seconds  ccnp-server-ctr-ccnp-server-1
 ```
 
-### CCNP Usage Example 
+### Deploy CCNP Usage Example 
 
-The script [exec-ccnp-example.sh](./exec-ccnp-example.sh) will launch a container from image `ccnp-node-measurement-example:latest` and request info from above three services. 
-
-```
-./exec-ccnp-example.sh -d
-```
-
-Typically, some successful message will log as below.
+The script [exec-ccnp-example.sh](./exec-ccnp-example.sh) will launch a container `ccnp-example`.
+It will get measurement, event logs and cc_report using CCNP SDK and save the output in `/tmp/docker_ccnp/example.log`.
 
 ```
-INFO: Execute example Container ccnp-node-measurement-example
-INFO: Example Container No Avaliable. Attempt Deploy It
-[+] Running 3/3
- ✔ Network node-measurement-example-ctr_default                            Created0.1s
- ✔ Container node-measurement-example-ctr-init-node-measurement-example-1  Exited0.2s
- ✔ Container node-measurement-example-ctr-node-measurement-example-1       Started0.1s
-SUCCESS: Example Container Avaliable. Compose file: /tmp/docker_ccnp/composes/ccnp-node-measurement-example.yaml
-SUCCESS: Measurement Log Saved in File /tmp/docker_ccnp/measurement.log
-SUCCESS: Example Container ccnp-node-measurement-example Executed
-INFO: Example Container Being Deleted
-[+] Running 3/3
- ✔ Container node-measurement-example-ctr-node-measurement-example-1       Removed10.4s
- ✔ Container node-measurement-example-ctr-init-node-measurement-example-1  Removed0.0s
- ✔ Network node-measurement-example-ctr_default                            Removed0.1s
-SUCCESS: Example Container Deleted
-
+$ sudo ./exec-ccnp-example.sh -r test-registry.intel.com/test -g 0.3
 ```
 
-The example container will launch and stop automatically, and save the measurement log in `/tmp/docker_ccnp/measurement.log`. The log file is similar to the [sample file](../../docs/sample-output-for-container-measurement.txt).
-
-The script provides some options. 
+This script has some options as below.
 
 ```
 Usage: $(basename "$0") [OPTION]...
     -r <registry prefix>    the prefix string for registry
     -g <tag>                container image tag
     -d			            delete example container
-    -o			            request from host
     -h                      show help info
 ```
 
-Specify the registry and tag if necessary.
-
-The option `-o` will send requests to three service for the guest directly.
-
-The option `-d` indicates that stopping the example after get measurement log.
+You will see below container running after the deployment.
+```
+$ sudo docker ps
+CONTAINER ID   IMAGE               COMMAND            CREATED          STATUS       PORTS     NAMES
+e815b6edafcb   ccnp-example:0.3  "tail -f /dev/null"  17 seconds ago  Up 15 seconds ccnp-example-ctr-ccnp-example-1
+```
 
 ### Clean Up
 
 The script `cleanup.sh` will help stop three containerized services and remove cache.
 
 ```
-./cleanup.sh
+$ sudo ./cleanup.sh
 ```
 
-Typically, some successful message will log as below.
 
-```
-INFO: Compose /tmp/docker_ccnp/composes/eventlog-compose.yaml Being Down
-[+] Running 3/3
- ✔ Container eventlog-server-ctr-eventlog-server-1       Removed           0.4s
- ✔ Container eventlog-server-ctr-init-eventlog-server-1  Removed           0.0s
- ✔ Network eventlog-server-ctr_default                   Removed           0.2s
-SUCCESS: Compose /tmp/docker_ccnp/composes/eventlog-compose.yaml Down
-INFO: Compose /tmp/docker_ccnp/composes/measurement-compose.yaml Being Down
-[+] Running 2/2
- ✔ Container measuerment-server-ctr-measurement-server-1  Removed          0.4s
- ✔ Network measuerment-server-ctr_default                 Removed          0.2s
-SUCCESS: Compose /tmp/docker_ccnp/composes/measurement-compose.yaml Down
-INFO: Compose /tmp/docker_ccnp/composes/quote-compose.yaml Being Down
-[+] Running 2/2
- ✔ Container quote-server-ctr-quote-server-1  Removed                     10.3s
- ✔ Network quote-server-ctr_default           Removed                      0.2s
-SUCCESS: Compose /tmp/docker_ccnp/composes/quote-compose.yaml Down
-INFO: Cache Dir Being Removed
-SUCCESS: Cache Dir Removed
+### (Optional) CCNP Prerequisite Manual Steps
+__NOTE: Below are manual Steps of CCNP prerequisite for your reference. They can be skipped if prerequisite.sh is run successfully.__
 
-```
+Basically the `prerequisite.sh` complete below steps to ensure `docker` is installed and set device permission. You can also complete them following below steps manually.
+
+  - Install docker on the TD nodes. Please refer to [Get Docker](https://docs.docker.com/get-docker/).
+  - Change the access privilege of the TDX device.
+    ```
+    $ chmod 0666 $(find /dev/ -name "tdx*")
+    ```
+  - Clean up `/tmp/docker_ccnp`.
