@@ -1,0 +1,8 @@
+linux-intel-opt (6.5.0-1003.3.ccnp.1) mantic; urgency=medium
+
+  * [CCNP] Add CCNP kernel patches
+
+    - [Config] intel-opt: Enable IMA CGPath options
+    - [Config] intel-opt: Enable ConfigFS TSM options
+
+ -- Xiaocheng Dong <xiaocheng.dong@intel.com>  Thu, 26 Mar 2024 15:26:10 +0800
