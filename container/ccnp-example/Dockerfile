@@ -1,3 +1,4 @@
+
 FROM python:3.12.1-alpine3.19 AS python-builder
 
 RUN apk update && apk add git
@@ -19,7 +20,15 @@ COPY container/ccnp-example/ccnp_example.py ./
 COPY --from=python-builder cc-trusted-api/common/python/dist/cctrusted_base*.whl ./
 COPY --from=python-builder ccnp-sdk/dist/ccnp*.whl ./
 
-RUN apk update && apk add bash vim
+RUN apk update && apk add bash vim tar wget
 RUN pip install ./cctrusted_base*.whl ./ccnp*.whl && rm -f *.whl
+
+RUN wget https://go.dev/dl/go1.22.1.linux-amd64.tar.gz && \
+    tar -C /usr/local -xzf go1.22.1.linux-amd64.tar.gz
+ENV PATH=$PATH:/usr/local/go/bin
+
+RUN mkdir /run/ccnp/golang-sdk-example
+COPY container/ccnp-example/golang-sdk-example/ golang-sdk-example/
+RUN cd golang-sdk-example && go mod tidy
 
 ENTRYPOINT ["tail", "-f", "/dev/null"]
