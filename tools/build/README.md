@@ -19,7 +19,7 @@ here is the information about the patches:
 | 0010 ~ 0016  | Support [ConfigFS TSM](https://lwn.net/Articles/945578/) |
 
 ## Build
-Install the build dependencies and build the packages
+Install the build dependencies and build the packages. It is recommend to run the tool on the TDX host prepared following [Configuration](../../README.md/#configuration).
 
 ```Shell
 sudo ./build.sh

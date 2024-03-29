@@ -2,21 +2,56 @@
 
 CCNP is designed for collecting confidential computing primitives in cloud native environments. It can run as DaemonSet in a Kubernetes cluster or containers in a Docker environment on confidential virtual machines, such as Intel TDX guest(TD). 
 
-## Create TD
+## Build CCNP Kernel
 
-Before moving forward, please make sure you have a TD booted. The CCNP service installation will happen in the TD.
+Run [build.sh](../tools/build/build.sh) to build kernel packages for CCNP. It's recommended to run the tool on TDX host mentioned in [Configuration](../README.md#configuration).
 
-You can use [cvm image rewriter](../tools/cvm-image-rewriter/README.md) to prepare a TD enlightened guest image.
+It will generate a `output` folder including kernel packages. The folder will be used in the next step.
+```
+$ cd tools/build
+$ sudo ./build.sh
+```
 
 **NOTE:**
- - If your initial guest image already has a TDX kernel, it's required to run [plugin](../tools/cvm-image-rewriter/plugins/) 07, 08 and 09 to set device access permission.
- - If your initial guest image is a normal Ubuntu guest image, it's required to run [plugin](../tools/cvm-image-rewriter/plugins/) 06 to install TDX kernel and then 07, 08, 09 to set device access permission.
- 
+  - CCNP kernel patches are at [kernel](../tools/build/kernel/)
+  - The tool should be run on a Ubuntu 23.10 TDX host with TDX early preview packages installed. Please refer to [here](https://github.com/canonical/tdx)
+
+
+## Prepare TDX guest image
+
+Run [cvm image rewriter](../tools/cvm-image-rewriter/README.md) to prepare a TDX guest image for CCNP deployment. The default user name is `tdx`. The password is `123456`.
+
+It's recommended to run the tool on TDX host mentioned in [Configuration](../README.md#configuration).
+
+A quick start is as below.
+
+```
+# Download Ubuntu 23.10 cloud image (Skip this step if you already has an initial guest image.)
+$ wget https://cloud-images.ubuntu.com/mantic/current/mantic-server-cloudimg-amd64.img
+
+# Set file path of the generated output folder above. Plugin 06 will install the kernel in the guest image.
+$ export CVM_TDX_GUEST_REPO=<path to above output folder>
+
+# Set image size
+$ export GUEST_SIZE=<image size>G
+
+# Run CVM image rewriter to configure a TDX guest image for CCNP
+$ cd tools/cvm-image-rewriter
+$ ./run.sh -i <mantic-server-cloudimg-amd64.img or your initial guest image>  -t <timeout in minutes, suggest to set to 15>
+```
+
+**NOTE:**
+ - By default all the plugins will be executed. Generate a `NOT_RUN` file under the specific plugin folder if you want to skip it.
+ - It's required to run [plugin](../tools/cvm-image-rewriter/plugins/) 06, 07, 08, 09 for CCNP.
+
+
+## Create a TD
+
 Start a TD using [qemu-test.sh](../tools/cvm-image-rewriter/qemu-test.sh) or [start-virt.sh](../tools/cvm-image-rewriter/start-virt.sh).
 
- - Use `qemu-test.sh`, please use `-q <vsock/tdvmcall>` to make sure get quote works for the TD.
+ - Use `qemu-test.sh`, please use `-q <vsock>` to make sure get quote works for the TD.
     ```
-    $ sudo ./qemu-test.sh -i output.qcow2 -t td -p <qemu monitor port> -f <ssh_forward port> -q tdvmcall
+    $ sudo ./qemu-test.sh -i output.qcow2 -q vsock
     ```
 
 - Use `start-virt.sh`. The Libvirt XML template is [tdx-libvirt-ubuntu-host.xml.template](../tools/cvm-image-rewriter/tdx-libvirt-ubuntu-host.xml.template). It uses `vsock` for getting quote.
@@ -26,11 +61,12 @@ Start a TD using [qemu-test.sh](../tools/cvm-image-rewriter/qemu-test.sh) or [st
 
 ## Build CCNP images
 
-Run script [build.sh](../container/build.sh) to generate CCNP images. It will generate 5 images and push them to user specific registry.
+Run script [build.sh](../container/build.sh) to generate CCNP images. It will generate 3 images and push them to user specific registry. Learn more details in the [README.md](../container/README.md).
 
-Learn more details in the [README.md](../container/README.md).
-
-_NOTE: The scripts need to run on a server with docker installed._
+**NOTE:**
+  - The scripts need to run on a server with docker installed.
+  - Run `docker login` before running the tool to make sure it can pull images.
+  - Set proxy server in your environment if needed. See more details in [Configure Docker to use a proxy server](https://docs.docker.com/network/proxy/).
 
 ```
 $ cd container
@@ -45,9 +81,7 @@ $ sudo ./build.sh -r test-registry.intel.com/test -g 0.3
 $ sudo ./build.sh -a build -g 0.3
 ```
 
-_NOTE: please set `HTTP_PROXY`, `HTTPS_PROXY`, `NO_PROXY` in your terminal if they are needed in your environments._
-
-After the script is successful, it's supposed to see below docker images for CCNP.
+After the script is executed successfully, it's supposed to see below docker images for CCNP.
 
 ```
 $ sudo docker images
@@ -62,7 +96,7 @@ Intel Quote Generation Service(QGS) and Provisioning Certification Caching Servi
 for QGS and PCCS installation.
 
 
-## Deployment CCNP in Kubernetes
+## Deploy CCNP in Kubernetes
 
 Below diagram illustrates CCNP deployment process in a Kubernetes cluster. If you want to install CCNP services as DamonSets in the Kubernetes cluster, please refer to [CCNP deployment in Kubernetes](./kubernetes/README.md).
 
