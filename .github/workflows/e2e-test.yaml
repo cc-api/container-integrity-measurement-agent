@@ -11,11 +11,11 @@ jobs:
         uses: actions/checkout@v4.1.1
       - name: Set up  test environment
         run: |
-           ./test/e2e-test/ci-setup.sh
+           sudo ./test/e2e-test/ci-setup.sh
       - name: Run Test
         run: |
-           ./test/e2e-test/ci-e2e-test.sh
+           sudo ./test/e2e-test/ci-e2e-test.sh
       - name: Clean up the environment
         if: always()
         run: |
-           ./test/e2e-test/ci-clean.sh
+           sudo ./test/e2e-test/ci-clean.sh
