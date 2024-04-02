@@ -1,0 +1,43 @@
+name: Run CCNP E2E test
+on:
+  schedule:
+    - cron: '0 7 * * *'
+  push:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/e2e-test-k8s.yaml'
+      - 'deployment/**'
+      - 'container/**'
+      - 'sdk/**'
+  pull_request:
+    paths:
+      - '.github/workflows/e2e-test-k8s.yaml'
+      - 'deployment/**'
+      - 'container/**'
+      - 'sdk/**'
+  workflow_dispatch:
+    inputs:
+      image_registey:
+        type: string
+        default: gar-registry.caas.intel.com/cpio
+        required: true
+      tag:
+        type: string
+        default: 0.3
+        required: true
+jobs:
+  E2E_test:
+    runs-on: tdvm-ut
+    steps: 
+      - name: Checkout code
+        uses: actions/checkout@v4.1.1
+      - name: Deploy CCNP server
+        run: |
+           sudo ./deployment/kubernetes/script/deploy-ccnp.sh -r ${{ inputs.image_registey }} -g ${{ inputs.tag }} -d
+      - name: Deploy CCNP test pod
+        run: |
+           sudo ./deployment/kubernetes/script/deploy-ccnp-example.sh -r ${{ inputs.image_registey }} -g ${{ inputs.tag }} -d
+      - name: Run Test
+        run: |
+           sudo ./test/e2e-test/ci-e2e-test.sh

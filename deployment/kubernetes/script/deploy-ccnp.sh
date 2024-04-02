@@ -106,6 +106,48 @@ function deploy_ccnp {
     popd || exit
 }
 
+function check_ccnp_deployment {
+    # Check CCNP device plugin pod
+    echo "-----------Checking ccnp device plugin pod..."
+    for i in {1..10}
+    do
+        DEVICE_POD=$(kubectl get po -n kube-system | grep device | grep Running | awk '{ print $1 }')
+        if [[ -z "$DEVICE_POD" ]]
+        then
+            sleep 3
+            echo "Retrying $i time ..."
+        else
+            break
+        fi
+    done
+
+    if [ -z "$DEVICE_POD" ]; then
+        echo "Error: CCNP device plugin pod is not Running."
+        exit 1
+    fi
+    echo "CCNP device plugin pod $DEVICE_POD is Running."
+
+    # Check CCNP server pod
+    echo "-----------Checking ccnp server pod..."
+    for i in {1..10}
+    do
+        CCNP_SERVER_POD=$(kubectl get po -n ccnp | grep ccnp-server | grep Running | awk '{ print $1 }')
+        if [[ -z "$CCNP_SERVER_POD" ]]
+        then
+            sleep 3
+            echo "Retrying $i time ..."
+        else
+            break
+        fi
+    done
+
+    if [ -z "$CCNP_SERVER_POD" ]; then
+        echo "Error: CCNP server pod is not Running."
+        exit 1
+    fi
+    echo "CCNP server pod $CCNP_SERVER_POD is Running."
+}
+
 check_env
 process_args "$@"
 
@@ -122,3 +164,4 @@ if [[ $delete_force == true ]]; then
 fi
 
 deploy_ccnp
+check_ccnp_deployment
