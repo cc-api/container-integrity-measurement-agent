@@ -1,10 +1,8 @@
 use crate::client::CcnpServiceClient;
 use anyhow::*;
 use cctrusted_base::api::CCTrustedApi;
-use cctrusted_base::api_data::ReplayResult;
 use cctrusted_base::api_data::{Algorithm, CcReport, ExtraArgs};
 use cctrusted_base::binary_blob::dump_data;
-use cctrusted_base::eventlog::EventLogs;
 use cctrusted_base::tcg::*;
 use core::result::Result::Ok;
 
@@ -134,13 +132,6 @@ impl CCTrustedApi for API {
         }
 
         Ok(event_logs)
-    }
-
-    // CCTrustedApi trait function: replay eventlogs
-    fn replay_cc_eventlog(
-        eventlogs: Vec<EventLogEntry>,
-    ) -> Result<Vec<ReplayResult>, anyhow::Error> {
-        EventLogs::replay(eventlogs)
     }
 
     // CCTrustedApi trait function: get default algorithm
