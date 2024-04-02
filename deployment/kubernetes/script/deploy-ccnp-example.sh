@@ -56,3 +56,4 @@ if [[ -z "$POD_NAME" ]]; then
     echo "No ccnp-example pod with status running! Please check your deployment."
     exit 1
 fi
+echo "CCNP example pod $POD_NAME is Running."
