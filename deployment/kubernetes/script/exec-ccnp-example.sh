@@ -33,20 +33,20 @@ fi
 
 if [ $MEASUREMENT == true ]; then
     echo "==> Get Measurements"
-    kubectl exec -it "$POD_NAME" -n ccnp -- python3 ccnp_example.py -m
+    kubectl exec -it "$POD_NAME" -n ccnp -- python3 py_sdk_example.py -m
 fi
 
 if [ $EVENTLOG == true ]; then
     echo "==> Get Event logs"
-    kubectl exec -it "$POD_NAME" -n ccnp -- python3 ccnp_example.py -e
+    kubectl exec -it "$POD_NAME" -n ccnp -- python3 py_sdk_example.py -e
 fi
 
 if [ $CC_REPORT == true ]; then
     echo "==> Get CC_REPORT"
-    kubectl exec -it "$POD_NAME" -n ccnp -- python3 ccnp_example.py -r
+    kubectl exec -it "$POD_NAME" -n ccnp -- python3 py_sdk_example.py -r
 fi
 
 if [ $VERIFY == true ]; then
     echo "==> Verify event logs"
-    kubectl exec -it "$POD_NAME" -n ccnp -- python3 ccnp_example.py -v
+    kubectl exec -it "$POD_NAME" -n ccnp -- python3 py_sdk_example.py -v
 fi
