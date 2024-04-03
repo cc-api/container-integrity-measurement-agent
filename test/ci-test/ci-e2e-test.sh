@@ -5,8 +5,7 @@
 
 set -o errexit
 
-PY_WORK_DIR='test/py-test'
-GO_WORK_DIR='test/go-test/test-cases'
+PY_WORK_DIR='test/ci-test/py-test'
 
 for i in {1..3}
 do
@@ -26,20 +25,14 @@ if [ -z "$POD_NAME" ]; then
 fi
 
 
-# Run python test cases
-if $PY_FLAG
-then
-    kubectl exec -it "$POD_NAME" -- pytest -v ${PY_WORK_DIR}
-fi
+# Run python tests
+echo "--------> Run python test........."
+kubectl exec -it "$POD_NAME" -- pytest -v ${PY_WORK_DIR}
 
-# Run golang test cases
-if $GO_FLAG
-then
-    kubectl exec -it "$POD_NAME" -- bash  -c "pushd  ${GO_WORK_DIR};go test -v;popd "
-fi
+# Run go tests
+echo "--------> Run go test........."
+kubectl exec -it "$POD_NAME" -- ./go-sdk-example
 
-# Run rust test cases
-if $GO_FLAG
-then
-    kubectl exec -it "$POD_NAME" -- bash  -c "pushd  ${GO_WORK_DIR};go test -v;popd "
-fi
+# Run rust tests
+echo "--------> Run rust test........."
+kubectl exec -it "$POD_NAME" -- ./rust-sdk-example
