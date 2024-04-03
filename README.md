@@ -37,7 +37,7 @@ It supports to deploy CCNP services as DaemonSets in Kubernetes cluster or docke
 
 ### CCNP SDK Usage
 
-[ccnp_example.py](/container/ccnp-example/ccnp_example.py) is an example of using CCNP Python SDK. There are also Golang SDK and Rust SDK. Please see more details in [CCNP SDK](https://intel.github.io/confidential-cloud-native-primitives/_rst/modules.html#ccnp-sdk).
+[py_sdk_example.py](/sdk/python3/example/py_sdk_example.py) is an example of using CCNP Python SDK. There are also Golang SDK and Rust SDK. Please see more details in [CCNP SDK](https://intel.github.io/confidential-cloud-native-primitives/_rst/modules.html#ccnp-sdk).
 
 
 ## Contributing

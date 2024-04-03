@@ -26,7 +26,7 @@ func testGetCCReport(sdk ccnp.SDK, logger *log.Logger) {
 	report, err := sdk.GetCCReport(nonce, userData, nil)
 	if err != nil {
 		logger.Println("Error in fetching cc report.")
-		os.Exit(0)
+		os.Exit(-1)
 	}
 
 	logger.Println("Dump the attestation report fetched.")
@@ -44,7 +44,7 @@ func testGetCCMeasurement(sdk ccnp.SDK, logger *log.Logger) {
 	measurement, err := sdk.GetCCMeasurement(imr_index, alg)
 	if err != nil {
 		logger.Println("Error in fetching cc measurement.")
-		os.Exit(0)
+		os.Exit(-1)
 	}
 
 	logger.Println("Dump measurement fetched.")
@@ -67,7 +67,7 @@ func testGetCCEventLog(sdk ccnp.SDK, logger *log.Logger) {
 	eventLogs, err := sdk.GetCCEventLog()
 	if err != nil {
 		logger.Println("Error in fetching event logs.")
-		os.Exit(0)
+		os.Exit(-1)
 	}
 
 	logger.Println("Total ", len(eventLogs), " of event logs fetched.")
@@ -85,7 +85,7 @@ func main() {
 	defaultAlg, err := sdk.GetDefaultAlgorithm()
 	if err != nil {
 		logger.Println("Error in fetching default algorithm.")
-		os.Exit(0)
+		os.Exit(-1)
 	}
 	logger.Println("Default Algorithm:   ", defaultAlg)
 	logger.Println("----------------------------------------------------------------------------------")
@@ -94,7 +94,7 @@ func main() {
 	count, err := sdk.GetMeasurementCount()
 	if err != nil {
 		logger.Println("Error in fetching measurement count.")
-		os.Exit(0)
+		os.Exit(-1)
 	}
 	logger.Println("Measurement count:   ", count)
 	logger.Println("----------------------------------------------------------------------------------")

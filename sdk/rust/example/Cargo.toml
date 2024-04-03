@@ -5,19 +5,11 @@ edition = "2021"
 license = "Apache-2.0"
 
 [[bin]]
-name = "cc-sample-quote"
-path = "src/cc-sample-quote.rs"
-
-[[bin]]
-name = "cc-sample-measurement"
-path = "src/cc-sample-measurement.rs"
-
-[[bin]]
-name = "cc-sample-eventlog"
-path = "src/cc-sample-eventlog.rs"
+name = "rust-sdk-example"
+path = "src/rust-sdk-example.rs"
 
 [dependencies]
-cctrusted_ccnp = { path = "../cctrusted_ccnp" }
+ccnp = { path = "../ccnp" }
 cctrusted_base = { git="https://github.com/cc-api/cc-trusted-api" }
 anyhow = "1.0"
 log = "0.4.20"

@@ -84,19 +84,19 @@ validate_on_container() {
 
     ok "Example Container Avaliable. Compose file: $COMPOSE_CACHE_DIR/ccnp-example.yaml"
     ok "=============== Get Measurement ==============="
-    docker exec -it "$ctr_id" python3 ccnp_example.py -m > "$CCNP_CACHE_DIR"/example.log
+    docker exec -it "$ctr_id" python3 py_sdk_example.py -m > "$CCNP_CACHE_DIR"/example.log
     ok "Measurement Log Saved in File $CCNP_CACHE_DIR/example.log"
 
     ok "=============== Get Event Logs ==============="
-    docker exec -it "$ctr_id" python3 ccnp_example.py -e >> "$CCNP_CACHE_DIR"/example.log
+    docker exec -it "$ctr_id" python3 py_sdk_example.py -e >> "$CCNP_CACHE_DIR"/example.log
     ok "Eventlog Saved in File $CCNP_CACHE_DIR/example.log"
 
     ok "=============== Get CC Report ==============="
-    docker exec -it "$ctr_id" python3 ccnp_example.py -r >> "$CCNP_CACHE_DIR"/example.log
+    docker exec -it "$ctr_id" python3 py_sdk_example.py -r >> "$CCNP_CACHE_DIR"/example.log
     ok "Eventlog Saved in File $CCNP_CACHE_DIR/example.log"
 
     ok "=============== Verify Event Logs ==============="
-    docker exec -it "$ctr_id" python3 ccnp_example.py -v >> "$CCNP_CACHE_DIR"/example.log
+    docker exec -it "$ctr_id" python3 py_sdk_example.py -v >> "$CCNP_CACHE_DIR"/example.log
     ok "Eventlog Saved in File $CCNP_CACHE_DIR/example.log"
 }
 
