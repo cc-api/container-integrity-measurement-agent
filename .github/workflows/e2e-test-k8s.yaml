@@ -18,7 +18,7 @@ jobs:
         uses: actions/checkout@v4.1.1
       - name: Build and push CCNP images
         run: |
-          sudo ./container/build.sh -r gar-registry.caas.intel.com/cpio -g latest -c ccnp-server ccnp-example ccnp-device-plugin
+          sudo ./container/build.sh -r gar-registry.caas.intel.com/cpio -g latest
       - name: Deploy CCNP server
         run: |
           sudo ./deployment/kubernetes/script/deploy-ccnp.sh -r gar-registry.caas.intel.com/cpio -g latest -d

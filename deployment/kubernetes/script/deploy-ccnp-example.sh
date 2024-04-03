@@ -34,15 +34,17 @@ if [[ -n "$tag" ]];then
 	sed -i "s#${DEFAULT_TAG}#${tag}#g" $TEMP_MANIFEST_FILE
 fi
 
-if [ $DELETE_DEPLOYMENT == true ]
-then
+# Delete old pod if it exists
+OLD_POD_NAME=$(kubectl get po -n ccnp | grep ccnp-example | grep Running | awk '{ print $1 }')
+
+if [[ $DELETE_DEPLOYMENT == true ]] && [[ -n "$OLD_POD_NAME" ]]; then
     echo "==> Cleaning up ccnp-example deployment"
-    kubectl delete -f $TEMP_MANIFEST_FILE
+    kubectl delete deployment ccnp-example -n ccnp
 fi
 
 echo "==> Creating ccnp-example deployment"
 kubectl apply -f $TEMP_MANIFEST_FILE
-for i in {1..5}
+for i in {1..10}
 do
     POD_NAME=$(kubectl get po -n ccnp | grep ccnp-example | grep Running | awk '{ print $1 }')
     if [[ -z "$POD_NAME" ]]

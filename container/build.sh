@@ -165,7 +165,9 @@ function publish_images {
     if [[ "$container" == "all" ]]; then
         for item in "${all_containers[@]}"
         do
+        if [[ ${item} != "pccs" && ${item} != "qgs" ]] || [[ ${item} == "pccs" && ${pccs} == true ]] || [[ ${item} == "qgs" && ${qgs} == true ]] ; then
             publish_a_image "$item"
+	    fi
         done
     else
         publish_a_image "$container"
