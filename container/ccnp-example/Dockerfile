@@ -37,6 +37,6 @@ COPY --from=golang-builder /go/ccnp-sdk/example/go-sdk-example ./
 COPY --from=rust-builder ccnp-sdk/example/target/release/rust-sdk-example ./
 
 RUN apk update && apk add bash vim tar wget
-RUN pip install ./cctrusted_base*.whl ./ccnp*.whl && rm -f *.whl
+RUN pip install ./cctrusted_base*.whl ./ccnp*.whl pytest && rm -f *.whl
 
 ENTRYPOINT ["tail", "-f", "/dev/null"]
