@@ -5,10 +5,8 @@ There are several docker image files in the sub directories of current directory
 |  Sub directory | Image name  | Description  | 
 |---|---|---|
 |  ccnp-device-plugin | ccnp-device-plugin  | CCNP Device plugin |
-|  ccnp-eventlog-server | ccnp-eventlog-server | Eventlog server |
-|  ccnp-measurement-server | ccnp-measurement-server  | Measurement server |
-|  ccnp-quote-server | ccnp-quote-server  | Quote server |
-|  ccnp-node-measurement-example | ccnp-node-measurement-example  | Example image of getting eventlog and measurement using CCNP SDK |
+|  ccnp-server | ccnp-server | CCNP server |
+|  ccnp-example | ccnp-example  | Example image of getting eventlog and measurement using CCNP SDK |
 |  pccs | pccs  | PCCS docker image for Intel® TDX remote attestation. Not required for CCNP usage.|
 |  qgs | qgs  | QGS docker image for Intel® TDX remote attestation. Not required for CCNP usage. |
 
