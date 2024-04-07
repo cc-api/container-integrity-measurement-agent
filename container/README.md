@@ -33,20 +33,20 @@ _NOTE: please set `HTTP_PROXY`, `HTTPS_PROXY`, `NO_PROXY` in docker daemon if th
 Below are usage examples for different scenarios. Please replace the parameters with your input.
 
 ```
-# Build all CCNP images with tag 0.3 and push them to remote registry test-registry.intel.com
-$ sudo ./build.sh -r test-registry.intel.com/test -g 0.3
+# Build all CCNP images with tag latest and push them to remote registry test-registry.intel.com
+$ sudo ./build.sh -r test-registry.intel.com/test -g latest
 
-# Build images only with tag 0.3
-$ sudo ./build.sh -a build -g 0.3
+# Build images only with tag latest
+$ sudo ./build.sh -a build -g latest
 
-# Build ccnp-measurement-server image with tag 0.3 and push them to remote registry test-registry.intel.com
-$ sudo ./build.sh -c ccnp-measurement-server -r test-registry.intel.com/test -g 0.3
+# Build ccnp-measurement-server image with tag latest and push them to remote registry test-registry.intel.com
+$ sudo ./build.sh -c ccnp-measurement-server -r test-registry.intel.com/test -g latest
 
-# Build pccs image with tag 0.3 and push it to remote registry test-registry.intel.com
-$ sudo ./build.sh -c pccs -r test-registry.intel.com/test -g 0.3 -p
+# Build pccs image with tag latest and push it to remote registry test-registry.intel.com
+$ sudo ./build.sh -c pccs -r test-registry.intel.com/test -g latest -p
 
-# Build qgs image with tag 0.3 and push it to remote registry test-registry.intel.com
-$ sudo ./build.sh -c qgs -r test-registry.intel.com/test -g 0.3 -q
+# Build qgs image with tag latest and push it to remote registry test-registry.intel.com
+$ sudo ./build.sh -c qgs -r test-registry.intel.com/test -g latest -q
 ```
 
 Note: For detailed PCCS and QGS service usage guide, please refer [PCCS Guide](pccs/README.md) and [QGS Guide](qgs/README.md).
