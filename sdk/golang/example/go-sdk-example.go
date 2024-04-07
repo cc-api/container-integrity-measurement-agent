@@ -12,7 +12,7 @@ import (
 	"github.com/cc-api/confidential-cloud-native-primitives/sdk/golang/ccnp"
 )
 
-// func to test GetCCMeasurement()
+// func to test GetCCReport()
 func testGetCCReport(sdk ccnp.SDK, logger *log.Logger) {
 	logger.Println("Call [GetCCReport] to fetch attestation report...")
 
