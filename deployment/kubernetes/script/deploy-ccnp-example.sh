@@ -5,6 +5,7 @@ set -e
 
 DEFAULT_DOCKER_REPO=docker.io/library
 DEFAULT_TAG=latest
+WORK_DIR=$(cd "$(dirname "$0")" || exit; pwd)
 TEMP_MANIFEST_FILE=/tmp/ccnp-example-deployment.yaml
 DELETE_DEPLOYMENT=false
 
@@ -23,8 +24,9 @@ while getopts ":r:g:i:dmervh" option; do
     done
 
 echo "Deploy CCNP example for container measurement in Kubernetes"
+pushd "${WORK_DIR}/../../.." || exit
 # replace registry and image tag according to user input
-cp ../manifests/ccnp-example-deployment.yaml $TEMP_MANIFEST_FILE
+cp deployment/kubernetes/manifests/ccnp-example-deployment.yaml $TEMP_MANIFEST_FILE
 if [[ -n "$registry" ]]; then
 	sed -i  "s#${DEFAULT_DOCKER_REPO}#${registry}#g" $TEMP_MANIFEST_FILE
 fi
@@ -32,15 +34,17 @@ if [[ -n "$tag" ]];then
 	sed -i "s#${DEFAULT_TAG}#${tag}#g" $TEMP_MANIFEST_FILE
 fi
 
-if [ $DELETE_DEPLOYMENT == true ]
-then
+# Delete old pod if it exists
+OLD_POD_NAME=$(kubectl get po -n ccnp | grep ccnp-example | grep Running | awk '{ print $1 }')
+
+if [[ $DELETE_DEPLOYMENT == true ]] && [[ -n "$OLD_POD_NAME" ]]; then
     echo "==> Cleaning up ccnp-example deployment"
-    kubectl delete -f $TEMP_MANIFEST_FILE
+    kubectl delete deployment ccnp-example -n ccnp
 fi
 
 echo "==> Creating ccnp-example deployment"
 kubectl apply -f $TEMP_MANIFEST_FILE
-for i in {1..5}
+for i in {1..10}
 do
     POD_NAME=$(kubectl get po -n ccnp | grep ccnp-example | grep Running | awk '{ print $1 }')
     if [[ -z "$POD_NAME" ]]
@@ -57,3 +61,5 @@ if [[ -z "$POD_NAME" ]]; then
     exit 1
 fi
 echo "CCNP example pod $POD_NAME is Running."
+
+popd || exit

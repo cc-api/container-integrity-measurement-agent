@@ -5,11 +5,11 @@
 
 set -o errexit
 
-PY_WORK_DIR='test/ci-test/py-test'
+PY_WORK_DIR='/run/ccnp/ci-test/py-test'
 
 for i in {1..3}
 do
-    POD_NAME=$(kubectl get po | grep ccnp-example | grep Running | awk '{ print $1 }')
+    POD_NAME=$(kubectl get po -n ccnp | grep ccnp-example | grep Running | awk '{ print $1 }')
     if [[ -z "$POD_NAME" ]]
     then
         sleep 2
@@ -27,12 +27,12 @@ fi
 
 # Run python tests
 echo "--------> Run python test........."
-kubectl exec -it "$POD_NAME" -- pytest -v ${PY_WORK_DIR}
+kubectl exec -it "$POD_NAME" -n ccnp -- pytest -v ${PY_WORK_DIR}
 
 # Run go tests
 echo "--------> Run go test........."
-kubectl exec -it "$POD_NAME" -- ./go-sdk-example
+kubectl exec -it "$POD_NAME" -n ccnp -- ./go-sdk-example
 
 # Run rust tests
 echo "--------> Run rust test........."
-kubectl exec -it "$POD_NAME" -- ./rust-sdk-example
+kubectl exec -it "$POD_NAME" -n ccnp -- ./rust-sdk-example
