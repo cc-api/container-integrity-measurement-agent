@@ -159,4 +159,4 @@ If you encounter any bugs or have suggestions, please file an issue in the Issue
 <!-- LINKS -->
 [source_code]: https://github.com/cc-api/confidential-cloud-native-primitives/tree/main/sdk/python3
 [ccnp_pypi]: https://pypi.org/project/ccnp/
-[api_doc]: https://intel.github.io/confidential-cloud-native-primitives/_rst/sdk.readme.html
+[api_doc]: https://github.com/cc-api/cc-trusted-api?tab=readme-ov-file#3-apis
