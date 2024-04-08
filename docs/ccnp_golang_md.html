@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Confidential Cloud-Native Primitives SDK for Golang &mdash; Confidential Cloud Native Primitives (CCNP)  documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="CCNP RUST SDK" href="ccnp_rust_sdk.html" />
+    <link rel="prev" title="CCNP GOLANG SDK" href="ccnp_golang_sdk.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            Confidential Cloud Native Primitives (CCNP)
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">CCNP Modules</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="deployment.html">CCNP Deployment</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="sdk.html">CCNP SDK</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="ccnp_python_sdk.html">CCNP Python SDK</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="ccnp_golang_sdk.html">CCNP Golang SDK</a><ul class="current">
+<li class="toctree-l4 current"><a class="current reference internal" href="#">Introduction</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="ccnp_rust_sdk.html">CCNP Rust SDK</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="ccnp.service.html">CCNP Service</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Confidential Cloud Native Primitives (CCNP)</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="modules.html">CCNP Modules</a></li>
+          <li class="breadcrumb-item"><a href="sdk.html">CCNP SDK</a></li>
+          <li class="breadcrumb-item"><a href="ccnp_golang_sdk.html">CCNP GOLANG SDK</a></li>
+      <li class="breadcrumb-item active">Confidential Cloud-Native Primitives SDK for Golang</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/ccnp_golang_md.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="confidential-cloud-native-primitives-sdk-for-golang">
+<span id="readme"></span><h1>Confidential Cloud-Native Primitives SDK for Golang<a class="headerlink" href="#confidential-cloud-native-primitives-sdk-for-golang" title="Link to this heading">¶</a></h1>
+<p>The Confidential Cloud-Native Primitives (CCNP) project is the solution targeted on simplifying the use of Trusted Execution Environment (TEE) in cloud-native environment. Currently, there are 2 parts included in CCNP, the services and the SDK.</p>
+<ul class="simple">
+<li><p>Service is designed to hide the complexity of different TEE platforms and provides common interfaces and scalability for cloud-native environment.</p></li>
+<li><p>SDK is to simplify the use of the service interface for development, it covers communication to the service and parses the results from the services.</p></li>
+</ul>
+<p>The service supports attestation, measurement fetching and event log collecting of various platforms including Intel Trusted Domain Extensions (TDX), Trusted Platform Modules (TPM) and AMD SEV-SNP. More platforms will be supported later.</p>
+<p>Attestation is a common process within TEE platform and TPM to verify if the software binaries were properly instantiated on a trusted platform. Third parties can leverage the attestation process to identify the trustworthiness of the platform (by checking the measurements or event logs) as well as the software running on it, in order to decide whether they shall put their confidential information/workload onto the platform.</p>
+<p>CCNP, as the overall framework for attestation, measurement and event log fetching, provides user with both customer-facing SDK and overall framework. By leveraging this SDK, user can easily retrieve different kinds of measurements or evidence such as event logs. Working along with different verification services (such as Amber) and configurable policies, user can validate the trustworthiness of the  platform and make further decision.</p>
+<p><a class="reference external" href="https://github.com/cc-api/confidential-cloud-native-primitives/tree/main/sdk/golang">Source code</a>
+| <a class="reference external" href="https://pkg.go.dev/github.com/cc-api/confidential-cloud-native-primitives/sdk/golang/ccnp">Package (Go package)</a>
+| <a class="reference external" href="https://github.com/cc-api/cc-trusted-api?tab=readme-ov-file#3-apis">API reference documentation</a></p>
+<section id="getting-started">
+<h2>Getting started<a class="headerlink" href="#getting-started" title="Link to this heading">¶</a></h2>
+<section id="prerequisites">
+<h3>Prerequisites<a class="headerlink" href="#prerequisites" title="Link to this heading">¶</a></h3>
+<p>In order to work properly, user need to have the backend services ready on the TEE or TPM enabled platform first. Please refer to each deployment guide reside in the <a class="reference external" href="../../service/">service</a> folder to install the backend services.</p>
+</section>
+<section id="install-the-package">
+<h3>Install the package<a class="headerlink" href="#install-the-package" title="Link to this heading">¶</a></h3>
+<p>User can install the CCNP client library for Golang:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">go</span> <span class="n">get</span> <span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">cc</span><span class="o">-</span><span class="n">api</span><span class="o">/</span><span class="n">confidential</span><span class="o">-</span><span class="n">cloud</span><span class="o">-</span><span class="n">native</span><span class="o">-</span><span class="n">primitives</span><span class="o">/</span><span class="n">sdk</span><span class="o">/</span><span class="n">golang</span><span class="o">/</span><span class="n">ccnp</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="key-concepts-and-usage">
+<h2>Key concepts and usage<a class="headerlink" href="#key-concepts-and-usage" title="Link to this heading">¶</a></h2>
+<p>There are three major functionalities provided in this SDK:</p>
+<ul class="simple">
+<li><p><span class="xref std std-ref">CC report fetching</span></p></li>
+<li><p><span class="xref std std-ref">Measurement fetching</span></p></li>
+<li><p><span class="xref std std-ref">Event log fetching</span></p></li>
+</ul>
+<section id="cc-report">
+<h3>CC Report<a class="headerlink" href="#cc-report" title="Link to this heading">¶</a></h3>
+<p>Using this SDK, user could fetch the report from different platforms, the service detect the platform automatically and return the report.</p>
+<section id="example-usage-of-the-sdk">
+<h4>Example usage of the SDK<a class="headerlink" href="#example-usage-of-the-sdk" title="Link to this heading">¶</a></h4>
+<p>The interface input of CC report is <code class="docutils literal notranslate"><span class="pre">nonce</span></code> and <code class="docutils literal notranslate"><span class="pre">user_data</span></code>, both of them are optional and will be measured in the report.
+Here are the example usages of the SDK:</p>
+<ul class="simple">
+<li><p>Fetch report with a <code class="docutils literal notranslate"><span class="pre">nonce</span></code> and <code class="docutils literal notranslate"><span class="pre">user_data</span></code></p></li>
+</ul>
+<div class="highlight-golang notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="p">(</span>
+<span class="w">    </span><span class="nx">b64</span><span class="w"> </span><span class="s">&quot;encoding/base64&quot;</span>
+<span class="w">    </span><span class="s">&quot;encoding/binary&quot;</span>
+<span class="w">    </span><span class="s">&quot;math&quot;</span>
+<span class="w">    </span><span class="s">&quot;math/rand&quot;</span>
+<span class="w">    </span><span class="s">&quot;fmt&quot;</span>
+<span class="w">    </span><span class="s">&quot;os&quot;</span>
+
+<span class="w">    </span><span class="s">&quot;github.com/cc-api/cc-trusted-api/common/golang/cctrusted_base&quot;</span>
+<span class="w">    </span><span class="s">&quot;github.com/cc-api/confidential-cloud-native-primitives/sdk/golang/ccnp&quot;</span>
+<span class="p">)</span>
+
+<span class="kd">func</span><span class="w"> </span><span class="nx">testGetCCReport</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">sdk</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">ccnp</span><span class="p">.</span><span class="nx">SDK</span><span class="p">{}</span>
+
+<span class="w">    </span><span class="nx">num</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nb">uint64</span><span class="p">(</span><span class="nx">rand</span><span class="p">.</span><span class="nx">Int63n</span><span class="p">(</span><span class="nx">math</span><span class="p">.</span><span class="nx">MaxInt64</span><span class="p">))</span>
+<span class="w">    </span><span class="nx">b</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nb">make</span><span class="p">([]</span><span class="kt">byte</span><span class="p">,</span><span class="w"> </span><span class="mi">8</span><span class="p">)</span>
+<span class="w">    </span><span class="nx">binary</span><span class="p">.</span><span class="nx">LittleEndian</span><span class="p">.</span><span class="nx">PutUint64</span><span class="p">(</span><span class="nx">b</span><span class="p">,</span><span class="w"> </span><span class="nx">num</span><span class="p">)</span>
+<span class="w">    </span><span class="nx">nonce</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">b64</span><span class="p">.</span><span class="nx">StdEncoding</span><span class="p">.</span><span class="nx">EncodeToString</span><span class="p">(</span><span class="nx">b</span><span class="p">)</span>
+
+<span class="w">    </span><span class="nx">rawBytes</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="p">[]</span><span class="nb">byte</span><span class="p">(</span><span class="s">&quot;demo user data&quot;</span><span class="p">)</span>
+<span class="w">    </span><span class="nx">userData</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">b64</span><span class="p">.</span><span class="nx">StdEncoding</span><span class="p">.</span><span class="nx">EncodeToString</span><span class="p">(</span><span class="nx">rawBytes</span><span class="p">)</span>
+<span class="w">    </span><span class="nx">report</span><span class="p">,</span><span class="w"> </span><span class="nx">err</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">sdk</span><span class="p">.</span><span class="nx">GetCCReport</span><span class="p">(</span><span class="nx">nonce</span><span class="p">,</span><span class="w"> </span><span class="nx">userData</span><span class="p">,</span><span class="w"> </span><span class="kc">nil</span><span class="p">)</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="nx">err</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="kc">nil</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nx">fmt</span><span class="p">.</span><span class="nx">Println</span><span class="p">(</span><span class="s">&quot;Error in fetching cc report.&quot;</span><span class="p">)</span>
+<span class="w">        </span><span class="nx">os</span><span class="p">.</span><span class="nx">Exit</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="nx">fmt</span><span class="p">.</span><span class="nx">Println</span><span class="p">(</span><span class="s">&quot;Dump the attestation report fetched.&quot;</span><span class="p">)</span>
+<span class="w">    </span><span class="nx">report</span><span class="p">.</span><span class="nx">Dump</span><span class="p">(</span><span class="nx">cctrusted_base</span><span class="p">.</span><span class="nx">QuoteDumpFormat</span><span class="p">(</span><span class="nx">cctrusted_base</span><span class="p">.</span><span class="nx">QuoteDumpFormatRaw</span><span class="p">))</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="measurement">
+<h3>Measurement<a class="headerlink" href="#measurement" title="Link to this heading">¶</a></h3>
+<p>Using this SDK, user could fetch various measurements from different perspective and categories.
+Basic support on measurement focus on the platform measurements, including TEE report, values within TDX RTMR registers or values reside in TPM PCR registers.
+There’s also advanced support to provide measurement for a certain workload or container. The feature is still developing in progress.</p>
+<section id="id1">
+<h4>Example usage of the SDK<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h4>
+<p>Here are the example usages for measurement SDK:</p>
+<ul class="simple">
+<li><p>Fetch TEE IMR measurement of the current pod(Fetch IMR[0] in the example)</p></li>
+</ul>
+<div class="highlight-golang notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="p">(</span>
+<span class="w">    </span><span class="s">&quot;os&quot;</span>
+<span class="w">    </span><span class="s">&quot;fmt&quot;</span>
+
+<span class="w">    </span><span class="s">&quot;github.com/cc-api/cc-trusted-api/common/golang/cctrusted_base&quot;</span>
+<span class="w">    </span><span class="s">&quot;github.com/cc-api/confidential-cloud-native-primitives/sdk/golang/ccnp&quot;</span>
+<span class="p">)</span>
+
+<span class="kd">func</span><span class="w"> </span><span class="nx">testGetCCMeasurement</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">sdk</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">ccnp</span><span class="p">.</span><span class="nx">SDK</span><span class="p">{}</span>
+
+<span class="w">    </span><span class="c1">// set the imr index to 0</span>
+<span class="w">    </span><span class="nx">imr_index</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="mi">0</span>
+<span class="w">    </span><span class="nx">alg</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">cctrusted_base</span><span class="p">.</span><span class="nx">TPM_ALG_SHA384</span>
+
+<span class="w">    </span><span class="nx">measurement</span><span class="p">,</span><span class="w"> </span><span class="nx">err</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">sdk</span><span class="p">.</span><span class="nx">GetCCMeasurement</span><span class="p">(</span><span class="nx">imr_index</span><span class="p">,</span><span class="w"> </span><span class="nx">alg</span><span class="p">)</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="nx">err</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="kc">nil</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nx">os</span><span class="p">.</span><span class="nx">Exit</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="nx">fmt</span><span class="p">.</span><span class="nx">Println</span><span class="p">(</span><span class="s">&quot;Dump measurement fetched.&quot;</span><span class="p">)</span>
+<span class="w">    </span><span class="nx">fmt</span><span class="p">.</span><span class="nx">Println</span><span class="p">(</span><span class="s">&quot;AlgID:  &quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">measurement</span><span class="p">.</span><span class="nx">AlgID</span><span class="p">)</span>
+<span class="w">    </span><span class="nx">fmt</span><span class="p">.</span><span class="nx">Println</span><span class="p">(</span><span class="s">&quot;Digest:&quot;</span><span class="p">)</span>
+<span class="w">    </span><span class="nx">fmt</span><span class="p">.</span><span class="nx">Printf</span><span class="p">(</span><span class="s">&quot;    %02X&quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">measurement</span><span class="p">.</span><span class="nx">Hash</span><span class="p">)</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="event-log">
+<h3>Event log<a class="headerlink" href="#event-log" title="Link to this heading">¶</a></h3>
+<p>Using this SDK, user can fetch the event logs to assist the attestation/verification process. It also enables two different categories of event logs - for the platform or for a single workload/container.
+From platform perspective, it can support different Trusted Execution Environment and TPM. This sdk can also do fetching on certain number of event logs.</p>
+<section id="id2">
+<h4>Example usage of the SDK<a class="headerlink" href="#id2" title="Link to this heading">¶</a></h4>
+<p>Here are the example usages of the SDK:</p>
+<ul class="simple">
+<li><p>Fetch event log of platform and check the information inside</p></li>
+</ul>
+<div class="highlight-golang notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="p">(</span>
+<span class="w">    </span><span class="s">&quot;os&quot;</span>
+<span class="w">    </span><span class="s">&quot;fmt&quot;</span>
+
+<span class="w">    </span><span class="s">&quot;github.com/cc-api/cc-trusted-api/common/golang/cctrusted_base&quot;</span>
+<span class="w">    </span><span class="s">&quot;github.com/cc-api/confidential-cloud-native-primitives/sdk/golang/ccnp&quot;</span>
+<span class="p">)</span>
+
+<span class="kd">func</span><span class="w"> </span><span class="nx">testGetCCEventLog</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">sdk</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">ccnp</span><span class="p">.</span><span class="nx">SDK</span><span class="p">{}</span>
+
+<span class="w">    </span><span class="cm">/*</span>
+<span class="cm">        Another example to set start to 0 and count to 10 for event log retrieval</span>
+<span class="cm">        start := int32(0)</span>
+<span class="cm">        count := int32(10)</span>
+<span class="cm">        eventLogs, err := sdk.GetCCEventLog(start, count)</span>
+<span class="cm">    */</span>
+<span class="w">    </span><span class="nx">eventLogs</span><span class="p">,</span><span class="w"> </span><span class="nx">err</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">sdk</span><span class="p">.</span><span class="nx">GetCCEventLog</span><span class="p">()</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="nx">err</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="kc">nil</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nx">fmt</span><span class="p">.</span><span class="nx">Println</span><span class="p">(</span><span class="s">&quot;Error in fetching event logs.&quot;</span><span class="p">)</span>
+<span class="w">        </span><span class="nx">os</span><span class="p">.</span><span class="nx">Exit</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="nx">fmt</span><span class="p">.</span><span class="nx">Println</span><span class="p">(</span><span class="s">&quot;Total &quot;</span><span class="p">,</span><span class="w"> </span><span class="nb">len</span><span class="p">(</span><span class="nx">eventLogs</span><span class="p">),</span><span class="w"> </span><span class="s">&quot; of event logs fetched.&quot;</span><span class="p">)</span>
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="nx">_</span><span class="p">,</span><span class="w"> </span><span class="nx">log</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="k">range</span><span class="w"> </span><span class="nx">eventLogs</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nx">log</span><span class="p">.</span><span class="nx">Dump</span><span class="p">()</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>Replay the event logs</p></li>
+</ul>
+<div class="highlight-golang notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="p">(</span>
+<span class="w">    </span><span class="s">&quot;os&quot;</span>
+<span class="w">    </span><span class="s">&quot;fmt&quot;</span>
+
+<span class="w">    </span><span class="s">&quot;github.com/cc-api/cc-trusted-api/common/golang/cctrusted_base&quot;</span>
+<span class="w">    </span><span class="s">&quot;github.com/cc-api/confidential-cloud-native-primitives/sdk/golang/ccnp&quot;</span>
+<span class="p">)</span>
+
+<span class="kd">func</span><span class="w"> </span><span class="nx">testReplayCCEventLog</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">sdk</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">ccnp</span><span class="p">.</span><span class="nx">SDK</span><span class="p">{}</span>
+
+<span class="w">    </span><span class="nx">eventLogs</span><span class="p">,</span><span class="w"> </span><span class="nx">err</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">sdk</span><span class="p">.</span><span class="nx">GetCCEventLog</span><span class="p">()</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="nx">err</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="kc">nil</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nx">fmt</span><span class="p">.</span><span class="nx">Println</span><span class="p">(</span><span class="s">&quot;Error in fetching event logs.&quot;</span><span class="p">)</span>
+<span class="w">        </span><span class="nx">os</span><span class="p">.</span><span class="nx">Exit</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="nx">fmt</span><span class="p">.</span><span class="nx">Println</span><span class="p">(</span><span class="s">&quot;Total &quot;</span><span class="p">,</span><span class="w"> </span><span class="nb">len</span><span class="p">(</span><span class="nx">eventLogs</span><span class="p">),</span><span class="w"> </span><span class="s">&quot; of event logs fetched.&quot;</span><span class="p">)</span>
+<span class="w">    </span><span class="nx">res</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">sdk</span><span class="p">.</span><span class="nx">ReplayCCEventLog</span><span class="p">(</span><span class="nx">eventLogs</span><span class="p">)</span>
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="nx">key</span><span class="p">,</span><span class="w"> </span><span class="nx">value</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="k">range</span><span class="w"> </span><span class="nx">res</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nx">fmt</span><span class="p">.</span><span class="nx">Println</span><span class="p">(</span><span class="nx">key</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;: &quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">value</span><span class="p">)</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+</section>
+</section>
+<section id="end-to-end-examples">
+<h2>End-to-end examples<a class="headerlink" href="#end-to-end-examples" title="Link to this heading">¶</a></h2>
+<p>TBA.</p>
+</section>
+<section id="troubleshooting">
+<h2>Troubleshooting<a class="headerlink" href="#troubleshooting" title="Link to this heading">¶</a></h2>
+<p>Troubleshooting information for the CCNP SDK can be found here.</p>
+</section>
+<section id="next-steps">
+<h2>Next steps<a class="headerlink" href="#next-steps" title="Link to this heading">¶</a></h2>
+<p>For more information about the Confidential Cloud-Native Primitives, please see our documentation page.</p>
+</section>
+<section id="contributing">
+<h2>Contributing<a class="headerlink" href="#contributing" title="Link to this heading">¶</a></h2>
+<p>This project welcomes contributions and suggestions. Most contributions require you to agree to a Contributor License Agreement (CLA) declaring that you have the right to, and actually do, grant us the rights to use your contribution. For details, visit the Contributor License Agreement site.</p>
+<p>When you submit a pull request, a CLA-bot will automatically determine whether you need to provide a CLA and decorate the PR appropriately (e.g., label, comment). Simply follow the instructions provided by the bot. You will only need to do this once across all repos using our CLA.</p>
+<p>See <a class="reference external" href="https://github.com/cc-api/confidential-cloud-native-primitives/blob/main/CONTRIBUTING.md">CONTRIBUTING.md</a> for details on building, testing, and contributing to these libraries.</p>
+</section>
+<section id="provide-feedback">
+<h2>Provide Feedback<a class="headerlink" href="#provide-feedback" title="Link to this heading">¶</a></h2>
+<p>If you encounter any bugs or have suggestions, please file an issue in the Issues section of the project.</p>
+<!-- LINKS --></section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="ccnp_golang_sdk.html" class="btn btn-neutral float-left" title="CCNP GOLANG SDK" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="ccnp_rust_sdk.html" class="btn btn-neutral float-right" title="CCNP RUST SDK" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Intel, ByteDance.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

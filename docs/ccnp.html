@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CCNP Package &mdash; Confidential Cloud Native Primitives (CCNP)  documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="CCNP GOLANG SDK" href="ccnp_golang_sdk.html" />
+    <link rel="prev" title="Confidential Cloud-Native Primitives SDK for Python" href="ccnp_python_md.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            Confidential Cloud Native Primitives (CCNP)
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">CCNP Modules</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="deployment.html">CCNP Deployment</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="sdk.html">CCNP SDK</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="ccnp_python_sdk.html">CCNP Python SDK</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="ccnp_python_md.html">Introduction</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">Python packages</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="ccnp_golang_sdk.html">CCNP Golang SDK</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ccnp_rust_sdk.html">CCNP Rust SDK</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="ccnp.service.html">CCNP Service</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Confidential Cloud Native Primitives (CCNP)</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="modules.html">CCNP Modules</a></li>
+          <li class="breadcrumb-item"><a href="sdk.html">CCNP SDK</a></li>
+          <li class="breadcrumb-item"><a href="ccnp_python_sdk.html">CCNP PYTHON SDK</a></li>
+      <li class="breadcrumb-item active">CCNP Package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/ccnp.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="ccnp-package">
+<h1>CCNP Package<a class="headerlink" href="#ccnp-package" title="Link to this heading">¶</a></h1>
+<section id="module-ccnp.sdk">
+<span id="ccnp-sdk-module"></span><h2>ccnp.sdk module<a class="headerlink" href="#module-ccnp.sdk" title="Link to this heading">¶</a></h2>
+<p>This package provides the definitions and helper class for CCNP SDK.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="ccnp.sdk.CcnpSdk">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ccnp.sdk.</span></span><span class="sig-name descname"><span class="pre">CcnpSdk</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">server</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'unix:/run/ccnp/uds/ccnp-server.sock'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ccnp.sdk.CcnpSdk" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">CCTrustedApi</span></code></p>
+<p>CCNP SDK class</p>
+<p>This class is a client to connect to CCNP Server and do gRPC call getting the
+server.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ccnp.sdk.CcnpSdk._server">
+<span class="sig-name descname"><span class="pre">_server</span></span><a class="headerlink" href="#ccnp.sdk.CcnpSdk._server" title="Link to this definition">¶</a></dt>
+<dd><p>The gRPC server to connect.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ccnp.sdk.CcnpSdk._channel">
+<span class="sig-name descname"><span class="pre">_channel</span></span><a class="headerlink" href="#ccnp.sdk.CcnpSdk._channel" title="Link to this definition">¶</a></dt>
+<dd><p>The gRPC channel, thread-safe.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Channel</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ccnp.sdk.CcnpSdk._stub">
+<span class="sig-name descname"><span class="pre">_stub</span></span><a class="headerlink" href="#ccnp.sdk.CcnpSdk._stub" title="Link to this definition">¶</a></dt>
+<dd><p>The get CCNP stub for gRPC.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ccnpStub</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ccnp.sdk.CcnpSdk.get_cc_eventlog">
+<span class="sig-name descname"><span class="pre">get_cc_eventlog</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">count</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="headerlink" href="#ccnp.sdk.CcnpSdk.get_cc_eventlog" title="Link to this definition">¶</a></dt>
+<dd><p>Get eventlog for given index and count.</p>
+<p>TCG log in Eventlog. Verify to spoof events in the TCG log, hence defeating
+remotely-attested measured-boot.
+To measure the full CC runtime environment, the eventlog may include addtional
+OS type and cloud native type event beyond the measured-boot.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>start</strong> (<em>int</em>) – the first index of event log to fetch</p></li>
+<li><p><strong>count</strong> (<em>int</em>) – the number of event logs to fetch</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Parsed event logs following TCG Spec.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ccnp.sdk.CcnpSdk.get_cc_measurement">
+<span class="sig-name descname"><span class="pre">get_cc_measurement</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">imr_select:</span> <span class="pre">[&lt;class</span> <span class="pre">'int'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'int'&gt;]</span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">TcgDigest</span></span></span><a class="headerlink" href="#ccnp.sdk.CcnpSdk.get_cc_measurement" title="Link to this definition">¶</a></dt>
+<dd><p>Get measurement register according to given selected index and algorithms</p>
+<p>Each trusted foundation in CC environment provides the multiple measurement
+registers, the count is update to <code class="docutils literal notranslate"><span class="pre">get_measurement_count()</span></code>. And for each
+measurement register, it may provides multiple digest for different algorithms.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>imr_select</strong> (<em>[</em><em>int</em><em>, </em><em>int</em><em>]</em>) – The first is index of measurement register,
+the second is the alrogithms ID</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The object of TcgIMR</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ccnp.sdk.CcnpSdk.get_cc_report">
+<span class="sig-name descname"><span class="pre">get_cc_report</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nonce</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bytearray</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bytearray</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">extraArgs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">CcReport</span></span></span><a class="headerlink" href="#ccnp.sdk.CcnpSdk.get_cc_report" title="Link to this definition">¶</a></dt>
+<dd><p>Get the CcReport (i.e. quote) for given nonce and data.</p>
+<p>The CcReport is signing of attestation data (IMR values or hashes of IMR
+values), made by a trusted foundation (TPM) using a key trusted by the
+verifier.</p>
+<p>Different trusted foundation may use different quote format.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>nonce</strong> (<em>bytearray</em>) – against replay attacks.</p></li>
+<li><p><strong>data</strong> (<em>bytearray</em>) – user data</p></li>
+<li><p><strong>extraArgs</strong> – for TPM, it will be given list of IMR/PCRs</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The <code class="docutils literal notranslate"><span class="pre">CcReport</span></code> object. Return None if it fails.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ccnp.sdk.CcnpSdk.get_default_algorithms">
+<span class="sig-name descname"><span class="pre">get_default_algorithms</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">TcgAlgorithmRegistry</span></span></span><a class="headerlink" href="#ccnp.sdk.CcnpSdk.get_default_algorithms" title="Link to this definition">¶</a></dt>
+<dd><p>Get the default Digest algorithms supported by trusted foundation.</p>
+<p>Different trusted foundation may support different algorithms, for example
+the Intel TDX use SHA384, TPM uses SHA256.</p>
+<p>Beyond the default digest algorithm, some trusted foundation like TPM
+may support multiple algorithms.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The default algorithms.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ccnp.sdk.CcnpSdk.get_measurement_count">
+<span class="sig-name descname"><span class="pre">get_measurement_count</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#ccnp.sdk.CcnpSdk.get_measurement_count" title="Link to this definition">¶</a></dt>
+<dd><p>Get the count of measurement register.</p>
+<p>Different trusted foundation may provide different count of measurement
+register. For example, Intel TDX TDREPORT provides the 4 measurement
+register by default. TPM provides 24 measurement (0~16 for SRTM and 17~24
+for DRTM).</p>
+<p>Beyond the real mesurement register, some SDK may extend virtual measurement
+reigster for additional trust chain like container, namespace, cluster in
+cloud native paradiagm.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The count of measurement registers</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ccnp.sdk.CcnpSdk.inst">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">inst</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ccnp.sdk.CcnpSdk.inst" title="Link to this definition">¶</a></dt>
+<dd><p>Singleton instance function.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="ccnp_python_md.html" class="btn btn-neutral float-left" title="Confidential Cloud-Native Primitives SDK for Python" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="ccnp_golang_sdk.html" class="btn btn-neutral float-right" title="CCNP GOLANG SDK" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Intel, ByteDance.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

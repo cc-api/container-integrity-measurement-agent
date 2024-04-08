@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CCNP Deployment Guide in Kubernetes Cluster &mdash; Confidential Cloud Native Primitives (CCNP)  documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Docker Compose Deployment" href="docker_deployment.html" />
+    <link rel="prev" title="CCNP Deployment Guide" href="general_deployment.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            Confidential Cloud Native Primitives (CCNP)
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">CCNP Modules</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="deployment.html">CCNP Deployment</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="general_deployment.html">General Deployment Guide</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Kubernetes Deployment</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#prepare-a-k8s-cluster-with-td-as-worker-nodes">Prepare a K8S cluster with TD as worker nodes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#deploy-ccnp">Deploy CCNP</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ccnp-usage-example">CCNP Usage Example</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="docker_deployment.html">Docker Deployment</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="sdk.html">CCNP SDK</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ccnp.service.html">CCNP Service</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Confidential Cloud Native Primitives (CCNP)</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="modules.html">CCNP Modules</a></li>
+          <li class="breadcrumb-item"><a href="deployment.html">CCNP Deployment</a></li>
+      <li class="breadcrumb-item active">CCNP Deployment Guide in Kubernetes Cluster</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/kubernetes_deployment.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="ccnp-deployment-guide-in-kubernetes-cluster">
+<span id="readme"></span><h1>CCNP Deployment Guide in Kubernetes Cluster<a class="headerlink" href="#ccnp-deployment-guide-in-kubernetes-cluster" title="Link to this heading">¶</a></h1>
+<p>Below diagram illustrates CCNP deployment process. In this document, it will use Intel TDX guest(TD) as an example of CVM and deploy CCNP on Intel TD nodes.</p>
+<a class="reference external image-reference" href="https://github.com/cc-api/confidential-cloud-native-primitives/blob/main/docs/ccnp-deployment-k8s.png"><img alt="Deployment diagram" src="ccnp-deployment-k8s.png" /></a>
+<section id="prepare-a-k8s-cluster-with-td-as-worker-nodes">
+<h2>Prepare a K8S cluster with TD as worker nodes<a class="headerlink" href="#prepare-a-k8s-cluster-with-td-as-worker-nodes" title="Link to this heading">¶</a></h2>
+<p>You can either create a K8S cluster in the TD or let the TD join an existing K8S cluster. Please choose one of the following step to make sure the K8S cluster is prepared with the TD running in it. CCNP will be deployed on the TD.</p>
+<section id="option-1-create-a-k8s-cluster-on-the-td">
+<h3>Option 1: Create a K8S cluster on the TD<a class="headerlink" href="#option-1-create-a-k8s-cluster-on-the-td" title="Link to this heading">¶</a></h3>
+<p>After TDs are started, users need to setup a K8S cluster in the TDs. It’s recommended to use <a class="reference external" href="https://docs.k3s.io/">K3S</a> to start a lightweight Kubernetes cluster for experimental purpose.</p>
+<p>Or you can refer to the <a class="reference external" href="https://kubernetes.io/docs/home/">k8s official documentation</a> to setup a cluster.</p>
+<p><em>NOTE: If the cluster has only one node (master node), the taint on the node needs to be removed.</em></p>
+</section>
+<section id="option-2-add-the-td-to-an-existing-k8s-cluster">
+<h3>Option 2: Add the TD to an existing K8S cluster<a class="headerlink" href="#option-2-add-the-td-to-an-existing-k8s-cluster" title="Link to this heading">¶</a></h3>
+<p>After TDs are started, users can let the TDs join an existing K8S cluster. Please refer to the <a class="reference external" href="https://kubernetes.io/docs/reference/setup-tools/kubeadm/kubeadm-join/">k8s official documentation</a> for detailed steps.</p>
+</section>
+</section>
+<section id="deploy-ccnp">
+<h2>Deploy CCNP<a class="headerlink" href="#deploy-ccnp" title="Link to this heading">¶</a></h2>
+<p>The following scripts can help to generate CCNP images and deploy them in the TD nodes. <code class="docutils literal notranslate"><span class="pre">build.sh</span></code> can run on either host or TD. Other scripts are supposed to run in the TD.</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/cc-api/confidential-cloud-native-primitives/blob/main/container/build.sh">build.sh</a>: The tool will build docker images and push them to remote registry if required. Skip it if you already have docker images prepared.</p></li>
+<li><p><a class="reference external" href="https://github.com/cc-api/confidential-cloud-native-primitives/blob/main/deployment/kubernetes/script/prerequisite.sh">prerequisite.sh</a>: This tool will complete the prerequisites for deploying CCNP on Ubuntu. For other distributions, you can follow the manual steps in <span class="xref std std-ref">Prerequisite Manually</span>.</p></li>
+<li><p><a class="reference external" href="https://github.com/cc-api/confidential-cloud-native-primitives/blob/main/deployment/kubernetes/script/deploy-ccnp.sh">deploy-ccnp.sh</a>: The tool will deploy CCNP services as DaemonSet on TDs in the K8S cluster.</p></li>
+<li><p><a class="reference external" href="https://github.com/cc-api/confidential-cloud-native-primitives/blob/main/deployment/kubernetes/script/deploy-ccnp-example.sh">deploy-ccnp-example.sh</a>: The tool will deploy an example pod with CCNP SDK installed.</p></li>
+<li><p><a class="reference external" href="https://github.com/cc-api/confidential-cloud-native-primitives/blob/main/deployment/kubernetes/script/exec-ccnp-example.sh">exec-ccnp-example.sh</a>: The tool will show getting event logs, measurement and perform verification using CCNP in the pod.</p></li>
+</ul>
+<section id="prerequisite">
+<h3>Prerequisite<a class="headerlink" href="#prerequisite" title="Link to this heading">¶</a></h3>
+<p>The prerequisite steps are required for CCNP deployment. Run <code class="docutils literal notranslate"><span class="pre">prerequisite.sh</span></code> in the TD.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ cd script
+$ sudo ./prerequisite.sh
+</pre></div>
+</div>
+</section>
+<section id="deploy-ccnp-services">
+<h3>Deploy CCNP services<a class="headerlink" href="#deploy-ccnp-services" title="Link to this heading">¶</a></h3>
+<p>CCNP deployment tool will deploy TDX device plugin and DaemonSets for CCNP event log, measurement and quote.
+Run below scripts on each TD node.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span># Deploy CCNP with user specified remote registry and image tag
+$ sudo ./deploy-ccnp.sh -r &lt;remote registry&gt; -g &lt;tag&gt;
+e.g.
+$ sudo ./deploy-ccnp.sh -r test-registry.intel.com/test -g 0.3
+
+# Delete existing CCNP and Deploy CCNP with user specified remote registry and image tag
+$ sudo ./deploy-ccnp.sh -r &lt;remote registry&gt; -g &lt;tag&gt; -d
+</pre></div>
+</div>
+<p>After it’s successful, you should see helm release <code class="docutils literal notranslate"><span class="pre">ccnp-device-plugin</span></code> and 3 DaemonSets in namespace <code class="docutils literal notranslate"><span class="pre">ccnp</span></code>.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ sudo helm list
+NAME                    NAMESPACE       REVISION        UPDATED                                 STATUS          CHART                           APP VERSION
+ccnp-device-plugin      default         1               2023-12-27 08:12:05.814766198 +0000 UTC deployed        ccnp-device-plugin-0.1.0        latest
+$ sudo kubectl get ds -n ccnp
+NAME                 DESIRED   CURRENT   READY   UP-TO-DATE   AVAILABLE   NODE SELECTOR                                        AGE
+ccnp-server          1         1         1       1            1           intel.feature.node.kubernetes.io/tdx-guest=enabled   24h
+$ sudo kubectl get pods -n ccnp
+NAME                       READY   STATUS    RESTARTS      AGE
+ccnp-server-mqfjx          1/1     Running   2 (39s ago)   24h
+</pre></div>
+</div>
+</section>
+</section>
+<section id="ccnp-usage-example">
+<h2>CCNP Usage Example<a class="headerlink" href="#ccnp-usage-example" title="Link to this heading">¶</a></h2>
+<p>The script <a class="reference external" href="https://github.com/cc-api/confidential-cloud-native-primitives/blob/main/deployment/kubernetes/script/deploy-ccnp-example.sh">deploy-ccnp-example.sh</a> will deploy an example pod with CCNP SDK installed.
+The script <a class="reference external" href="https://github.com/cc-api/confidential-cloud-native-primitives/blob/main/deployment/kubernetes/script/exec-ccnp-example.sh">exec-ccnp-example.sh</a> will use CCNP SDK to collect event log, measurement and perform verification in the example pod.</p>
+<ul class="simple">
+<li><p>Deploy example pod</p></li>
+</ul>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ cd script
+
+# Deploy CCNP example pod
+$ sudo ./deploy-ccnp-example.sh -r &lt;remote-registry&gt; -g &lt;tag&gt;
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>Get Pod measurement, event logs, CC report and verify event logs using CCNP SDK.</p></li>
+</ul>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span># Get measurement
+$ sudo ./exec-ccnp-example.sh -m
+
+# Get event logs
+$ sudo ./exec-ccnp-example.sh -e
+
+# Get CC report
+$ sudo ./exec-ccnp-example.sh -r
+
+# Verify event logs with measurements
+$ sudo ./exec-ccnp-example.sh -v
+</pre></div>
+</div>
+<p>The example output of verification can be found at <a class="reference external" href="https://github.com/cc-api/confidential-cloud-native-primitives/blob/main/docs/sample-output-for-container-measurement.txt">sample-output-for-container-measurement.txt</a> and
+<a class="reference external" href="https://github.com/cc-api/confidential-cloud-native-primitives/blob/main/docs/sample-output-for-container-eventlog.txt">sample-output-for-container-eventlog.txt</a>.</p>
+<section id="optional-ccnp-prerequisite-manual-steps">
+<h3>(Optional) CCNP Prerequisite Manual Steps<a class="headerlink" href="#optional-ccnp-prerequisite-manual-steps" title="Link to this heading">¶</a></h3>
+<p><strong>NOTE: Below are manual Steps of CCNP prerequisite for your reference. They can be skipped if prerequisite.sh is run successfully.</strong></p>
+<p>Basically the <code class="docutils literal notranslate"><span class="pre">prerequisite.sh</span></code> complete below steps to ensure <code class="docutils literal notranslate"><span class="pre">helm</span></code>, <code class="docutils literal notranslate"><span class="pre">docker</span></code> and <code class="docutils literal notranslate"><span class="pre">pip</span></code> are installed and check whether file permission is set correctly.
+You can also complete them following below steps manually.</p>
+<ul class="simple">
+<li><p>Install Helm on the TD nodes. Please refer to the <a class="reference external" href="https://helm.sh/docs/intro/quickstart/">HELM quick start</a>.</p></li>
+<li><p>Install docker on the TD nodes. Please refer to <a class="reference external" href="https://docs.docker.com/get-docker/">Get Docker</a>.</p></li>
+<li><p>Install python3-pip on the TD nodes. Please refer to <a class="reference external" href="https://pip.pypa.io/en/stable/installation/">pip document</a>.</p></li>
+<li><p>Set access permission to TD device node and ccnp working directory on the TD nodes.</p></li>
+</ul>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ sudo mkdir -p /etc/udev/rules.d
+$ sudo touch /etc/udev/rules.d/90-tdx.rules
+# Check TD device node on TD
+$ ls /dev/tdx*
+
+# If above output is &quot;/dev/tdx-guest&quot;
+$ sudo bash -c &#39;echo &quot;SUBSYSTEM==\&quot;misc\&quot;,KERNEL==\&quot;tdx-guest\&quot;,MODE=\&quot;0666\&quot;&quot;&gt;/etc/udev/rules.d/90-tdx.rules&#39;
+# If above output is &quot;/dev/tdx_guest&quot;
+$ sudo bash -c &#39;echo &quot;SUBSYSTEM==\&quot;misc\&quot;,KERNEL==\&quot;tdx_guest\&quot;,MODE=\&quot;0666\&quot;&quot;&gt;/etc/udev/rules.d/90-tdx.rules&#39;
+# make the udev setup effective
+$ sudo udevadm trigger
+
+$ sudo touch /usr/lib/tmpfiles.d/ccnp.conf
+$ sudo bash -c &#39;echo &quot;D /run/ccnp/uds 0757 - - -&quot;&gt;/usr/lib/tmpfiles.d/ccnp.conf&#39;
+# make the directory setup effective by running below command or restarting the node
+$ sudo systemd-tmpfiles --create
+</pre></div>
+</div>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="general_deployment.html" class="btn btn-neutral float-left" title="CCNP Deployment Guide" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="docker_deployment.html" class="btn btn-neutral float-right" title="Docker Compose Deployment" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Intel, ByteDance.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

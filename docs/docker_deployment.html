@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Docker Compose Deployment &mdash; Confidential Cloud Native Primitives (CCNP)  documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="CCNP SDK" href="sdk.html" />
+    <link rel="prev" title="CCNP Deployment Guide in Kubernetes Cluster" href="kubernetes_deployment.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            Confidential Cloud Native Primitives (CCNP)
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">CCNP Modules</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="deployment.html">CCNP Deployment</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="general_deployment.html">General Deployment Guide</a></li>
+<li class="toctree-l3"><a class="reference internal" href="kubernetes_deployment.html">Kubernetes Deployment</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Docker Deployment</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#deploy-ccnp">Deploy CCNP</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="sdk.html">CCNP SDK</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ccnp.service.html">CCNP Service</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Confidential Cloud Native Primitives (CCNP)</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="modules.html">CCNP Modules</a></li>
+          <li class="breadcrumb-item"><a href="deployment.html">CCNP Deployment</a></li>
+      <li class="breadcrumb-item active">Docker Compose Deployment</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/docker_deployment.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="docker-compose-deployment">
+<span id="readme"></span><h1>Docker Compose Deployment<a class="headerlink" href="#docker-compose-deployment" title="Link to this heading">¶</a></h1>
+<p>The CCNP can be deployed in the confidential VMs using docker compose. In this document, it will use Intel TDX guest(TD) as an example of CVM and deploy CCNP on the TD using docker compose.</p>
+<a class="reference external image-reference" href="https://github.com/cc-api/confidential-cloud-native-primitives/blob/main/docs/ccnp-deployment-docker.png"><img alt="Deployment diagram" src="ccnp-deployment-docker.png" /></a>
+<section id="deploy-ccnp">
+<h2>Deploy CCNP<a class="headerlink" href="#deploy-ccnp" title="Link to this heading">¶</a></h2>
+<p>The following scripts can help to generate CCNP images and deploy them in the TD nodes. <code class="docutils literal notranslate"><span class="pre">build.sh</span></code> can run on either host or TD. Other scripts are supposed to run in the TD.</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/cc-api/confidential-cloud-native-primitives/blob/main/container/build.sh">build.sh</a>: The tool will build docker images and push them to remote registry if required. Skip it if you already have docker images prepared.</p></li>
+<li><p><a class="reference external" href="https://github.com/cc-api/confidential-cloud-native-primitives/blob/main/deployment/docker-compose/prerequisite.sh">prerequisite.sh</a>: This tool will complete the prerequisites for deploying CCNP on Ubuntu. For other distributions, you can follow the manual steps in <span class="xref std std-ref">Prerequisite Manually</span>.</p></li>
+<li><p><a class="reference external" href="https://github.com/cc-api/confidential-cloud-native-primitives/blob/main/deployment/docker-compose/deploy-ccnp.sh">deploy-ccnp.sh</a>: The tool will deploy CCNP service using docker compose.</p></li>
+<li><p><a class="reference external" href="https://github.com/cc-api/confidential-cloud-native-primitives/blob/main/deployment/docker-compose/exec-ccnp-example.sh">exec-ccnp-example.sh</a>: The tool will create a docker container, getting container event logs, measurement and performing verification using CCNP SDK.</p></li>
+</ul>
+<section id="prerequisite">
+<h3>Prerequisite<a class="headerlink" href="#prerequisite" title="Link to this heading">¶</a></h3>
+<p>Run the script <code class="docutils literal notranslate"><span class="pre">prerequisite.sh</span></code> as below.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ sudo ./prerequisite.sh
+</pre></div>
+</div>
+</section>
+<section id="deploy-ccnp-service">
+<h3>Deploy CCNP Service<a class="headerlink" href="#deploy-ccnp-service" title="Link to this heading">¶</a></h3>
+<p>Use the script <a class="reference external" href="https://github.com/cc-api/confidential-cloud-native-primitives/blob/main/deployment/docker-compose/depoly-ccnp.sh">deploy-ccnp.sh</a> to deploy the CCNP services.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span># Deploy CCNP with user specified remote registry and image tag
+$ sudo ./deploy-ccnp.sh -r &lt;remote registry&gt; -g &lt;tag&gt;
+e.g.
+$ sudo ./deploy-ccnp.sh -r test-registry.intel.com/test -g 0.3
+</pre></div>
+</div>
+<p>This script has some options as below.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>Usage: $(basename &quot;$0&quot;) [OPTION]...
+    -r &lt;registry prefix&gt;    the prefix string for registry
+    -g &lt;tag&gt;                container image tag
+    -h                      show help info
+</pre></div>
+</div>
+<p>You will see below container running after the deployment.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ sudo docker ps
+CONTAINER ID   IMAGE             COMMAND               CREATED        STATUS      PORTS     NAMES
+3a9de1a9c7d7  ccnp-server:0.3  &quot;/usr/bin/ccnp_serve…&quot; 36 seconds ago  Up 34 seconds  ccnp-server-ctr-ccnp-server-1
+</pre></div>
+</div>
+</section>
+<section id="deploy-ccnp-usage-example">
+<h3>Deploy CCNP Usage Example<a class="headerlink" href="#deploy-ccnp-usage-example" title="Link to this heading">¶</a></h3>
+<p>The script <a class="reference external" href="https://github.com/cc-api/confidential-cloud-native-primitives/blob/main/deployment/docker-compose/exec-ccnp-example.sh">exec-ccnp-example.sh</a> will launch a container <code class="docutils literal notranslate"><span class="pre">ccnp-example</span></code>.
+It will get measurement, event logs and cc_report using CCNP SDK and save the output in <code class="docutils literal notranslate"><span class="pre">/tmp/docker_ccnp/example.log</span></code>.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ sudo ./exec-ccnp-example.sh -r test-registry.intel.com/test -g 0.3
+</pre></div>
+</div>
+<p>This script has some options as below.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>Usage: $(basename &quot;$0&quot;) [OPTION]...
+    -r &lt;registry prefix&gt;    the prefix string for registry
+    -g &lt;tag&gt;                container image tag
+    -d                                   delete example container
+    -h                      show help info
+</pre></div>
+</div>
+<p>You will see below container running after the deployment.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ sudo docker ps
+CONTAINER ID   IMAGE               COMMAND            CREATED          STATUS       PORTS     NAMES
+e815b6edafcb   ccnp-example:0.3  &quot;tail -f /dev/null&quot;  17 seconds ago  Up 15 seconds ccnp-example-ctr-ccnp-example-1
+</pre></div>
+</div>
+</section>
+<section id="clean-up">
+<h3>Clean Up<a class="headerlink" href="#clean-up" title="Link to this heading">¶</a></h3>
+<p>The script <code class="docutils literal notranslate"><span class="pre">cleanup.sh</span></code> will help stop three containerized services and remove cache.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ sudo ./cleanup.sh
+</pre></div>
+</div>
+</section>
+<section id="optional-ccnp-prerequisite-manual-steps">
+<h3>(Optional) CCNP Prerequisite Manual Steps<a class="headerlink" href="#optional-ccnp-prerequisite-manual-steps" title="Link to this heading">¶</a></h3>
+<p><strong>NOTE: Below are manual Steps of CCNP prerequisite for your reference. They can be skipped if prerequisite.sh is run successfully.</strong></p>
+<p>Basically the <code class="docutils literal notranslate"><span class="pre">prerequisite.sh</span></code> complete below steps to ensure <code class="docutils literal notranslate"><span class="pre">docker</span></code> is installed and set device permission. You can also complete them following below steps manually.</p>
+<ul>
+<li><p>Install docker on the TD nodes. Please refer to <a class="reference external" href="https://docs.docker.com/get-docker/">Get Docker</a>.</p></li>
+<li><p>Change the access privilege of the TDX device.
+.. code-block:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ chmod 0666 $(find /dev/ -name &quot;tdx*&quot;)
+</pre></div>
+</div>
+</li>
+<li><p>Clean up <code class="docutils literal notranslate"><span class="pre">/tmp/docker_ccnp</span></code>.</p></li>
+</ul>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="kubernetes_deployment.html" class="btn btn-neutral float-left" title="CCNP Deployment Guide in Kubernetes Cluster" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="sdk.html" class="btn btn-neutral float-right" title="CCNP SDK" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Intel, ByteDance.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CCNP Deployment Guide &mdash; Confidential Cloud Native Primitives (CCNP)  documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="CCNP Deployment Guide in Kubernetes Cluster" href="kubernetes_deployment.html" />
+    <link rel="prev" title="CCNP Deployment" href="deployment.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            Confidential Cloud Native Primitives (CCNP)
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">CCNP Modules</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="deployment.html">CCNP Deployment</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#">General Deployment Guide</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#build-ccnp-kernel">Build CCNP Kernel</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#prepare-tdx-guest-image">Prepare TDX guest image</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#create-a-td">Create a TD</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#build-ccnp-images">Build CCNP images</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#setup-qgs-and-pccs-on-the-host">Setup QGS and PCCS on the Host</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#deploy-ccnp-in-kubernetes">Deploy CCNP in Kubernetes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#deploy-ccnp-in-docker">Deploy CCNP in Docker</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="kubernetes_deployment.html">Kubernetes Deployment</a></li>
+<li class="toctree-l3"><a class="reference internal" href="docker_deployment.html">Docker Deployment</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="sdk.html">CCNP SDK</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ccnp.service.html">CCNP Service</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Confidential Cloud Native Primitives (CCNP)</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="modules.html">CCNP Modules</a></li>
+          <li class="breadcrumb-item"><a href="deployment.html">CCNP Deployment</a></li>
+      <li class="breadcrumb-item active">CCNP Deployment Guide</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/general_deployment.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="ccnp-deployment-guide">
+<span id="readme"></span><h1>CCNP Deployment Guide<a class="headerlink" href="#ccnp-deployment-guide" title="Link to this heading">¶</a></h1>
+<p>CCNP is designed for collecting confidential computing primitives in cloud native environments. It can run as DaemonSet in a Kubernetes cluster or containers in a Docker environment on confidential virtual machines, such as Intel TDX guest(TD).</p>
+<section id="build-ccnp-kernel">
+<h2>Build CCNP Kernel<a class="headerlink" href="#build-ccnp-kernel" title="Link to this heading">¶</a></h2>
+<p>Run <a class="reference external" href="https://github.com/cc-api/confidential-cloud-native-primitives/blob/main/container/build.sh">build.sh</a> to build kernel packages for CCNP. It’s recommended to run the tool on TDX host mentioned in <a class="reference external" href="https://github.com/cc-api/confidential-cloud-native-primitives/blob/main/README.md#configuration">Configuration</a>.</p>
+<p>It will generate a <code class="docutils literal notranslate"><span class="pre">output</span></code> folder including kernel packages. The folder will be used in the next step.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ cd tools/build
+$ sudo ./build.sh
+</pre></div>
+</div>
+<p><strong>NOTE:</strong></p>
+<ul class="simple">
+<li><p>CCNP kernel patches are at <a class="reference external" href="https://github.com/cc-api/confidential-cloud-native-primitives/blob/main/tools/build/kernel">kernel</a></p></li>
+<li><p>The tool should be run on a Ubuntu 23.10 TDX host with TDX early preview packages installed. Please refer to <a class="reference external" href="https://github.com/canonical/tdx">here</a></p></li>
+</ul>
+</section>
+<section id="prepare-tdx-guest-image">
+<h2>Prepare TDX guest image<a class="headerlink" href="#prepare-tdx-guest-image" title="Link to this heading">¶</a></h2>
+<p>Run <a class="reference external" href="https://github.com/cc-api/confidential-cloud-native-primitives/blob/main/tools/cvm-image-rewriter/README.md">cvm image rewriter</a> to prepare a TDX guest image for CCNP deployment. The default user name is <code class="docutils literal notranslate"><span class="pre">tdx</span></code>. The password is <code class="docutils literal notranslate"><span class="pre">123456</span></code>.</p>
+<p>It’s recommended to run the tool on TDX host mentioned in <a class="reference external" href="https://github.com/cc-api/confidential-cloud-native-primitives/blob/main/README.md#configuration">Configuration</a>.</p>
+<p>A quick start is as below.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span># Download Ubuntu 23.10 cloud image (Skip this step if you already has an initial guest image.)
+$ wget https://cloud-images.ubuntu.com/mantic/current/mantic-server-cloudimg-amd64.img
+
+# Set file path of the generated output folder above. Plugin 06 will install the kernel in the guest image.
+$ export CVM_TDX_GUEST_REPO=&lt;path to above output folder&gt;
+
+# Set image size
+$ export GUEST_SIZE=&lt;image size&gt;G
+
+# Run CVM image rewriter to configure a TDX guest image for CCNP
+$ cd tools/cvm-image-rewriter
+$ ./run.sh -i &lt;mantic-server-cloudimg-amd64.img or your initial guest image&gt;  -t &lt;timeout in minutes, suggest to set to 15&gt;
+</pre></div>
+</div>
+<p><strong>NOTE:</strong></p>
+<ul class="simple">
+<li><p>By default all the plugins will be executed. Generate a <code class="docutils literal notranslate"><span class="pre">NOT_RUN</span></code> file under the specific plugin folder if you want to skip it.</p></li>
+<li><p>It’s required to run <a class="reference external" href="https://github.com/cc-api/confidential-cloud-native-primitives/blob/main/tools/cvm-image-rewriter/plugins/">plugin</a> 06, 07, 08, 09 for CCNP.</p></li>
+</ul>
+</section>
+<section id="create-a-td">
+<h2>Create a TD<a class="headerlink" href="#create-a-td" title="Link to this heading">¶</a></h2>
+<p>Start a TD using <a class="reference external" href="https://github.com/cc-api/confidential-cloud-native-primitives/blob/main/tools/cvm-image-rewriter/qemu-test.sh">qemu-test.sh</a> or <a class="reference external" href="https://github.com/cc-api/confidential-cloud-native-primitives/blob/main/tools/cvm-image-rewriter/start-virt.sh">start-virt.sh</a>.</p>
+<ul>
+<li><p>Use <code class="docutils literal notranslate"><span class="pre">qemu-test.sh</span></code>, please use <code class="docutils literal notranslate"><span class="pre">-q</span> <span class="pre">&lt;vsock&gt;</span></code> to make sure get quote works for the TD.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ sudo ./qemu-test.sh -i output.qcow2 -q vsock
+</pre></div>
+</div>
+</li>
+<li><p>Use <code class="docutils literal notranslate"><span class="pre">start-virt.sh</span></code>. The Libvirt XML template is <a class="reference external" href="https://github.com/cc-api/confidential-cloud-native-primitives/blob/main/tools/cvm-image-rewriter/tdx-libvirt-ubuntu-host.xml.template">tdx-libvirt-ubuntu-host.xml.template</a>. It uses <code class="docutils literal notranslate"><span class="pre">vsock</span></code> for getting quote.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ sudo ./start-virt.sh -i &lt;guest image&gt;
+</pre></div>
+</div>
+</li>
+</ul>
+</section>
+<section id="build-ccnp-images">
+<h2>Build CCNP images<a class="headerlink" href="#build-ccnp-images" title="Link to this heading">¶</a></h2>
+<p>Run script <a class="reference external" href="https://github.com/cc-api/confidential-cloud-native-primitives/blob/main/container/build.sh">build.sh</a> to generate CCNP images. It will generate 3 images and push them to user specific registry. Learn more details in the <a class="reference external" href="https://github.com/cc-api/confidential-cloud-native-primitives/blob/main/container/README.md">README.md</a>.</p>
+<p><strong>NOTE:</strong></p>
+<ul class="simple">
+<li><p>The scripts need to run on a server with docker installed.</p></li>
+<li><p>Run <code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">login</span></code> before running the tool to make sure it can pull images.</p></li>
+<li><p>Set proxy server in your environment if needed. See more details in <a class="reference external" href="https://docs.docker.com/network/proxy/">Configure Docker to use a proxy server</a>.</p></li>
+</ul>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ cd container
+$ sudo ./build.sh -r &lt;remote registry&gt; -g &lt;docker image tag&gt;
+
+e.g.
+
+# Build images with tag 0.3 and push them to remote registry test-registry.intel.com
+$ sudo ./build.sh -r test-registry.intel.com/test -g 0.3
+
+# Build images only with tag 0.3
+$ sudo ./build.sh -a build -g 0.3
+</pre></div>
+</div>
+<p>After the script is executed successfully, it’s supposed to see below docker images for CCNP.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ sudo docker images
+ccnp-example                    &lt;your image tag&gt;
+ccnp-server                     &lt;your image tag&gt;
+ccnp-device-plugin              &lt;your image tag&gt;
+</pre></div>
+</div>
+</section>
+<section id="setup-qgs-and-pccs-on-the-host">
+<h2>Setup QGS and PCCS on the Host<a class="headerlink" href="#setup-qgs-and-pccs-on-the-host" title="Link to this heading">¶</a></h2>
+<p>Intel Quote Generation Service(QGS) and Provisioning Certification Caching Service(PCCS) should be installed and configured on the host for getting TD Quote. Please refer to Section 4.3.2, 4.3.3 and 4.3.4 of <a class="reference external" href="https://www.intel.com/content/www/us/en/content-details/789198/whitepaper-linux-stacks-for-intel-trust-domain-extensions-1-5.html">guide</a>
+for QGS and PCCS installation.</p>
+</section>
+<section id="deploy-ccnp-in-kubernetes">
+<h2>Deploy CCNP in Kubernetes<a class="headerlink" href="#deploy-ccnp-in-kubernetes" title="Link to this heading">¶</a></h2>
+<p>Below diagram illustrates CCNP deployment process in a Kubernetes cluster. If you want to install CCNP services as DamonSets in the Kubernetes cluster, please refer to <a class="reference external" href="kubernetes_deployment.html">CCNP deployment in Kubernetes</a>.</p>
+<a class="reference external image-reference" href="https://github.com/cc-api/confidential-cloud-native-primitives/blob/main/docs/ccnp-deployment-k8s.png"><img alt="Deployment diagram" src="_images/ccnp-deployment-k8s.png" /></a>
+</section>
+<section id="deploy-ccnp-in-docker">
+<h2>Deploy CCNP in Docker<a class="headerlink" href="#deploy-ccnp-in-docker" title="Link to this heading">¶</a></h2>
+<p>Below diagram illustrates CCNP deployment process using docker compose. If you want to setup CCNP services as docker containers, please refer to <a class="reference external" href="docker_deployment.html">CCNP deployment in Docker</a>.</p>
+<a class="reference external image-reference" href="https://github.com/cc-api/confidential-cloud-native-primitives/blob/main/docs/ccnp-deployment-docker.png"><img alt="Deployment diagram" src="_images/ccnp-deployment-docker.png" /></a>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="deployment.html" class="btn btn-neutral float-left" title="CCNP Deployment" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="kubernetes_deployment.html" class="btn btn-neutral float-right" title="CCNP Deployment Guide in Kubernetes Cluster" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Intel, ByteDance.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
