@@ -3,9 +3,9 @@ CCNP Performance Test.
 """
 
 import logging
+import concurrent
 
 from concurrent.futures import ThreadPoolExecutor
-from concurrent.futures import TimeoutError
 from multiprocessing import Process, Queue
 from threading import Event
 import time
@@ -72,7 +72,7 @@ def _timeout_fn(fn, timeout, ev_stop):
         future = executor.submit(fn)
         try:
             r = future.result(timeout)
-        except TimeoutError:
+        except concurrent.futures.TimeoutError:
             # Timeout expires.
             # Now it's time to stop the thread and get the result.
             ev_stop.set()
@@ -105,6 +105,7 @@ def _cnt_operations(svc_call, res_queue, timeout):
         timeout: time used to repeat the service call.
     """
     ev_stop = Event()
+    # pylint: disable=unnecessary-lambda-assignment
     operation = lambda: _repeat_svc_call(svc_call, ev_stop)
     cnt = _timeout_fn(operation, timeout, ev_stop)
     res_queue.put(cnt) # Pass the total count to the parent process.
@@ -140,7 +141,7 @@ def _start_proc(_perf_wrapper_fn, svc_call, timeout):
     be terminated. The result got by the child process will be stored in the ``Queue``.
     """
     res_queue = Queue()
-    p = Process(target=(lambda: _perf_wrapper_fn(svc_call, res_queue, timeout)))
+    p = Process(target=lambda: _perf_wrapper_fn(svc_call, res_queue, timeout))
     p.start()
     return p, res_queue
 
@@ -155,7 +156,7 @@ def _start_proc_and_wait(_perf_wrapper_fn, svc_call):
         The result returned by the wrapper function. e.g. the timing result.
     """
     res_queue = Queue()
-    p = Process(target=(lambda: _perf_wrapper_fn(svc_call, res_queue)))
+    p = Process(target=lambda: _perf_wrapper_fn(svc_call, res_queue))
     p.start()
     # NOTE: The order matters here. There could be some deadlock if "join" before
     # "get" according to the document of Python:
@@ -170,17 +171,17 @@ def _test_throughput(svc_call):
     Args:
         svc_call: function to invoke the service call.
     """
-    # 1. Start N processes to simulate N apps (see our design for details).​
+    # 1. Start N processes to simulate N apps (see our design for details).
     task_num = THROUGHPUT_TEST_TASK_NUM
     time_total = THROUGHPUT_TEST_TASK_TIME
     tasks = []
     for _ in range(task_num):
         # 2. Each process invokes the CCNP API (either via SDK or service directly) repeatedly
-        # until the timeout T expires (see our design details).​
-       p, res_queue = _start_proc(_cnt_operations, svc_call, time_total)
-       tasks.append(PerfTask(p, res_queue))
+        # until the timeout T expires (see our design details).
+        p, res_queue = _start_proc(_cnt_operations, svc_call, time_total)
+        tasks.append(PerfTask(p, res_queue))
 
-    # 3. Calculate the average ops (total count of completed API calls in N threads divided by T).​
+    # 3. Calculate the average ops (total count of completed API calls in N threads divided by T).
     cnt_total = 0
     for t in tasks:
         cnt = t.queue.get()
@@ -189,6 +190,7 @@ def _test_throughput(svc_call):
     ops_avg = cnt_total / time_total
 
     # Log out the result for latter analysis.
+    # pylint: disable=logging-fstring-interpolation
     LOG.info(f"Perf test average throughput is: {ops_avg} ops (operations per second)")
 
 def _test_response(svc_call):
@@ -197,20 +199,22 @@ def _test_response(svc_call):
     Args:
         svc_call: function to invoke the service call.
     """
-    # 1. Repeat the steps below M times (M = 20 is the current setting):​
+    # 1. Repeat the steps below M times (M = 20 is the current setting):
     repeat_times = RESPONSE_TEST_REPEAT_TIME
     t_cost_total = 0
     for _ in range(repeat_times):
-        # Start a new process to simulate an app.​ In the process:​
-        #   Begin timing.​
-        #   Call (one immediately after another) the CCNP API (either via SDK or request to service directly).​
-        #   End timing.​
-        #   Record the time consumption and exit.​
+        # Start a new process to simulate an app. In the process:
+        #   Begin timing.
+        #   Call (one immediately after another) the CCNP API (either via SDK or
+        #         request to service directly).
+        #   End timing.
+        #   Record the time consumption and exit.
         t_cost = _start_proc_and_wait(_timing_response, svc_call)
         t_cost_total += t_cost
 
     # 2. Calculate the average response time (total time divided by  M).
     t_cost_avg = t_cost_total / repeat_times
+    # pylint: disable=logging-fstring-interpolation
     LOG.info(f"Perf test average response time is: {t_cost_avg / 1000000} ms (milliseconds)")
 
 def _sdk_get_cc_measurement():
@@ -257,9 +261,9 @@ def test_ccnp_init():
     """
     # TODO:
     # Repeat R times (R = 20 is the current setting) and calculate the average time
-    # (total times divided by R):​
-    #   Begin timing.​
-    #   Start CCNP deployment (incl. CCNP Device Plugin and CCNP Service).​
-    #   Polling the readiness of CCNP service until it's ready.​
-    #   End timing.​
-    #   Calculate the initialization time using end time subtracted by begin time.​
+    # (total times divided by R):
+    #   Begin timing.
+    #   Start CCNP deployment (incl. CCNP Device Plugin and CCNP Service).
+    #   Polling the readiness of CCNP service until it's ready.
+    #   End timing.
+    #   Calculate the initialization time using end time subtracted by begin time.

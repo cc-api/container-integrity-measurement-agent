@@ -6,7 +6,6 @@ CCNP test:
 """
 
 import logging
-import argparse
 
 from ccnp import CcnpSdk
 
@@ -25,6 +24,9 @@ class TestCCNP:
     Tests for CCNP python SDK
     '''
     def test_eventlog_verify(self):
+        '''
+        Replay and verify event logs
+        '''
         evt = CcnpSdk.inst().get_cc_eventlog()
         replay = CcnpSdk.inst().replay_cc_eventlog(evt)
         for r in replay:
@@ -34,9 +36,15 @@ class TestCCNP:
             assert m.hash == replay[r][12], "Replay IMR value does not match real IMR."
 
     def test_cc_report(self):
-        assert CcnpSdk.inst().get_cc_report().dump() is not ""
+        '''
+        Test CC report
+        '''
+        assert CcnpSdk.inst().get_cc_report().dump() != ""
 
     def test_container_imr(self):
+        '''
+        Test container IMR
+        '''
         for i in [0, 1, 3]:
             m = CcnpSdk.inst().get_cc_measurement([i, 12])
-            assert m.hash.hex() is not "", "IMR value should not empty."
+            assert m.hash.hex() != "", "IMR value should not empty."
