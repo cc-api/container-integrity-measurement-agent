@@ -59,6 +59,15 @@ Start a TD using [qemu-test.sh](../tools/cvm-image-rewriter/qemu-test.sh) or [st
     $ sudo ./start-virt.sh -i <guest image>
     ```
 
+Check the kernel version. It should be CCNP kernel as below.
+
+```
+$ uname -ar | grep -i ccnp
+Linux tdx-guest 6.5.0-1003-intel-opt #3.ccnp.1
+```
+
+If above output is empty, refer to [Build CCNP Kernel](#build-ccnp-kernel) to generate CCNP kernel packages. Then install the packages in the TD and make it as default kernel.
+
 ## Build CCNP images
 
 Run script [build.sh](../container/build.sh) to generate CCNP images. It will generate 3 images and push them to user specific registry. Learn more details in the [README.md](../container/README.md).

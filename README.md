@@ -18,6 +18,10 @@ It requires a full chain integrity measurement on the launch-time or runtime env
 to guarantee "consistent behavior in an expected way" of confidential
 computing environment for tenant's zero-trust use case.
 
+CCNP aims to help users establish a chain of trust for cloud-native workloads by providing
+cloud-native level confidential computing primitives, including container measurements,
+event logs, and confidential computing (CC) reports.
+
 
 ## How to Install CCNP
 
@@ -27,13 +31,12 @@ CCNP runs on Intel TDX guest. Thus, you will need TDX host and guest for CCNP de
 
 |  CPU | Host OS  | Host packages  | Guest OS  | Guest packages  | Attestation packages |
 |---|---|---|---|---|---|
-|  Intel® Emerald Rapids | Ubuntu 23.10| TDX early preview referring to [here](https://github.com/canonical/tdx) | Ubuntu 23.10 | Build guest image using [CVM image rewriter](/tools/cvm-image-rewriter/README.md) | Install PCCS and QGS on host from [here](https://download.01.org/intel-sgx/sgx-dcap/1.20/linux/distro/ubuntu23.10-server/)
-
-_NOTE: The Platform certificate caching service (PCCS) is used to retrieve and cache PCK certificates locally to your cluster from Intel's Platform Certificate Service. This is necessary to attest the authenticity of a TD guest before a workload is started in it. The Quote Generate Service (QGS) runs on the host in a specialized enclave to generate and use TD quotes. For convenient setup these can run inside a Docker container. Learn more at [here]( https://download.01.org/intel-sgx/sgx-dcap/1.17/linux/docs/Intel_TDX_DCAP_Quoting_Library_API.pdf). The PCCS and QGS are used to get Quote for a TD guest. They need to be installed on TDX hosts._
+|  Intel® Emerald Rapids | Ubuntu 23.10| TDX early preview referring to [here](https://github.com/canonical/tdx?tab=readme-ov-file#4-setup-tdx-host) | Ubuntu 23.10 | Build a guest image for CCNP using [CVM image rewriter](/tools/cvm-image-rewriter/README.md) | Setup remote attestation on host referring to [here](https://github.com/canonical/tdx?tab=readme-ov-file#8-setup-remote-attestation-on-host-and-td-guest)
 
 ### CCNP Service Deployment in Confidential VM
 
-It supports to deploy CCNP services as DaemonSets in Kubernetes cluster or docker containers on a single confidential VM. Please refer to [CCNP deployment guide](deployment/README.md).
+CCNP will run as a DaemonSet in a Kubernetes cluster or as a container in a docker environment on a single confidential VM (CVM).
+Refer to [CCNP deployment guide](deployment/README.md) and choose a deployment model.
 
 ### CCNP SDK Usage
 
