@@ -77,20 +77,22 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 }
 
 #[cfg(test)]
-mod ccnp_server_test{
+mod ccnp_server_test {
     use super::*;
-    use serial_test::serial;
+    use crate::agent::IMR;
+    use ccnp_pb::{
+        ccnp_client::CcnpClient, GetCcEventlogRequest, GetCcMeasurementRequest, GetCcReportRequest,
+    };
+    use cctrusted_base::{cc_type::TeeType, tcg};
     use policy::PolicyConfig;
-    use tower::service_fn;
     use rand::Rng;
+    use serial_test::serial;
     use service::Service;
     use std::fs::read_to_string;
     use tokio::net::{UnixListener, UnixStream};
     use tokio_stream::wrappers::UnixListenerStream;
-    use tonic::transport::{Server, Endpoint, Uri, Channel};
-    use cctrusted_base::{cc_type::TeeType, tcg};
-    use ccnp_pb::{ccnp_client::CcnpClient, GetCcReportRequest, GetCcMeasurementRequest, GetCcEventlogRequest};
-    use crate::agent::IMR;
+    use tonic::transport::{Channel, Endpoint, Server, Uri};
+    use tower::service_fn;
 
     async fn creat_server() {
         let sock = String::from("/tmp/ccnp-server.sock");
@@ -109,10 +111,10 @@ mod ccnp_server_test{
         let service = Service::new(policy);
         tokio::spawn(async {
             Server::builder()
-            .add_service(CcnpServer::new(service))
-            .serve_with_incoming(uds_stream)
-            .await
-            .unwrap();
+                .add_service(CcnpServer::new(service))
+                .serve_with_incoming(uds_stream)
+                .await
+                .unwrap();
         });
     }
 
@@ -142,12 +144,12 @@ mod ccnp_server_test{
             .collect();
 
         for line in data_lines {
-            if line.contains(docker_pattern){
+            if line.contains(docker_pattern) {
                 let element = line.split(docker_pattern).last();
                 if element.is_some() {
                     let (id, _) = element.unwrap().split_once('/').unwrap();
                     return id.to_string();
-                } 
+                }
             }
 
             if line.contains(k8s_pattern) {
@@ -172,7 +174,7 @@ mod ccnp_server_test{
 
         let container_id = get_container_id();
         assert_ne!(container_id.len(), 0);
-        
+
         let request = tonic::Request::new(GetCcReportRequest {
             container_id: container_id,
             user_data: Some(user_data),
@@ -211,7 +213,7 @@ mod ccnp_server_test{
 
         let container_id = get_container_id();
         assert_ne!(container_id.len(), 0);
-        
+
         let request = tonic::Request::new(GetCcReportRequest {
             container_id: container_id,
             user_data: Some("".to_string()),
@@ -229,10 +231,10 @@ mod ccnp_server_test{
         creat_server().await;
         let mut client = create_client().await;
         let user_data = base64::encode(rand::thread_rng().gen::<[u8; 32]>());
-    
+
         let container_id = get_container_id();
         assert_ne!(container_id.len(), 0);
-        
+
         let request = tonic::Request::new(GetCcReportRequest {
             container_id: container_id,
             user_data: Some(user_data),
@@ -252,14 +254,18 @@ mod ccnp_server_test{
 
         let container_id = get_container_id();
         assert_ne!(container_id.len(), 0);
-        
+
         let request = tonic::Request::new(GetCcMeasurementRequest {
             container_id: container_id,
             index: IMR::CONTAINER as u32,
             algo_id: tcg::TPM_ALG_SHA384.into(),
         });
 
-        let response = client.get_cc_measurement(request).await.unwrap().into_inner();
+        let response = client
+            .get_cc_measurement(request)
+            .await
+            .unwrap()
+            .into_inner();
         let cc_measurement = response.measurement.unwrap();
         assert_eq!(cc_measurement.algo_id, tcg::TPM_ALG_SHA384.into());
         assert_ne!(cc_measurement.hash.len(), 0)
@@ -270,7 +276,7 @@ mod ccnp_server_test{
     async fn request_to_cc_measurement_empty_container_id() {
         creat_server().await;
         let mut client = create_client().await;
-        
+
         let request = tonic::Request::new(GetCcMeasurementRequest {
             container_id: "".to_string(),
             index: IMR::CONTAINER as u32,
@@ -288,8 +294,8 @@ mod ccnp_server_test{
         let mut client = create_client().await;
 
         let container_id = get_container_id();
-        assert_ne!(container_id.len(),0);
-        
+        assert_ne!(container_id.len(), 0);
+
         let request = tonic::Request::new(GetCcMeasurementRequest {
             container_id: container_id,
             index: IMR::SYSTEM as u32,
@@ -297,7 +303,7 @@ mod ccnp_server_test{
         });
 
         let result = client.get_cc_measurement(request).await;
-        assert!(result.is_err(),"Excepted an error");
+        assert!(result.is_err(), "Excepted an error");
     }
 
     #[tokio::test]
@@ -307,8 +313,8 @@ mod ccnp_server_test{
         let mut client = create_client().await;
 
         let container_id = get_container_id();
-        assert_ne!(container_id.len(),0);
-        
+        assert_ne!(container_id.len(), 0);
+
         let request = tonic::Request::new(GetCcMeasurementRequest {
             container_id: container_id,
             index: IMR::CONTAINER as u32,
@@ -327,7 +333,7 @@ mod ccnp_server_test{
 
         let container_id = get_container_id();
         assert_ne!(container_id.len(), 0);
-        
+
         let request = tonic::Request::new(GetCcEventlogRequest {
             container_id: container_id,
             start: Some(0),
@@ -348,7 +354,7 @@ mod ccnp_server_test{
     async fn request_to_cc_eventlog_empty_container_id() {
         creat_server().await;
         let mut client = create_client().await;
-        
+
         let request = tonic::Request::new(GetCcEventlogRequest {
             container_id: "".to_string(),
             start: Some(0),
@@ -366,8 +372,8 @@ mod ccnp_server_test{
         let mut client = create_client().await;
 
         let container_id = get_container_id();
-        assert_ne!(container_id.len(),0);
-        
+        assert_ne!(container_id.len(), 0);
+
         let request = tonic::Request::new(GetCcEventlogRequest {
             container_id: container_id,
             start: Some(0),

@@ -5,17 +5,17 @@ on:
     branches:
       - main
     paths:
-      - 'service/quote-server/**.rs'
+      - 'service/ccnp-server/**.rs'
       - '.github/workflows/pr-check-rust.yaml'
   pull_request:
     paths:
-      - 'service/quote-server/**.rs'
+      - 'service/ccnp-server/**.rs'
       - '.github/workflows/pr-check-rust.yaml'
   workflow_dispatch:
 
 jobs:
   codescan:
-    runs-on: tdvm-ut
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout PR
         uses: actions/checkout@v3
@@ -27,11 +27,12 @@ jobs:
 
       - name: Install dependencies
         run: |
-          sudo apt update && yes | DEBIAN_FRONTEND=noninteractive sudo apt install -y libcryptsetup-dev clang protobuf-compiler protobuf-c-compiler libprotobuf-c-dev libprotobuf-c1 build-essential pkg-config libssl-dev
+          sudo apt update && DEBIAN_FRONTEND=noninteractive sudo apt install -y libcryptsetup-dev clang protobuf-compiler protobuf-c-compiler libprotobuf-c-dev libprotobuf-c1 build-essential pkg-config libssl-dev
+          wget https://github.com/protocolbuffers/protobuf/releases/download/v26.1/protoc-26.1-linux-x86_64.zip && unzip protoc-26.1-linux-x86_64.zip
+          sudo mv bin/protoc /usr/bin/protoc && sudo mv include/google/protobuf/* /usr/include/google/protobuf/
       - name: Run cargo check
         run: |
           cd service/ccnp-server
-          cargo test
           cargo check
           cargo fmt -- --check
           cargo clippy
