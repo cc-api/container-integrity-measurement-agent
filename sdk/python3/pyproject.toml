@@ -22,8 +22,8 @@ dependencies = [
 ]
 
 [project.urls]
-"Homepage" = "https://github.com/intel/confidential-cloud-native-primitives"
-"Bug Tracker" = "https://github.com/intel/confidential-cloud-native-primitives/issues"
+"Homepage" = "https://github.com/cc-api/confidential-cloud-native-primitives"
+"Bug Tracker" = "https://github.com/cc-api/confidential-cloud-native-primitives/issues"
 
 [build-system]
 requires = ["setuptools", "wheel"]
