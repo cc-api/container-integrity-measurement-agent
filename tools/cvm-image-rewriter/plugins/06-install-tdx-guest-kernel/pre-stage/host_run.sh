@@ -40,8 +40,9 @@ cat > "${CURR_DIR}/../cloud-init/x-shellscript/07-install-tdx-guest-kernel.sh" <
 
 PACKAGE_DIR=""$ARTIFACTS_GUEST"/$(basename "$CVM_TDX_GUEST_REPO")/"
 pushd \$PACKAGE_DIR || exit 0
-apt install ./linux-image-unsigned-*.deb ./linux-modules-*.deb \
-        ./linux-headers-*.deb ./linux-intel-opt-headers-*.deb --allow-downgrades -y
+DEBIAN_FRONTEND=noninteractive apt install ./linux-image-unsigned-*.deb \
+./linux-modules-*.deb ./linux-headers-*.deb \
+./linux-intel-opt-headers-*.deb --allow-downgrades -y 
 popd || exit 0
 EOL
 
