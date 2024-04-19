@@ -32,6 +32,7 @@ impl CCTrustedApi for API {
         Ok(CcReport {
             cc_report: response.cc_report,
             cc_type: ccnp_service_client.get_tee_type_by_value(&response.cc_type),
+            ..Default::default()
         })
     }
 
