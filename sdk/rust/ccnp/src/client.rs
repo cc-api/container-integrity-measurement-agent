@@ -66,7 +66,7 @@ impl CcnpServiceClient {
             user_data: data,
         });
 
-        let mut ccnp_client = CcnpClient::new(channel);
+        let mut ccnp_client = CcnpClient::new(channel).max_decoding_message_size(usize::MAX);
 
         let response = ccnp_client
             .get_cc_report(request)
@@ -128,7 +128,7 @@ impl CcnpServiceClient {
             algo_id: algo_id.into(),
         });
 
-        let mut ccnp_client = CcnpClient::new(channel);
+        let mut ccnp_client = CcnpClient::new(channel).max_decoding_message_size(usize::MAX);
 
         let response = ccnp_client
             .get_cc_measurement(request)
@@ -182,7 +182,7 @@ impl CcnpServiceClient {
             count,
         });
 
-        let mut ccnp_client = CcnpClient::new(channel);
+        let mut ccnp_client = CcnpClient::new(channel).max_decoding_message_size(usize::MAX);
 
         let response = ccnp_client
             .get_cc_eventlog(request)

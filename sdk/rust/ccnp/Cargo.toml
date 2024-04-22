@@ -15,13 +15,13 @@ path = "src/lib.rs"
 cctrusted_base = { git="https://github.com/cc-api/cc-trusted-api" }
 anyhow = "1.0"
 log = "0.4.20"
-tonic = "0.9"
+tonic = "0.11"
 base64 = "0.13.0"
 tower = { version = "0.4", features = ["util"] }
-prost = "0.11"
-tokio = { version = "1.0", features = ["macros", "rt-multi-thread"] }
+prost = "0.12"
+tokio = { version = "1", features = ["full"] }
 hashbrown = "0.14"
 lazy_static = "1.4.0"
 
 [build-dependencies]
-tonic-build = "0.9"
+tonic-build = "0.11"
