@@ -1,7 +1,7 @@
 use cctrusted_base::api::*;
 use cctrusted_base::api_data::*;
 use cctrusted_base::cc_type::TeeType;
-// use cctrusted_base::tcg::EventLogEntry;
+use cctrusted_base::tcg::EventLogEntry;
 use cctrusted_base::tcg::TcgAlgorithmRegistry;
 use cctrusted_base::tdx::quote::TdxQuote;
 use ccnp::sdk::API;
@@ -160,13 +160,13 @@ fn get_cc_eventlog() {
     //     eventlog.show();
     // }
 
-    /*
     // retrieve cc eventlog in batch
-    info!("call cc trusted API [get_cc_eventlog] to get container related eventlog in batch size of 10!");
+    info!("call cc trusted API [get_cc_eventlog] to get container related eventlog in 10 batches!");
     let mut eventlogs2: Vec<EventLogEntry> = Vec::new();
     let mut start = 0;
-    let batch_size = 10;
+    let batch_size = (eventlogs1.len() / 10) as u32;
     loop {
+        info!("batch start: {}", start);
         let event_logs = match API::get_cc_eventlog(Some(start), Some(batch_size)) {
             Ok(q) => q,
             Err(e) => {
@@ -185,7 +185,6 @@ fn get_cc_eventlog() {
     }
 
     info!("event log count: {}", eventlogs2.len());
-    */
 
     // replay cc eventlog with API "replay_cc_eventlog"
     info!("call cc trusted API [replay_cc_eventlog] to replay container related eventlog!");
