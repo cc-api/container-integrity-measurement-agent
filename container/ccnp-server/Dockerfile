@@ -1,4 +1,4 @@
-FROM rust:1.74.1-alpine3.17 AS ccnp-server-builder
+FROM rust:1.77.1-alpine3.19 AS ccnp-server-builder
 
 RUN apk update \
     && apk add --no-cache make protobuf-dev musl-dev wget openssl-dev openssl-libs-static
@@ -8,7 +8,7 @@ RUN cd /ccnp-server && make build
 
 # ======================================================================================================================
 
-From alpine:3.17
+FROM alpine:3.19
 ARG USER=ccnp
 ARG GROUP=ccnp
 ARG UID=1000
