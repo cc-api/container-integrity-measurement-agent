@@ -26,17 +26,6 @@ spec:
       - name: ccnp-server
         image: docker.io/library/ccnp-server:latest
         imagePullPolicy: IfNotPresent
-        livenessProbe:
-          exec:
-            command: ["/usr/bin/grpc-health-probe", "-addr=unix:/run/ccnp/uds/ccnp-server.sock"]
-          initialDelaySeconds: 10
-          periodSeconds: 10
-        readinessProbe:
-          exec:
-            command: ["/usr/bin/grpc-health-probe", "-addr=unix:/run/ccnp/uds/ccnp-server.sock"]
-          initialDelaySeconds: 5
-          periodSeconds: 10
-          failureThreshold: 10
         resources:
           limits:
             tdx.intel.com/tdx-guest: 1
