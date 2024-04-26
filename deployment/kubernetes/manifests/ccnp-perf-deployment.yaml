@@ -10,15 +10,12 @@ spec:
     metadata:
       labels:
         app: ccnp-perf
+      annotations:
+        "ccnp.cc-api/require": "true"
     spec:
       containers:
       - name: ccnp-perf
         image: "docker.io/library/ccnp-perf:latest"
         imagePullPolicy: IfNotPresent
-        resources:
-          limits:
-            tdx.intel.com/tdx-guest: 1
-          requests:
-              tdx.intel.com/tdx-guest: 1
       nodeSelector:
         intel.feature.node.kubernetes.io/tdx-guest: enabled
