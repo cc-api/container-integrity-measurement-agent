@@ -96,7 +96,7 @@ After the script is executed successfully, it's supposed to see below docker ima
 $ sudo docker images
 ccnp-example                    <your image tag>
 ccnp-server                     <your image tag>
-ccnp-device-plugin              <your image tag>
+ccnp-webhook                    <your image tag>
 ```
 
 ## Setup QGS and PCCS on the Host

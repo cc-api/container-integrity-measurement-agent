@@ -4,7 +4,7 @@ There are several docker image files in the sub directories of current directory
 
 |  Sub directory | Image name  | Description  | 
 |---|---|---|
-|  ccnp-device-plugin | ccnp-device-plugin  | CCNP Device plugin |
+|  ccnp-webhook | ccnp-webhook | CCNP webhook |
 |  ccnp-server | ccnp-server | CCNP server |
 |  ccnp-example | ccnp-example  | Example image of getting eventlog and measurement using CCNP SDK |
 |  pccs | pccs  | PCCS docker image for Intel® TDX remote attestation. Not required for CCNP usage.|
@@ -57,5 +57,5 @@ After the script is running successfully, it's supposed to see corresponding CCN
 $ sudo docker images
 ccnp-example                    <your image tag>
 ccnp-server                     <your image tag>
-ccnp-device-plugin              <your image tag>
+ccnp-webhook                    <your image tag>
 ```

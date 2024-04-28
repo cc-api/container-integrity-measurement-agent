@@ -52,18 +52,16 @@ $ sudo ./deploy-ccnp.sh -r <remote registry> -g <tag> -d
 
 ```
 
-After it's successful, you should see helm release `ccnp-device-plugin` and 3 DaemonSets in namespace `ccnp`.
+After it's successful, you should see DaemonSet in namespace `ccnp`.
 
 ```
-$ sudo helm list
-NAME                    NAMESPACE       REVISION        UPDATED                                 STATUS          CHART                           APP VERSION
-ccnp-device-plugin      default         1               2023-12-27 08:12:05.814766198 +0000 UTC deployed        ccnp-device-plugin-0.1.0        latest
 $ sudo kubectl get ds -n ccnp
 NAME                 DESIRED   CURRENT   READY   UP-TO-DATE   AVAILABLE   NODE SELECTOR                                        AGE
 ccnp-server          1         1         1       1            1           intel.feature.node.kubernetes.io/tdx-guest=enabled   24h
 $ sudo kubectl get pods -n ccnp
-NAME                       READY   STATUS    RESTARTS      AGE
-ccnp-server-mqfjx          1/1     Running   2 (39s ago)   24h
+NAME                            READY   STATUS    RESTARTS   AGE
+ccnp-webhook-74f88647bd-d4hmk   1/1     Running   0          91m
+ccnp-server-h7t46               1/1     Running   0          90m
 ```
 
 ## CCNP Usage Example
