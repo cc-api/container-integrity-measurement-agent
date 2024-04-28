@@ -4,6 +4,7 @@ DOCKER_REPO=docker.io/library
 NFD_NAME=node-feature-discovery
 NFD_NS=node-feature-discovery
 NFD_URL=https://kubernetes-sigs.github.io/node-feature-discovery/charts
+CERT_MANAGER_URL=https://github.com/cert-manager/cert-manager/releases/download/v1.14.5/cert-manager.yaml
 WORK_DIR=$(cd "$(dirname "$0")" || exit; pwd)
 tag=latest
 delete_force=false
@@ -54,15 +55,17 @@ function check_env {
 function delete_ccnp {
     pushd "${WORK_DIR}/../../.." || exit
 
-    echo "-----------Delete ccnp device plugin and NFD..."
-    helm uninstall $NFD_NAME --namespace $NFD_NS
-    helm uninstall ccnp-device-plugin
-
-    echo "-----------Delete ccnp server..."
+    echo "-----------Delete ccnp webhook and server..."
+    kubectl delete -f deployment/kubernetes/manifests/ccnp-webhook-deployment.yaml
     kubectl delete -f deployment/kubernetes/manifests/ccnp-server-deployment.yaml
 
     echo "-----------Delete ccnp namespace..."
     kubectl delete -f deployment/kubernetes/manifests/namespace.yaml
+
+    echo "-----------Delete NFD, cert-manager..."
+    helm uninstall $NFD_NAME --namespace $NFD_NS
+    kubectl delete -f $CERT_MANAGER_URL
+
     popd || exit
 }
 
@@ -71,34 +74,45 @@ function deploy_ccnp {
 
     # Generate temporary yaml files for deployment
     mkdir -p temp_manifests
-    cp deployment/kubernetes/manifests/* temp_manifests/
-
-    mkdir temp_manifests/ccnp-device-plugin
-    cp -r device-plugin/ccnp-device-plugin/deploy/helm/ccnp-device-plugin/* temp_manifests/ccnp-device-plugin/
+    cp -r deployment/kubernetes/manifests/* temp_manifests/
 
     # If private repo is used, modify the images' names in the yaml files
     if [[ -n "$registry" ]]; then
         sed -i  "s#${DOCKER_REPO}#${registry}#g" temp_manifests/*.yaml
-        sed -i  "s#${DOCKER_REPO}#${registry}#g" temp_manifests/ccnp-device-plugin/values.yaml
     fi
 
     if [[ "$tag" != "latest" ]]; then
         sed -i  "s#latest#${tag}#g" temp_manifests/*.yaml
-        sed -i  "s#latest#${tag}#g" temp_manifests/ccnp-device-plugin/values.yaml
     fi
 
     # Deploy CCNP Dependencies
     helm repo add nfd $NFD_URL
     helm repo update
     helm install $NFD_NAME  nfd/node-feature-discovery --namespace $NFD_NS --create-namespace
+    kubectl create -f $CERT_MANAGER_URL
 
-    kubectl apply -f  device-plugin/ccnp-device-plugin/deploy/node-feature-rules.yaml
-    helm install ccnp-device-plugin  temp_manifests/ccnp-device-plugin
+    # Check the cert manager
+    curl -fsSL -o cmctl  https://github.com/cert-manager/cmctl/releases/download/v2.0.0/cmctl_linux_amd64
+    chmod +x cmctl
+    while :
+    do
+        CMCTL=$(./cmctl check api | grep "is ready")
+        if [[ -z "$CMCTL" ]]
+        then
+            echo "cert-manager is not ready, try again..."
+            sleep 5
+        else
+            break
+        fi
+    done
+    rm cmctl
 
-    # Deploy CCNP services
+    # Deploy CCNP webhook
     echo "-----------Deploy ccnp namespace..."
     kubectl create -f temp_manifests/namespace.yaml
+    kubectl create -f temp_manifests/ccnp-webhook-deployment.yaml
 
+    # Deploy CCNP services
     echo "-----------Deploy ccnp server..."
     kubectl create -f temp_manifests/ccnp-server-deployment.yaml
 
@@ -107,26 +121,6 @@ function deploy_ccnp {
 }
 
 function check_ccnp_deployment {
-    # Check CCNP device plugin pod
-    echo "-----------Checking ccnp device plugin pod..."
-    for i in {1..10}
-    do
-        DEVICE_POD=$(kubectl get po -n kube-system | grep device | grep Running | awk '{ print $1 }')
-        if [[ -z "$DEVICE_POD" ]]
-        then
-            sleep 3
-            echo "Retrying $i time ..."
-        else
-            break
-        fi
-    done
-
-    if [ -z "$DEVICE_POD" ]; then
-        echo "Error: CCNP device plugin pod is not Running."
-        exit 1
-    fi
-    echo "CCNP device plugin pod $DEVICE_POD is Running."
-
     # Check CCNP server pod
     echo "-----------Checking ccnp server pod..."
     for i in {1..10}

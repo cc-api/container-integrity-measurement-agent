@@ -1,0 +1,119 @@
+---
+
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: selfsigned
+  namespace: ccnp
+spec:
+  selfSigned: {}
+
+---
+
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: ccnp-webhook
+  namespace: ccnp
+spec:
+  secretName: ccnp-webhook-tls
+  dnsNames:
+    - ccnp-webhook.ccnp.svc
+  issuerRef:
+    name: selfsigned
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ccnp-webhook
+  namespace: ccnp
+spec:
+  selector:
+    matchLabels:
+      app: ccnp-webhook
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: ccnp-webhook
+    spec:
+      containers:
+      - name: ccnp-webhook
+        image: docker.io/library/ccnp-webhook:latest
+        imagePullPolicy: IfNotPresent
+        volumeMounts:
+        - name: tls
+          # the tls certificates automatically get mounted into the correct path
+          mountPath: "/tmp/k8s-webhook-server/serving-certs"
+          readOnly: true
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 8081
+          initialDelaySeconds: 15
+          periodSeconds: 20
+        readinessProbe:
+          httpGet:
+            path: /readyz
+            port: 8081
+          initialDelaySeconds: 5
+          periodSeconds: 10
+      terminationGracePeriodSeconds: 10
+      volumes:
+        - name: tls
+          secret:
+            secretName: ccnp-webhook-tls
+            # the pod only gets created if the secret exists
+            # so it waits until the cert-manager is done
+            optional: false
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: ccnp-webhook
+  namespace: ccnp
+spec:
+  ports:
+    - name: https
+      port: 9443
+      protocol: TCP
+  selector:
+    # IMPORTANT:
+    # this has to match the selector in our Deployment later
+    app: ccnp-webhook
+
+---
+
+apiVersion: admissionregistration.k8s.io/v1
+kind: MutatingWebhookConfiguration
+metadata:
+  name: ccnp-webhook
+  annotations:
+    cert-manager.io/inject-ca-from: ccnp/ccnp-webhook
+webhooks:
+- admissionReviewVersions:
+  - v1
+  clientConfig:
+    service:
+      # has to match the service we created
+      namespace: ccnp
+      name: ccnp-webhook
+      port: 9443
+      path: "/mutate"
+  failurePolicy: Fail
+  name: mpod.kb.io
+  rules:
+  - apiGroups:
+    - ""
+    apiVersions:
+    - v1
+    operations:
+    - CREATE
+    - UPDATE
+    resources:
+    - pods
+  sideEffects: None

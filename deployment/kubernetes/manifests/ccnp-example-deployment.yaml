@@ -11,6 +11,8 @@ spec:
     metadata:
       labels:
         app: ccnp-example
+      annotations:
+        "ccnp.cc-api/require": "true"
     spec:
       containers:
       - name: ccnp-example
@@ -20,8 +22,5 @@ spec:
           limits:
             memory: "128Mi"
             cpu: "100m"
-            tdx.intel.com/tdx-guest: 1
-          requests:
-              tdx.intel.com/tdx-guest: 1
       nodeSelector:
         intel.feature.node.kubernetes.io/tdx-guest: enabled

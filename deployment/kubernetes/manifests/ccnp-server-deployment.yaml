@@ -14,6 +14,8 @@ spec:
     metadata:
       labels:
         app: ccnp-server
+      annotations:
+        "ccnp.cc-api/require": "true"
     spec:
       tolerations:
       - key: node-role.kubernetes.io/control-plane
@@ -26,9 +28,6 @@ spec:
       - name: ccnp-server
         image: docker.io/library/ccnp-server:latest
         imagePullPolicy: IfNotPresent
-        resources:
-          limits:
-            tdx.intel.com/tdx-guest: 1
         securityContext:
           privileged: true
           runAsGroup: 0
