@@ -22,6 +22,8 @@ CCNP aims to help users establish a chain of trust for cloud-native workloads by
 cloud-native level confidential computing primitives, including container measurements,
 event logs, and confidential computing (CC) reports.
 
+Please see [container measurement design guide](docs/container-measurement-design.md) for more details.
+
 
 ## How to Install CCNP
 
