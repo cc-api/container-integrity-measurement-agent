@@ -27,11 +27,10 @@ spec:
       containers:
       - name: ccnp-server
         image: docker.io/library/ccnp-server:latest
+        env:
+        - name: TSM_REPORT
+          value: /run/ccnp/tsm/
         imagePullPolicy: IfNotPresent
-        securityContext:
-          privileged: true
-          runAsGroup: 0
-          runAsUser: 0
         volumeMounts:
           - name: proc
             mountPath: /proc
@@ -43,8 +42,8 @@ spec:
             mountPath: /run/kernel/security/
           - name: vsock-port
             mountPath: /etc/tdx-attest.conf
-          - name: configfs
-            mountPath: /sys/kernel/config/
+          - name: tsm-report
+            mountPath: /run/ccnp/tsm/
       volumes:
         - name: proc
           hostPath:
@@ -66,9 +65,9 @@ spec:
           hostPath:
             path: /etc/tdx-attest.conf
             type: File
-        - name: configfs
+        - name: tsm-report
           hostPath:
-            path: /sys/kernel/config/
+            path: /sys/kernel/config/tsm/report/ccnp/
             type: Directory
       nodeSelector:
         intel.feature.node.kubernetes.io/tdx-guest: "enabled"
