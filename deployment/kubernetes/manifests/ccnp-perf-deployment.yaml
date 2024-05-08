@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: ccnp-perf
+  namespace: ccnp
 spec:
   selector:
     matchLabels:
@@ -17,5 +18,9 @@ spec:
       - name: ccnp-perf
         image: "docker.io/library/ccnp-perf:latest"
         imagePullPolicy: IfNotPresent
+        resources:
+          limits:
+            memory: 100M
+            cpu: 1
       nodeSelector:
         intel.feature.node.kubernetes.io/tdx-guest: enabled

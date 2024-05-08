@@ -25,6 +25,13 @@ RUN cd ccnp-sdk/example && cargo build --release
 
 # Copy/Install
 FROM python:3.12.3-alpine3.19
+ARG USER=ccnp
+ARG UID=1000
+ARG GID=1000
+ARG GROUP=ccnp
+
+RUN addgroup -S -g $GID $GROUP && adduser -S -u $UID -D -G $GROUP $USER
+RUN chown $USER:$GROUP /run/ccnp
 
 WORKDIR /run/ccnp
 
@@ -39,4 +46,5 @@ COPY --from=rust-builder ccnp-sdk/example/target/release/rust-sdk-example ./
 RUN apk update && apk add bash vim tar wget libexpat=2.6.2-r0
 RUN pip install ./cctrusted_base*.whl ./ccnp*.whl pytest && rm -f *.whl
 
+USER ${USER}
 ENTRYPOINT ["tail", "-f", "/dev/null"]
