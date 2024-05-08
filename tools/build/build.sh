@@ -2,7 +2,11 @@
 
 set -e
 
-BASE_KERNEL_VERSION="6.5.0-1003-intel-opt"
+CCNP_VERSION_SUFFIX="+ccnp1"
+BASE_KERNEL_VERSION="6.8.0-31-generic"
+if [ -n "${TDX_SETUP_INTEL_KERNEL}" ]; then
+  BASE_KERNEL_VERSION="6.8.0-1001-intel"
+fi
 
 CUR_DIR=$(dirname "$(readlink -f "$0")")
 KERNEL_DIR=${CUR_DIR}/kernel
@@ -18,7 +22,9 @@ patch_kernel() {
 
 build_ubuntu_kernel() {
     # Add apt repository source
-    add-apt-repository -s -y ppa:kobuk-team/tdx-release
+    add-apt-repository -s -y ppa:kobuk-team/tdx
+    sed -i 's/^Types: deb$/Types: deb deb-src/' /etc/apt/sources.list.d/ubuntu.sources \
+        /etc/apt/sources.list.d/kobuk-team-ubuntu-tdx-noble.sources
     # Install the build dependencies
     DEBIAN_FRONTEND=noninteractive apt update && apt install -y devscripts && \
     apt build-dep -y linux-image-unsigned-"${BASE_KERNEL_VERSION}"
@@ -31,12 +37,22 @@ build_ubuntu_kernel() {
     pushd linux-*/
     patch_kernel
     # Add new configs in the patch
-    sed -i "/CONFIG_TDX_GUEST_DRIVER *note.*/ r ${KERNEL_DIR}/ubuntu/annotations" \
-        debian.intel-opt/config/annotations
+    sed -i "/CONFIG_TDX_GUEST_DRIVER/ r ${KERNEL_DIR}/ubuntu/annotations" \
+        debian.master/config/annotations
     # Change kernel version in changelog
-    sed -i "0 r ${KERNEL_DIR}/ubuntu/changelog" debian/changelog debian.intel-opt/changelog
+    if [ -f "debian.intel/changelog" ]; then
+        CHANGELOG="debian.intel/changelog"
+    else
+        CHANGELOG="debian.master/changelog"
+    fi
+    LATEST_VERSION=$(sed -n '1 s/linux.*(\(.*\)) noble.*$/\1/p' ${CHANGELOG})
+    CCNP_VERSION=${LATEST_VERSION}${CCNP_VERSION_SUFFIX}
+    sed "s/CCNP_VERSION/${CCNP_VERSION}/" \
+        "${KERNEL_DIR}/ubuntu/changelog" > "${KERNEL_DIR}/ubuntu/changelog.tmp"
+    sed -i "0 r ${KERNEL_DIR}/ubuntu/changelog.tmp" debian/changelog ${CHANGELOG}
+    rm "${KERNEL_DIR}/ubuntu/changelog.tmp"
 
-    debuild -uc -us -b
+    dpkg-buildpackage -us -uc -ui -b
     popd
 
     mv ./*.deb "${OUT_DIR}"/
