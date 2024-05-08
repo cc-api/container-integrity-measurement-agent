@@ -1,11 +1,11 @@
 FROM ubuntu:22.04
 
 ARG DEBIAN_FRONTEND=noninteractive
-ARG PCCS_VERSION="1.18.100.1-jammy1"
+ARG PCCS_VERSION="1.21.100.3-jammy1"
 
 RUN apt-get update && apt-get install -y wget gnupg ca-certificates curl
 
-RUN wget https://download.01.org/intel-sgx/sgx-dcap/1.18/linux/distro/ubuntu22.04-server/sgx_debian_local_repo.tgz
+RUN wget https://download.01.org/intel-sgx/sgx-dcap/1.21/linux/distro/ubuntu22.04-server/sgx_debian_local_repo.tgz
 
 RUN tar zxvf sgx_debian_local_repo.tgz && \
     rm -f sgx_debian_local_repo.tgz
@@ -23,7 +23,7 @@ RUN set -o pipefail && echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] ht
 # The postinst will check the directory for configuration
 RUN mkdir /etc/init/
 
-RUN apt-get update && apt-get install -y nodejs cracklib-runtime sgx-dcap-pccs=${PCCS_VERSION} sgx-pck-id-retrieval-tool=${PCCS_VERSION} && \
+RUN apt-get update && apt-get install -y nodejs=18.18.2-1nodesource1 cracklib-runtime sgx-dcap-pccs=${PCCS_VERSION} sgx-pck-id-retrieval-tool=${PCCS_VERSION} && \
     rm -rf /var/lib/apt/lists/*
 
 RUN cd /opt/intel/sgx-dcap-pccs/ && \
