@@ -16,7 +16,7 @@ platform is reset, no change of the initial trust state is possible, so it is ca
 
 ## Chain of Trust for Container
 
-The Trusted Execution Environment (TEE) serves as the fundamental chain of trust during boot time, for instance, in [TDX Virtual Fimware (TDVF) design guide](https://cdrdv2-public.intel.com/733585/tdx-virtual-firmware-design-guide-rev-004-20231206.pdf), a Trust Domain (TD) system hash 1 TD Measurement Register (MRTD) for static measurement of the TD build process and the initial contents of the TD and 4 Runtime exteneable Measurement Registers (RTMR) for runtime measurement. A typical usage is RTMR matching TPM Platform Configuration Registers (PCR):
+The Trusted Execution Environment (TEE) serves as the fundamental chain of trust during boot time, for instance, in [TDX Virtual Firmware (TDVF) design guide](https://cdrdv2-public.intel.com/733585/tdx-virtual-firmware-design-guide-rev-004-20231206.pdf), a Trust Domain (TD) system hash 1 TD Measurement Register (MRTD) for static measurement of the TD build process and the initial contents of the TD and 4 Runtime Measurement Registers (RTMR) for runtime measurement. A typical usage is RTMR matching TPM Platform Configuration Registers (PCR):
 | PCR Index | Typical Usage | TD Register |
 | --- | --- | --- |
 | 0 | FirmwareCode (BFV,including init page table) | MRTD |
@@ -29,7 +29,7 @@ The Trusted Execution Environment (TEE) serves as the fundamental chain of trust
 | 7 | Secure Boot Configuration | RTMR[0] |
 | 8~15 | TD OS measurement | RTMR[2] |
 
-During boot time, the TDX Virtual Firmware (TDVF), along with Grub and Shim, is responsible for managing the firmware, OS loader, and configuration measurements. As the system boots into the OS kernel, the responsibility for measuring processes and configurations shifts to the system itself.
+During boot time, the TDVF, along with Grub and Shim, is responsible for managing the firmware, OS loader, and configuration measurements. As the system boots into the OS kernel, the responsibility for measuring processes and configurations shifts to the system itself.
 
 In the context of container measurement chains, several typical use cases arise:
 
@@ -85,7 +85,7 @@ Based on the critical data and measurement chain described, the overall architec
 
 * Boot Time Measurement:
   * During boot time, the Trusted Execution Environment (TEE), utilizing Intel Trust Domain Extensions (TDX) or similar technologies, establishes a chain of trust.
-  * Components like TDX Virtual Firmware (TDVF), Grub, and Shim handle firmware, OS loader, and configuration measurements.
+  * Components like TDVF, Grub, and Shim handle firmware, OS loader, and configuration measurements.
 * OS Kernel Initialization:
   * The OS kernel initiates an "init" process, which in turn launches container services for managing containers.
 * Cluster Management (e.g., Kubernetes):
@@ -165,11 +165,11 @@ The concept of container isolation determines whether a container can access the
 
 [2] https://kubernetes.io/docs/concepts/containers/
 
-[3] [Trusted Computing Group (TCG) Trusted Platform Module (TPM) architecture](https://trustedcomputinggroup.org/wp-content/uploads/TCG_TPM2_r1p59_Part1_Architecture_pub.pdf)
+[3] [TCG TPM architecture](https://trustedcomputinggroup.org/wp-content/uploads/TCG_TPM2_r1p59_Part1_Architecture_pub.pdf)
 
 [4] [TCG Guidance on Integrity Measurements and Event Log
 Processing](https://trustedcomputinggroup.org/wp-content/uploads/TCG-Guidance-Integrity-Measurements-Event-Log-Processing_v1_r0p118_24feb2022-1.pdf)
 
-[5] [TDX Virtual Fimware (TDVF) design guide](https://cdrdv2-public.intel.com/733585/tdx-virtual-firmware-design-guide-rev-004-20231206.pdf)
+[5] [TDX Virtual Firmware design guide](https://cdrdv2-public.intel.com/733585/tdx-virtual-firmware-design-guide-rev-004-20231206.pdf)
 
 [6] [Integrity Measurement Architecture](https://sourceforge.net/p/linux-ima/wiki/Home/)
