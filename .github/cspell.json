@@ -41,6 +41,14 @@
         "virt",
         "containerized",
         "vsock",
-        "cgpath"
+        "cgpath",
+        "SRTM",
+        "TDVF",
+        "MRTD",
+        "ACPI",
+        "runc",
+        "crun",
+        "apiserver",
+        "kubeproxy"
     ]
 }
