@@ -31,6 +31,10 @@ spec:
         - name: TSM_REPORT
           value: /run/ccnp/tsm/
         imagePullPolicy: IfNotPresent
+        resources:
+          limits:
+            memory: 100M
+            cpu: 1
         volumeMounts:
           - name: proc
             mountPath: /proc

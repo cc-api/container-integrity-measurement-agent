@@ -10,13 +10,14 @@ RUN wget https://download.01.org/intel-sgx/sgx-dcap/1.18/linux/distro/ubuntu22.0
 RUN tar zxvf sgx_debian_local_repo.tgz && \
     rm -f sgx_debian_local_repo.tgz
 
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 RUN echo "deb [trusted=yes arch=amd64] file:/sgx_debian_local_repo jammy main" |\
     tee /etc/apt/sources.list.d/sgx_debian_local_repo.list
 
 RUN mkdir -p /etc/apt/keyrings
-RUN curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key |\
+RUN set -o pipefail && curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key |\
     gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg
-RUN echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_18.x nodistro main" |\
+RUN set -o pipefail && echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_18.x nodistro main" |\
     tee /etc/apt/sources.list.d/nodesource.list
 
 # The postinst will check the directory for configuration
@@ -31,8 +32,8 @@ RUN cd /opt/intel/sgx-dcap-pccs/ && \
 
 RUN mkdir /opt/intel/sgx-dcap-pccs/ssl_key
 
-ADD container/pccs/default.json /opt/intel/sgx-dcap-pccs/config/
-ADD container/pccs/network_setting.conf /opt/intel/sgx-pck-id-retrieval-tool/
+COPY container/pccs/default.json /opt/intel/sgx-dcap-pccs/config/
+COPY container/pccs/network_setting.conf /opt/intel/sgx-pck-id-retrieval-tool/
 COPY container/pccs/ssl_key /opt/intel/sgx-dcap-pccs/ssl_key
 
 WORKDIR /opt/intel/sgx-dcap-pccs/
