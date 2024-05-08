@@ -1,0 +1,106 @@
+From f10cb93761498859e90bf8c4a71ce3ccb9e160a6 Mon Sep 17 00:00:00 2001
+From: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
+Date: Tue, 23 Jan 2024 00:03:11 +0000
+Subject: [PATCH] x86/tdx: Add tdx_mcall_rtmr_extend() interface
+
+TDX Guest exposes 1 MRTD and 3 RTMR registers to record the build and
+boot measurements of the VM. It is similar to PCR registers in TPM
+space. This measurement data will be used to implement security
+features like attestation, trusted boot, etc.
+
+To facilitate RTMR register update, the TDX Module provides support for
+TDG.MR.RTMR.EXTEND TDCALL  which can be used to securely extend the
+RTMR registers.
+
+Add helper function to update RTMR registers. It will be used by the
+TDX guest driver in enabling RTMR support.
+
+Signed-off-by: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
+---
+ arch/x86/coco/tdx/tdx.c           | 36 +++++++++++++++++++++++++++++++
+ arch/x86/include/asm/shared/tdx.h |  1 +
+ arch/x86/include/asm/tdx.h        |  2 ++
+ 3 files changed, 39 insertions(+)
+
+diff --git a/arch/x86/coco/tdx/tdx.c b/arch/x86/coco/tdx/tdx.c
+index c1cb90369915..e88868631e18 100644
+--- a/arch/x86/coco/tdx/tdx.c
++++ b/arch/x86/coco/tdx/tdx.c
+@@ -35,6 +35,7 @@
+ /* TDX Module call error codes */
+ #define TDCALL_RETURN_CODE(a)	((a) >> 32)
+ #define TDCALL_INVALID_OPERAND	0xc0000100
++#define TDCALL_OPERAND_BUSY	0x80000200
+ 
+ #define TDREPORT_SUBTYPE_0	0
+ 
+@@ -107,6 +108,41 @@ int tdx_mcall_get_report0(u8 *reportdata, u8 *tdreport)
+ }
+ EXPORT_SYMBOL_GPL(tdx_mcall_get_report0);
+ 
++/**
++ * tdx_mcall_rtmr_extend() - Wrapper to extend RTMR registers using
++ *			     TDG.MR.RTMR.EXTEND TDCALL.
++ * @index: Index of RTMR register to be extended.
++ * @data: Address of the input buffer with RTMR register extend data.
++ *
++ * Refer to section titled "TDG.MR.RTMR.EXTEND leaf" in the TDX Module
++ * v1.0 specification for more information on TDG.MR.RTMR.EXTEND TDCALL.
++ * It is used in the TDX guest driver module to allow user extend the
++ * RTMR registers (index > 1).
++ *
++ * Return 0 on success, -EINVAL for invalid operands, -EBUSY for busy
++ * operation or -EIO on other TDCALL failures.
++ */
++int tdx_mcall_rtmr_extend(u8 index, u8 *data)
++{
++	struct tdx_module_args args = {
++		.rcx = virt_to_phys(data),
++		.rdx = index,
++	};
++	u64 ret;
++
++	ret = __tdcall(TDG_MR_RTMR_EXTEND, &args);
++	if (ret) {
++		if (TDCALL_RETURN_CODE(ret) == TDCALL_INVALID_OPERAND)
++			return -EINVAL;
++		if (TDCALL_RETURN_CODE(ret) == TDCALL_OPERAND_BUSY)
++			return -EBUSY;
++		return -EIO;
++	}
++
++	return 0;
++}
++EXPORT_SYMBOL_GPL(tdx_mcall_rtmr_extend);
++
+ /**
+  * tdx_hcall_get_quote() - Wrapper to request TD Quote using GetQuote
+  *                         hypercall.
+diff --git a/arch/x86/include/asm/shared/tdx.h b/arch/x86/include/asm/shared/tdx.h
+index fdfd41511b02..4ed1fa11df81 100644
+--- a/arch/x86/include/asm/shared/tdx.h
++++ b/arch/x86/include/asm/shared/tdx.h
+@@ -12,6 +12,7 @@
+ 
+ /* TDX module Call Leaf IDs */
+ #define TDG_VP_VMCALL			0
++#define TDG_MR_RTMR_EXTEND		2
+ #define TDG_VP_INFO			1
+ #define TDG_VP_VEINFO_GET		3
+ #define TDG_MR_REPORT			4
+diff --git a/arch/x86/include/asm/tdx.h b/arch/x86/include/asm/tdx.h
+index eba178996d84..9ff74b4b69b9 100644
+--- a/arch/x86/include/asm/tdx.h
++++ b/arch/x86/include/asm/tdx.h
+@@ -64,6 +64,8 @@ bool tdx_early_handle_ve(struct pt_regs *regs);
+ 
+ int tdx_mcall_get_report0(u8 *reportdata, u8 *tdreport);
+ 
++int tdx_mcall_rtmr_extend(u8 index, u8 *data);
++
+ u64 tdx_hcall_get_quote(u8 *buf, size_t size);
+ 
+ #else
+-- 
+2.34.1
+
