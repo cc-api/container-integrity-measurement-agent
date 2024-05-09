@@ -1,4 +1,4 @@
-linux (CCNP_VERSION) noble; urgency=medium
+CCNP_VERSION noble; urgency=medium
 
   * [CCNP] Add CCNP kernel patches
 

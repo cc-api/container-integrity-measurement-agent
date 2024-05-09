@@ -45,8 +45,13 @@ build_ubuntu_kernel() {
     else
         CHANGELOG="debian.master/changelog"
     fi
-    LATEST_VERSION=$(sed -n '1 s/linux.*(\(.*\)) noble.*$/\1/p' ${CHANGELOG})
-    CCNP_VERSION=${LATEST_VERSION}${CCNP_VERSION_SUFFIX}
+
+    # For generic kernel, the default version in changelog is linux (6.8.0-31.31),
+    #   we want to change to ccnp version linux (6.8.0-31.31+ccnp1)
+    # For intel kernel, the default version in changelog is linux-intel (6.8.0-1001.7)
+    #   we want to change it to linux-intel (6.8.0-1001.7+ccnp1)
+    LATEST_VERSION=$(sed -n '1 s/\(linux.*(.*\)) noble.*$/\1/p' ${CHANGELOG})
+    CCNP_VERSION="${LATEST_VERSION}${CCNP_VERSION_SUFFIX})"
     sed "s/CCNP_VERSION/${CCNP_VERSION}/" \
         "${KERNEL_DIR}/ubuntu/changelog" > "${KERNEL_DIR}/ubuntu/changelog.tmp"
     sed -i "0 r ${KERNEL_DIR}/ubuntu/changelog.tmp" debian/changelog ${CHANGELOG}

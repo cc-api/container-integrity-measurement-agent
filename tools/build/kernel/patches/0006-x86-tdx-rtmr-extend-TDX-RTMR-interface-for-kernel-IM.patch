@@ -116,7 +116,7 @@ index 000000000000..3ed78ad754dd
 +    memcpy(data, digests[DEFAULT_SHA384_IDX].digest, sizeof(digests[DEFAULT_SHA384_IDX].digest));
 +
 +    /* Extend RTMR registers using "TDG.MR.RTMR.EXTEND" TDCALL */
-+    rc = tdx_mcall_rtmr_extend(data, (u8)rtmr_idx);
++    rc = tdx_mcall_rtmr_extend((u8)rtmr_idx, data);
 +    kfree(data);
 +
 +    return rc;
