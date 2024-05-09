@@ -19,15 +19,17 @@ $ sudo ./build.sh
 
 ## Prepare TDX guest image
 
-Run [cvm image rewriter](../tools/cvm-image-rewriter/README.md) to prepare a TDX guest image for CCNP deployment. The default user name is `tdx`. The password is `123456`.
+Run [cvm image rewriter](https://github.com/cc-api/cvm-image-rewriter) to prepare a TDX guest image for CCNP deployment. The default user name is `tdx`. The password is `123456`.
 
 It's recommended to run the tool on TDX host mentioned in [Configuration](../README.md#configuration).
 
 A quick start is as below.
 
 ```
-# Download Ubuntu 23.10 cloud image (Skip this step if you already has an initial guest image.)
-$ wget https://cloud-images.ubuntu.com/mantic/current/mantic-server-cloudimg-amd64.img
+# Refer to TDX early preview to [generate a TD guest image](https://github.com/canonical/tdx/tree/noble-24.04?tab=readme-ov-file#create-a-new-td-guest-image).
+
+# Get cvm image rewriter. 
+$ git clone https://github.com/cc-api/cvm-image-rewriter.git
 
 # Set file path of the generated output folder above. Plugin 06 will install the kernel in the guest image.
 $ export CVM_TDX_GUEST_REPO=<path to above output folder>
@@ -36,13 +38,13 @@ $ export CVM_TDX_GUEST_REPO=<path to above output folder>
 $ export GUEST_SIZE=<image size>G
 
 # Run CVM image rewriter to configure a TDX guest image for CCNP
-$ cd tools/cvm-image-rewriter
+$ cd cvm-image-rewriter
 $ ./run.sh -i <mantic-server-cloudimg-amd64.img or your initial guest image>  -t <timeout in minutes, suggest to set to 15>
 ```
 
 **NOTE:**
  - By default all the plugins will be executed. Generate a `NOT_RUN` file under the specific plugin folder if you want to skip it.
- - It's required to run [plugin](../tools/cvm-image-rewriter/plugins/) 06, 07, 08, 09 for CCNP.
+ - It's required to run [plugin](https://github.com/cc-api/cvm-image-rewriter/tree/main/plugins) 06, 07, 08, 09 for CCNP.
 
 
 ## Create a TD
