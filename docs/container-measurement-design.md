@@ -9,14 +9,14 @@ In Trusted Computing Group (TCG) [Trusted Platform Module (TPM) architecture](ht
 * the hash of code or data, or
 * an indication of the signer of some code or data.
 
-For integrity measurement collection, TCG defined [Event Log specification](https://trustedcomputinggroup.org/wp-content/uploads/TCG-Guidance-Integrity-Measurements-Event-Log-Processing_v1_r0p118_24feb2022-1.pdf), a Event is a kind of executable, data, or action that may affect the device’s trust state, and integrity measurement is A deterministic (1:1) representation of an Event. Some Events may be large blocks of executable code and other Events may be small strings such as a version number, configuration data, etc. TCG uses the size of a hash to hold an integrity measurement.
+For integrity measurement collection, TCG defined [Event Log specification](https://trustedcomputinggroup.org/wp-content/uploads/TCG-Guidance-Integrity-Measurements-Event-Log-Processing_v1_r0p118_24feb2022-1.pdf), an Event is a kind of executable, data, or action that may affect the device’s trust state, and integrity measurement is A deterministic (1:1) representation of an Event. Some Events may be large blocks of executable code and other Events may be small strings such as a version number, configuration data, etc. TCG uses a digest size of a hash to hold an integrity measurement.
 
-The transitive trust chain is maintained by measurement of the code, a power-on reset creates an environment in which the platform is in a known initial state, with the main CPU running code from some well-defined initial location. Since that code has exclusive control of the platform at that time, it may make measurements of the platform from firmware. From these initial measurements, a chain of trust may be established. Because this chain of trust is created once when the
-platform is reset, no change of the initial trust state is possible, so it is called a static runtime measurement (SRTM).
+The transitive trust chain is maintained by measurement of the code. A power-on reset creates an environment in which the platform is in a known initial state, with the main CPU running code from some well-defined initial location. Since that code has exclusive control of the platform at that time, it may make measurements of the platform from boot firmware. From these initial measurements, a chain of trust may be established. This chain of trust is created on platform reset, does not allow any change in trust state, and is thus called a static runtime measurement (SRTM).
 
 ## Chain of Trust for Container
 
-The Trusted Execution Environment (TEE) serves as the fundamental chain of trust during boot time, for instance, in [TDX Virtual Firmware (TDVF) design guide](https://cdrdv2-public.intel.com/733585/tdx-virtual-firmware-design-guide-rev-004-20231206.pdf), a Trust Domain (TD) system hash 1 TD Measurement Register (MRTD) for static measurement of the TD build process and the initial contents of the TD and 4 Runtime Measurement Registers (RTMR) for runtime measurement. A typical usage is RTMR matching TPM Platform Configuration Registers (PCR):
+The Trusted Execution Environment (TEE) serves as the foundation chain of trust during boot time, for instance, in [TDX Virtual Firmware (TDVF) design guide](https://cdrdv2-public.intel.com/733585/tdx-virtual-firmware-design-guide-rev-004-20231206.pdf), provides a single Trust Domain (TD) Measurement Register (MRTD) and four Runtime Measurement Registers (RTMR). There certainly are fewer TD measurement registers than TPM Platform Configuration Registers (PCRs). They are typically mapped as below:
+
 | PCR Index | Typical Usage | TD Register |
 | --- | --- | --- |
 | 0 | FirmwareCode (BFV,including init page table) | MRTD |
@@ -29,28 +29,30 @@ The Trusted Execution Environment (TEE) serves as the fundamental chain of trust
 | 7 | Secure Boot Configuration | RTMR[0] |
 | 8~15 | TD OS measurement | RTMR[2] |
 
+*RTMR[3] is reserved for special usage, such as virtual TPM. Users have the flexibility to utilize RTMR[3] if it is not required for these specialized purposes.*
+
 During boot time, the TDVF, along with Grub and Shim, is responsible for managing the firmware, OS loader, and configuration measurements. As the system boots into the OS kernel, the responsibility for measuring processes and configurations shifts to the system itself.
 
 In the context of container measurement chains, several typical use cases arise:
 
-* Container services
-* Cluster
-* Function as a service (FaaS)
+* Container services on a single node (virtual machine or bare metal)
+* Container services in a cluster
+* Function as a service (FaaS) in a cluster
 
-### Container Services
+### Container services on a single node
 
 A typical measurement chain in a Linux OS involves the OS kernel initiating an `init` process, which in turn launches container services responsible for managing the containers.
 
 ![Runtime Measurement Chain - Container Services](container-measurement-chain.png)
 
-### Cluster
+### Container services in a cluster
 
 
 In a cluster environment on a Linux OS, such as with Kubernetes, the measurement chain extends beyond container services. After initializing container services, Kubernetes proceeds to launch additional management containers, including but not limited to the API server, scheduler, and controller manager.
 
 ![Runtime Measurement Chain - Kubernetes](kubernetes-measurement-chain.png)
 
-### FaaS
+### FaaS in a cluster
 
 In a cloud-native environment, Function as a Service (FaaS) is a typical usage, often based on a cluster infrastructure like Kubernetes integrated with platforms like OpenFaaS. A typical measurement chain in this setup involves:
 
@@ -58,7 +60,7 @@ In a cloud-native environment, Function as a Service (FaaS) is a typical usage, 
 
 ## Critical Data in Container Measurement
 
-From these typical usages, it's evident that for container measurement after booting up to the OS kernel, the critical data includes:
+From these typical usages, it is evident that for container measurement after booting up to the OS kernel, the critical data includes:
 
 * System Processes/Services
   * init(systemd)
@@ -73,7 +75,7 @@ From these typical usages, it's evident that for container measurement after boo
 
 ## Container Measurement Architecture
 
-For measurement purposes, Linux offers an [Integrity Measurement Architecture](https://sourceforge.net/p/linux-ima/wiki/Home/), serving as a subsystem designed to:
+For measurement purposes, Linux offers an [Integrity Measurement Architecture](https://sourceforge.net/p/linux-ima/wiki/Home/), a subsystem designed to:
 
 * Detect any alterations made to files, whether accidental or malicious, both remotely and locally.
 * Appraise a file's measurement against a pre-defined "good" value stored as an extended attribute.
@@ -122,7 +124,10 @@ This design leverages IMA as a foundational component for ensuring the integrity
 Here's a proposal for an architecture designed to measure containers within a cloud-native environment:
 
 ![Container Measurement](container-measurement-arch2.png)
+*\*[IMA cgroup template patches](https://patchwork.kernel.org/project/linux-integrity/patch/20221224160912.17830-1-enrico.bravi@polito.it/)*
 
+An example of an `etcd` pod measurement:
+![IMA with CGroup Path](ima-cgpath.png)
 In this design, the Linux kernel's Integrity Measurement Architecture (IMA) assumes responsibility for collecting all runtime measurements and extending them to measurement registers, such as PCR or RTMR. A measurement agent deployed as a DaemonSet within the Kubernetes cluster retrieves all IMA measurements and expands them to cover system processes and cluster configurations.
 
 The measurement agent also exposes an interface accessible to containers and applications within them. Applications within containers can invoke the DaemonSet to obtain system and cluster measurements. Additionally, a flexible configuration mechanism allows policies to be defined, specifying which measurements are collected and how they are used for integrity assessment and enforcement.
