@@ -7,7 +7,6 @@
 ![CI Check Rust](https://github.com/cc-api/confidential-cloud-native-primitives/actions/workflows/pr-check-rust.yaml/badge.svg)
 ![CI Check Golang](https://github.com/cc-api/confidential-cloud-native-primitives/actions/workflows/pr-golang-check.yaml/badge.svg)
 ![CI Check Container](https://github.com/cc-api/confidential-cloud-native-primitives/actions/workflows/pr-container-check.yaml/badge.svg)
-![CC Foundation Image Customize](https://github.com/cc-api/confidential-cloud-native-primitives/actions/workflows/image-rewriter.yaml/badge.svg)
 [![OpenSSF Best Practices](https://www.bestpractices.dev/projects/8325/badge)](https://www.bestpractices.dev/projects/8325)
 
 ## Introduction
@@ -33,7 +32,7 @@ CCNP runs on Intel TDX guest. Thus, you will need TDX host and guest for CCNP de
 
 |  CPU | Host OS  | Host packages  | Guest OS  | Guest packages  | Attestation packages |
 |---|---|---|---|---|---|
-|  Intel® Emerald Rapids | Ubuntu 23.10| TDX early preview referring to [here](https://github.com/canonical/tdx?tab=readme-ov-file#4-setup-tdx-host) | Ubuntu 23.10 | Build a guest image for CCNP using [CVM image rewriter](/tools/cvm-image-rewriter/README.md) | Setup remote attestation on host referring to [here](https://github.com/canonical/tdx?tab=readme-ov-file#8-setup-remote-attestation-on-host-and-td-guest)
+|  Intel® Emerald Rapids | Ubuntu 23.10| TDX early preview referring to [here](https://github.com/canonical/tdx?tab=readme-ov-file#4-setup-tdx-host) | Ubuntu 23.10 | Build a guest image for CCNP using [CVM image rewriter](https://github.com/cc-api/cvm-image-rewriter) | Setup remote attestation on host referring to [here](https://github.com/canonical/tdx?tab=readme-ov-file#8-setup-remote-attestation-on-host-and-td-guest)
 
 ### CCNP Service Deployment in Confidential VM
 
