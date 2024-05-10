@@ -30,10 +30,9 @@ ARG UID=1000
 ARG GID=1000
 ARG GROUP=ccnp
 
+WORKDIR /run/ccnp
 RUN addgroup -S -g $GID $GROUP && adduser -S -u $UID -D -G $GROUP $USER
 RUN chown $USER:$GROUP /run/ccnp
-
-WORKDIR /run/ccnp
 
 COPY test ./
 COPY sdk/python3/example/py_sdk_example.py ./
