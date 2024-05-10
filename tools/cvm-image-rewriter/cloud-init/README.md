@@ -1,1 +1,0 @@
-# Cloud-init script and configs
