@@ -51,14 +51,9 @@ $ ./run.sh -i <mantic-server-cloudimg-amd64.img or your initial guest image>  -t
 
 Start a TD using [qemu-test.sh](../tools/cvm-image-rewriter/qemu-test.sh) or [start-virt.sh](../tools/cvm-image-rewriter/start-virt.sh).
 
- - Use `qemu-test.sh`, please use `-q <vsock>` to make sure get quote works for the TD.
+ - Use `qemu-test.sh`.
     ```
-    $ sudo ./qemu-test.sh -i output.qcow2 -q vsock
-    ```
-
-- Use `start-virt.sh`. The Libvirt XML template is [tdx-libvirt-ubuntu-host.xml.template](../tools/cvm-image-rewriter/tdx-libvirt-ubuntu-host.xml.template). It uses `vsock` for getting quote.
-    ```
-    $ sudo ./start-virt.sh -i <guest image>
+    $ sudo ./qemu-test.sh -i output.qcow2
     ```
 
 Check the kernel version. It should be CCNP kernel as below.
@@ -85,11 +80,11 @@ $ sudo ./build.sh -r <remote registry> -g <docker image tag>
 
 e.g.
 
-# Build images with tag 0.3 and push them to remote registry test-registry.intel.com
-$ sudo ./build.sh -r test-registry.intel.com/test -g 0.3
+# Build images with tag 0.5 and push them to remote registry test-registry.intel.com
+$ sudo ./build.sh -r test-registry.intel.com/test -g 0.5
 
-# Build images only with tag 0.3
-$ sudo ./build.sh -a build -g 0.3
+# Build images only with tag 0.5
+$ sudo ./build.sh -a build -g 0.5
 ```
 
 After the script is executed successfully, it's supposed to see below docker images for CCNP.
