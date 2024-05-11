@@ -74,4 +74,4 @@ spec:
             path: /sys/kernel/config/tsm/report/ccnp/
             type: Directory
       nodeSelector:
-        intel.feature.node.kubernetes.io/tdx-guest: "enabled"
+        "feature.node.kubernetes.io/cpu-security.tdx.protected": "true"
