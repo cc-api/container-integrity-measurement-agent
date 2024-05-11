@@ -11,7 +11,7 @@
 
 ## Introduction
 
-Confidential Computing technologies like Intel® TDX provides an isolated encryption runtime
+Confidential Computing technologies provide an isolated encryption runtime
 environment to protect data-in-use based on hardware Trusted Execution Environment (TEE).
 It requires a full chain integrity measurement on the launch-time or runtime environment
 to guarantee "consistent behavior in an expected way" of confidential
@@ -21,18 +21,21 @@ CCNP aims to help users establish a chain of trust for cloud-native workloads by
 cloud-native level confidential computing primitives, including container measurements,
 event logs, and confidential computing (CC) reports.
 
-Please see [container measurement design guide](docs/container-measurement-design.md) for more details.
+Find out more in [CCNP Design and Architecture](https://cc-api.github.io/confidential-cloud-native-primitives/) and [Container Measurement Design](docs/container-measurement-design.md).
 
 
 ## How to Install CCNP
 
 ### Configuration
 
-CCNP runs on Intel TDX guest. Thus, you will need TDX host and guest for CCNP deployment and usage. Please see below recommended configuration. 
+CCNP support to run on Intel® TDX guest. Thus, you will need TDX host and guest for CCNP deployment and usage. Please see below recommended configuration. 
 
-|  CPU | Host OS  | Host packages  | Guest OS  | Guest packages  | Attestation packages |
-|---|---|---|---|---|---|
-|  Intel® Emerald Rapids | Ubuntu 23.10| TDX early preview referring to [here](https://github.com/canonical/tdx?tab=readme-ov-file#4-setup-tdx-host) | Ubuntu 23.10 | Build a guest image for CCNP using [CVM image rewriter](https://github.com/cc-api/cvm-image-rewriter) | Setup remote attestation on host referring to [here](https://github.com/canonical/tdx?tab=readme-ov-file#8-setup-remote-attestation-on-host-and-td-guest)
+|  CPU | Host OS  | Host packages  | Guest OS  | Guest packages  | Attestation packages | CCNP Tag |
+|---|---|---|---|---|---|---|
+|  Intel 4th Gen (only TDX SKUs) and 5th Gen Xeon Scalable Processors | Ubuntu 23.10| TDX early preview referring to [here](https://github.com/canonical/tdx?tab=readme-ov-file#4-setup-tdx-host) | Ubuntu 23.10 | Build a guest image for CCNP using [CVM image rewriter](https://github.com/cc-api/confidential-cloud-native-primitives/tree/v0.4.0/deployment#prepare-tdx-guest-image) | Setup remote attestation on host referring to [here](https://github.com/canonical/tdx?tab=readme-ov-file#8-setup-remote-attestation-on-host-and-td-guest)| [v0.4.0](https://github.com/cc-api/confidential-cloud-native-primitives/releases/tag/v0.4.0)
+|  Intel 4th Gen (only TDX SKUs) and 5th Gen Xeon Scalable Processors | Ubuntu 24.04| TDX early preview referring to [here](https://github.com/canonical/tdx/tree/2.0?tab=readme-ov-file#setup-tdx-host) | Ubuntu 24.04 | Build a guest image for CCNP using [CVM image rewriter](https://github.com/cc-api/confidential-cloud-native-primitives/tree/v0.5.0/deployment#prepare-tdx-guest-image) | Setup remote attestation on host referring to [here](https://github.com/cc-api/confidential-cloud-native-primitives/blob/v0.5.0/container/pccs/README.md) and [here](https://github.com/cc-api/confidential-cloud-native-primitives/blob/v0.5.0/container/qgs/README.md)| [v0.5.0](https://github.com/cc-api/confidential-cloud-native-primitives/releases/tag/v0.5.0)
+
+
 
 ### CCNP Service Deployment in Confidential VM
 
@@ -41,7 +44,7 @@ Refer to [CCNP deployment guide](deployment/README.md) and choose a deployment m
 
 ### CCNP SDK Usage
 
-[py_sdk_example.py](/sdk/python3/example/py_sdk_example.py) is an example of using CCNP Python SDK. There are also Golang SDK and Rust SDK. Please see more details in [CCNP SDK](https://cc-api.github.io/confidential-cloud-native-primitives/sdk.html).
+If you want to integrate CCNP SDK in the workload to get measurement and event logs, refer to [py_sdk_example.py](/sdk/python3/example/py_sdk_example.py). It is an example of using CCNP Python SDK. There are also Golang SDK and Rust SDK. Please see more details in [CCNP SDK](https://cc-api.github.io/confidential-cloud-native-primitives/sdk.html).
 
 
 ## Contributing
@@ -68,13 +71,17 @@ _Note: This is pre-production software. As such, it may be substantially modifie
 
 ## Reference
 
+[CCNP Design and Architecture](https://cc-api.github.io/confidential-cloud-native-primitives/)
+
+[Container Measurement Design](docs/container-measurement-design.md)
+
 [Trusted Computing](https://en.wikipedia.org/wiki/Trusted_Computing)
 
 [TCG PC Client Platform TPM Profile Specification](https://trustedcomputinggroup.org/resource/pc-client-platform-tpm-profile-ptp-specification/)
 
 [TCG PC Client Platform Firmware Profile Specification](https://trustedcomputinggroup.org/resource/pc-client-specific-platform-firmware-profile-specification/)
 
-[CCNP Design and Architecture](https://cc-api.github.io/confidential-cloud-native-primitives/)
+
 
 ## Contributors
 
