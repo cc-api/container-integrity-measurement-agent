@@ -2,6 +2,8 @@
 
 CCNP is designed for collecting confidential computing primitives in cloud native environments. It can run as DaemonSet in a Kubernetes cluster or containers in a Docker environment on confidential virtual machines, such as Intel TDX guest(TD). 
 
+CCNP deployment supports to deploy on Ubuntu 24.04 and Ubuntu 23.10. The follows will use Ubuntu 24.04. Please see [deployment guide](https://github.com/cc-api/confidential-cloud-native-primitives/blob/v0.4.0/deployment/README.md) for Ubuntu 23.10.
+
 ## Build CCNP Kernel
 
 Run [build.sh](../tools/build/build.sh) to build kernel packages for CCNP. It's recommended to run the tool on TDX host mentioned in [Configuration](../README.md#configuration).
@@ -14,7 +16,7 @@ $ sudo ./build.sh
 
 **NOTE:**
   - CCNP kernel patches are at [kernel](../tools/build/kernel/)
-  - The tool should be run on a Ubuntu 23.10 TDX host with TDX early preview packages installed. Please refer to [here](https://github.com/canonical/tdx)
+  - The tool should be run on a Ubuntu 24.04 TDX host with TDX early preview packages installed. Please refer to [here](https://github.com/canonical/tdx)
 
 
 ## Prepare TDX guest image
@@ -26,30 +28,34 @@ It's recommended to run the tool on TDX host mentioned in [Configuration](../REA
 A quick start is as below.
 
 ```
-# Refer to TDX early preview to [generate a TD guest image](https://github.com/canonical/tdx/tree/noble-24.04?tab=readme-ov-file#create-a-new-td-guest-image).
+# Refer to TDX early preview to [create a TD guest image](https://github.com/canonical/tdx?tab=readme-ov-file#create-a-new-td-guest-image).
 
 # Get cvm image rewriter. 
 $ git clone https://github.com/cc-api/cvm-image-rewriter.git
 
+# Plugin 98 is an example of setting IMA. It will take a few minutes. Suggest to skip it if not needed.
+$ touch cvm-image-rewriter/plugins/98-ima-example/NOT_RUN
+
 # Set file path of the generated output folder above. Plugin 06 will install the kernel in the guest image.
 $ export CVM_TDX_GUEST_REPO=<path to above output folder>
 
-# Set image size
+# (Optional)Set image size
 $ export GUEST_SIZE=<image size>G
 
 # Run CVM image rewriter to configure a TDX guest image for CCNP
 $ cd cvm-image-rewriter
-$ ./run.sh -i <mantic-server-cloudimg-amd64.img or your initial guest image>  -t <timeout in minutes, suggest to set to 15>
+$ ./run.sh -i <initial guest image>  -t <timeout in minutes, suggest to set to 15>
 ```
 
 **NOTE:**
  - By default all the plugins will be executed. Generate a `NOT_RUN` file under the specific plugin folder if you want to skip it.
- - It's required to run [plugin](https://github.com/cc-api/cvm-image-rewriter/tree/main/plugins) 06, 07, 08, 09 for CCNP.
+ - Plugin 98 is an example of setting IMA. It will take a few minutes. Suggest to skip it if not needed.
+ - It's required to run [plugin](https://github.com/cc-api/cvm-image-rewriter/tree/main/plugins) 06, 07, 08, 09, 10 for CCNP.
 
 
 ## Create a TD
 
-Start a TD using [qemu-test.sh](../tools/cvm-image-rewriter/qemu-test.sh) or [start-virt.sh](../tools/cvm-image-rewriter/start-virt.sh).
+Start a TD using [qemu-test.sh](../tools/cvm-image-rewriter/qemu-test.sh).
 
  - Use `qemu-test.sh`.
     ```
@@ -98,8 +104,7 @@ ccnp-webhook                    <your image tag>
 
 ## Setup QGS and PCCS on the Host
 
-Intel Quote Generation Service(QGS) and Provisioning Certification Caching Service(PCCS) should be installed and configured on the host for getting TD Quote. Please refer to Section 4.3.2, 4.3.3 and 4.3.4 of [guide](https://www.intel.com/content/www/us/en/content-details/789198/whitepaper-linux-stacks-for-intel-trust-domain-extensions-1-5.html)
-for QGS and PCCS installation.
+Intel Quote Generation Service(QGS) and Provisioning Certification Caching Service(PCCS) should be installed and configured on the host for getting TD Quote. Please refer to [PCCS](https://github.com/cc-api/confidential-cloud-native-primitives/blob/v0.5.0/container/pccs/README.md) and [QGS](https://github.com/cc-api/confidential-cloud-native-primitives/blob/v0.5.0/container/qgs/README.md) tp start PCCS and QGS container and register the platform.
 
 
 ## Deploy CCNP in Kubernetes
