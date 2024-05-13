@@ -24,7 +24,7 @@ After TDs are started, users can let the TDs join an existing K8S cluster. Pleas
 The following scripts can help to generate CCNP images and deploy them in the TD nodes. `build.sh` can run on either host or TD. Other scripts are supposed to run in the TD.
 
 - [build.sh](../../container/build.sh): The tool will build docker images and push them to remote registry if required. Skip it if you already have docker images prepared.
-- [prerequisite.sh](../kubernetes/script/prerequisite.sh): This tool will complete the prerequisites for deploying CCNP on Ubuntu. For other distributions, you can follow the manual steps in [Prerequisite Manually](#optional-ccnp-prerequisite-manual-steps).
+- [prerequisite.sh](../kubernetes/script/prerequisite.sh): This tool will complete the prerequisites for deploying CCNP on Ubuntu.
 - [deploy-ccnp.sh](../kubernetes/script/deploy-ccnp.sh): The tool will deploy CCNP services as DaemonSet on TDs in the K8S cluster.
 - [deploy-ccnp-example.sh](../kubernetes/script/deploy-ccnp-example.sh): The tool will deploy an example pod with CCNP SDK installed.
 - [exec-ccnp-example.sh](../kubernetes/script/exec-ccnp-example.sh): The tool will show getting event logs, measurement and perform verification using CCNP in the pod.
@@ -45,7 +45,7 @@ Run below scripts on each TD node.
 # Deploy CCNP with user specified remote registry and image tag
 $ sudo ./deploy-ccnp.sh -r <remote registry> -g <tag>
 e.g.
-$ sudo ./deploy-ccnp.sh -r test-registry.intel.com/test -g 0.3
+$ sudo ./deploy-ccnp.sh -r test-registry.intel.com/test -g 0.5
 
 # Delete existing CCNP and Deploy CCNP with user specified remote registry and image tag
 $ sudo ./deploy-ccnp.sh -r <remote registry> -g <tag> -d
@@ -94,32 +94,3 @@ $ sudo ./exec-ccnp-example.sh -v
 
 The example output of verification can be found at [sample-output-for-container-measurement.txt](../../docs/sample-output-for-container-measurement.txt) and
 [sample-output-for-container-eventlog.txt](../../docs/sample-output-for-container-eventlog.txt).
-
-
-### (Optional) CCNP Prerequisite Manual Steps
-__NOTE: Below are manual Steps of CCNP prerequisite for your reference. They can be skipped if prerequisite.sh is run successfully.__
-
-Basically the `prerequisite.sh` complete below steps to ensure `helm`, `docker` and `pip` are installed and check whether file permission is set correctly.
-You can also complete them following below steps manually.
-- Install Helm on the TD nodes. Please refer to the [HELM quick start](https://helm.sh/docs/intro/quickstart/).
-- Install docker on the TD nodes. Please refer to [Get Docker](https://docs.docker.com/get-docker/).
-- Install python3-pip on the TD nodes. Please refer to [pip document](https://pip.pypa.io/en/stable/installation/).
-- Set access permission to TD device node and ccnp working directory on the TD nodes.
-```
-$ sudo mkdir -p /etc/udev/rules.d
-$ sudo touch /etc/udev/rules.d/90-tdx.rules
-# Check TD device node on TD
-$ ls /dev/tdx*
-
-# If above output is "/dev/tdx-guest"
-$ sudo bash -c 'echo "SUBSYSTEM==\"misc\",KERNEL==\"tdx-guest\",MODE=\"0666\"">/etc/udev/rules.d/90-tdx.rules'
-# If above output is "/dev/tdx_guest"
-$ sudo bash -c 'echo "SUBSYSTEM==\"misc\",KERNEL==\"tdx_guest\",MODE=\"0666\"">/etc/udev/rules.d/90-tdx.rules'
-# make the udev setup effective
-$ sudo udevadm trigger
-
-$ sudo touch /usr/lib/tmpfiles.d/ccnp.conf
-$ sudo bash -c 'echo "D /run/ccnp/uds 0757 - - -">/usr/lib/tmpfiles.d/ccnp.conf'
-# make the directory setup effective by running below command or restarting the node
-$ sudo systemd-tmpfiles --create
-```
