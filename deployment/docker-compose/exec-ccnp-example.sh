@@ -70,7 +70,7 @@ validate_on_container() {
     info "Execute example Container ccnp-example"
     ctr_id=$(docker ps | grep ccnp-example-ctr | awk '{print $1}')    
     if [[ "$ctr_id" == "" ]]; then
-   	info "Example Container No Avaliable. Attempt Deploy It"
+   	info "Example Container is NOT Avaliable. Deploying Example Container"
         sed "s@\#EXAMPLE_IMAGE@$EXAMPLE_IMAGE@g" "$CONFIG_DIR"/ccnp-example.yaml.template \
                     > "$COMPOSE_CACHE_DIR"/ccnp-example.yaml
         sed -i "s@\#DEV_TDX@$DEV_TDX@g" "$COMPOSE_CACHE_DIR"/ccnp-example.yaml
@@ -79,25 +79,25 @@ validate_on_container() {
 
     ctr_id=$(docker ps | grep ccnp-example-ctr | awk '{print $1}')
     if [[ "$ctr_id" == "" ]]; then
-       error "Example Container Deploy Failed"
+       error "Fail to deploy Example Container"
     fi
 
     ok "Example Container Avaliable. Compose file: $COMPOSE_CACHE_DIR/ccnp-example.yaml"
     ok "=============== Get Measurement ==============="
     docker exec -it "$ctr_id" python3 py_sdk_example.py -m > "$CCNP_CACHE_DIR"/example.log
-    ok "Measurement Log Saved in File $CCNP_CACHE_DIR/example.log"
+    ok "Measurement is saved in file $CCNP_CACHE_DIR/example.log"
 
     ok "=============== Get Event Logs ==============="
     docker exec -it "$ctr_id" python3 py_sdk_example.py -e >> "$CCNP_CACHE_DIR"/example.log
-    ok "Eventlog Saved in File $CCNP_CACHE_DIR/example.log"
+    ok "Eventlog is saved in file $CCNP_CACHE_DIR/example.log"
 
     ok "=============== Get CC Report ==============="
     docker exec -it "$ctr_id" python3 py_sdk_example.py -r >> "$CCNP_CACHE_DIR"/example.log
-    ok "Eventlog Saved in File $CCNP_CACHE_DIR/example.log"
+    ok "CC Report is saved in file $CCNP_CACHE_DIR/example.log"
 
     ok "=============== Verify Event Logs ==============="
     docker exec -it "$ctr_id" python3 py_sdk_example.py -v >> "$CCNP_CACHE_DIR"/example.log
-    ok "Eventlog Saved in File $CCNP_CACHE_DIR/example.log"
+    ok "Eventlog is verified in file $CCNP_CACHE_DIR/example.log"
 }
 
 process_args "$@"
