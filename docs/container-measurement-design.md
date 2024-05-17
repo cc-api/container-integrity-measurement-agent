@@ -164,6 +164,52 @@ Within the measurement list, system processes can be explicitly defined and meas
 
 The concept of container isolation determines whether a container can access the measurements of other containers. In a Kubernetes cluster environment, management pods or containers can also be defined for measurement purposes, ensuring comprehensive coverage of the cluster's integrity.
 
+## Attestation
+
+Confidential Computing Consortium (CCC) added attestation as an explicit part while defining [Confidential Computing](https://confidentialcomputing.io/wp-content/uploads/sites/10/2023/03/CCC-A-Technical-Analysis-of-Confidential-Computing-v1.3_unlocked.pdf), and explained [why attestation is required](https://confidentialcomputing.io/2023/04/06/why-is-attestation-required-for-confidential-computing/). With the above introduction, the measurement chain for a container can be obtained, encompassing the kernel, services, and workloads. This measurement chain is crucial for ensuring the security and integrity of the containerized environment. The measurement register, which logs these measurements, is recorded in a signed report. By verifying the replay of event logs, we can ensure that the recorded state of the environment is accurate and has not been tampered with. Using these event logs, the environment can be reconstructed and verified, providing a robust mechanism for maintaining trust.
+
+### Remote Attestation
+
+The Internet Engineering Task Force (IETF) defined an [Remote ATtestation procedureS (RATS)](https://datatracker.ietf.org/doc/draft-ietf-rats-architecture/) architecture for remote attestation, which determine whether relying parties can establish a level of confidence in the trustworthiness of remote peers and two-stage appraisal procedure facilitated by a trusted third party.
+To improve the confidence in a system component's trustworthiness, a relying party may require evidence about:
+
+* system component identity,
+* composition of system components, including nested components,
+* roots of trust,
+* an assertion/claim origination or provenance,
+* manufacturing origin,
+* system component integrity,
+* system component configuration,
+* operational state and measurements of steps which led to the operational state, or
+* other factors that could influence trust decisions.
+
+This can be achieved using several types of evidence in TEE, including:
+
+* Signed Report: This report, such as a Quote in 
+TDX or TPM, contains the platform's Trusted Computing Base (TCB) and the runtime measurement register. The TCB includes the hardware and software components critical for the system’s security. The signed report ensures that the measurements have been recorded correctly and have not been altered.
+
+    * Signer Verification: Before trusting the report, it is crucial to verify the identity of the signer. This step ensures that the report comes from a legitimate source and has not been tampered with.
+
+    * Measurement Register: The measurement register, which logs the state of the system components, can be trusted if the signer is verified. This register includes measurements of the firmware, boot loader, operating system, and applications, ensuring the integrity of the entire system.
+
+* Nonce: A nonce is a random number used once in cryptographic communication to ensure that old communications cannot be reused in replay attacks. It ensures the freshness of the attestation evidence.
+
+* Event Logs: Event logs record significant events within the system, such as changes in configuration or application execution. By replaying these logs and comparing the results with the measurement registers, we can verify that the logs accurately reflect the system’s state. If the replayed logs match the measurement registers, it confirms that the logs are trustworthy.
+
+    * Reconstruction of Environment: Using the event logs, we can reconstruct the entire virtual machine (VM) environment. This reconstruction includes measurements for firmware, GRUB, shim, kernel, initrd, and all applications inside the container. This process helps ensure that no unauthorized changes have occurred.
+* User Data: User data can also be part of the attestation process to ensure that sensitive information has not been compromised.
+
+A third-party application can maintain the golden values (trusted baseline measurements) for all these components and use them to verify the attestation evidence. This verification ensures that the system is in a known good state before sensitive data is processed or transmitted.
+
+### Local Attestation
+[Local attestation](https://gramine.readthedocs.io/en/stable/attestation.html) is similar to remote attestation but occurs between applications running running on the same platform. It is used when two or more local applications need to verify each other’s integrity without involving a third party. This is useful in scenarios where local components must ensure mutual trust before performing sensitive operations.
+
+* Reconstruction of Environment: Just like in remote attestation, the local environment can be reconstructed using the event logs and golden values stored locally. By verifying these values locally, each application can ensure that the other components of the system are in a trusted state.
+
+* Verification Process: The process involves verifying the measurement registers and event logs locally to ensure that the system's state has not been tampered with. This local verification provides a layer of security, ensuring that only trusted components interact with each other.
+
+In both remote and local attestation, the goal is to ensure that the system’s integrity is maintained and that all components operate in a trusted and secure manner. This process is essential for protecting sensitive data and maintaining the overall security of the system.
+
 ## Reference
 
 [1] https://www.docker.com/resources/what-container/
@@ -178,3 +224,11 @@ Processing](https://trustedcomputinggroup.org/wp-content/uploads/TCG-Guidance-In
 [5] [TDX Virtual Firmware design guide](https://cdrdv2-public.intel.com/733585/tdx-virtual-firmware-design-guide-rev-004-20231206.pdf)
 
 [6] [Integrity Measurement Architecture](https://sourceforge.net/p/linux-ima/wiki/Home/)
+
+[7] [A Technical Analysis of Confidential Computing](https://confidentialcomputing.io/wp-content/uploads/sites/10/2023/03/CCC-A-Technical-Analysis-of-Confidential-Computing-v1.3_unlocked.pdf)
+
+[8] [Remote Attestation procedures architecture](https://datatracker.ietf.org/doc/draft-ietf-rats-architecture/)
+
+[9] [Attestation and Secret Provisioning](https://gramine.readthedocs.io/en/stable/attestation.html)
+
+[10] [Innovative Technology for CPU Based Attestation and Sealing](https://www.intel.com/content/www/us/en/developer/articles/technical/innovative-technology-for-cpu-based-attestation-and-sealing.html)
