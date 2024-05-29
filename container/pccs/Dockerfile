@@ -36,6 +36,8 @@ COPY container/pccs/default.json /opt/intel/sgx-dcap-pccs/config/
 COPY container/pccs/network_setting.conf /opt/intel/sgx-pck-id-retrieval-tool/
 COPY container/pccs/ssl_key /opt/intel/sgx-dcap-pccs/ssl_key
 
+RUN useradd -rm -d /home/ubuntu -s /bin/bash -g root -G sudo -u 1001 ubuntu
+USER ubuntu
 WORKDIR /opt/intel/sgx-dcap-pccs/
 
 EXPOSE 8081
