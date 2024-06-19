@@ -24,7 +24,7 @@ from ccnp import ccnp_server_pb2_grpc
 LOG = logging.getLogger(__name__)
 
 # Default gRPC timeout
-TIMEOUT = 5
+TIMEOUT = 60
 
 class CcnpSdk(CCTrustedApi):
     """CCNP SDK class
