@@ -36,6 +36,7 @@ RUN chown $USER:$GROUP /run/ccnp
 
 COPY test ./
 COPY sdk/python3/example/py_sdk_example.py ./
+COPY test/perf/py_perf.py ./
 COPY --from=python-builder cc-trusted-api/common/python/dist/cctrusted_base*.whl ./
 COPY --from=python-builder ccnp-sdk/dist/ccnp*.whl ./
 

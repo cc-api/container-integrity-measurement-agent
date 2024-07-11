@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ccnp-perf-example-PLACEHOLDER
+  namespace: perf
+spec:
+  selector:
+    matchLabels:
+      app: ccnp-perf-example-PLACEHOLDER
+  template:
+    metadata:
+      labels:
+        app: ccnp-perf-example-PLACEHOLDER
+      annotations:
+        "ccnp.cc-api/require": "true"
+    spec:
+      containers:
+      - name: ccnp-perf-example-PLACEHOLDER
+        image: "docker.io/library/ccnp-example:latest"
+        imagePullPolicy: Always
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "100m"
+      nodeSelector:
+        "feature.node.kubernetes.io/cpu-security.tdx.protected": "true"
