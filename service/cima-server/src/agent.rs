@@ -1,5 +1,5 @@
 use anyhow::{anyhow, Error};
-use cctrusted_base::{api::CCTrustedApi, api_data::ExtraArgs, tcg};
+use evidence_api::{api::EvidenceApi, api_data::ExtraArgs, tcg};
 use cctrusted_vm::sdk::API;
 use log::info;
 use std::cmp::Ordering;

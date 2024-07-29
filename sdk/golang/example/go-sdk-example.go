@@ -8,8 +8,8 @@ import (
 	"math/rand"
 	"os"
 
-	"github.com/cc-api/cc-trusted-api/common/golang/cctrusted_base"
 	"github.com/cc-api/container-integrity-measurement-agent/sdk/golang/cima"
+	"github.com/cc-api/evidence-api/common/golang/evidence_api"
 )
 
 // func to test GetCCReport()
@@ -30,7 +30,7 @@ func testGetCCReport(sdk cima.SDK, logger *log.Logger) {
 	}
 
 	logger.Println("Dump the attestation report fetched.")
-	report.Dump(cctrusted_base.QuoteDumpFormat(cctrusted_base.QuoteDumpFormatRaw))
+	report.Dump(evidence_api.QuoteDumpFormat(evidence_api.QuoteDumpFormatRaw))
 	logger.Println("----------------------------------------------------------------------------------")
 }
 
@@ -39,7 +39,7 @@ func testGetCCMeasurement(sdk cima.SDK, logger *log.Logger) {
 	logger.Println("Call [GetCCMeasurement] to fetch measurement for specific IMR[0]...")
 
 	imr_index := 0
-	alg := cctrusted_base.TPM_ALG_SHA384
+	alg := evidence_api.TPM_ALG_SHA384
 
 	measurement, err := sdk.GetCCMeasurement(imr_index, alg)
 	if err != nil {

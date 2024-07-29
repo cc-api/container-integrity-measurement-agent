@@ -10,13 +10,13 @@ import os
 from typing import Optional
 import grpc
 
-from cctrusted_base.api import CCTrustedApi
-from cctrusted_base.ccreport import CcReport
-from cctrusted_base.tcg import TcgAlgorithmRegistry
-from cctrusted_base.tcg import TcgDigest
-from cctrusted_base.tcg import TcgImrEvent
-from cctrusted_base.tcg import TcgPcClientImrEvent
-from cctrusted_base.tdx.quote import TdxQuote
+from evidence_api.api import EvidenceApi
+from evidence_api.ccreport import CcReport
+from evidence_api.tcg import TcgAlgorithmRegistry
+from evidence_api.tcg import TcgDigest
+from evidence_api.tcg import TcgImrEvent
+from evidence_api.tcg import TcgPcClientImrEvent
+from evidence_api.tdx.quote import TdxQuote
 # pylint: disable=E1101
 from cima import cima_server_pb2
 from cima import cima_server_pb2_grpc
@@ -26,7 +26,7 @@ LOG = logging.getLogger(__name__)
 # Default gRPC timeout
 TIMEOUT = 60
 
-class CimaSdk(CCTrustedApi):
+class CimaSdk(EvidenceApi):
     """CIMA SDK class
 
     This class is a client to connect to CIMA Server and do gRPC call getting the
@@ -193,7 +193,7 @@ class CimaSdk(CCTrustedApi):
             LOG.error("CIMA service response is not correct.")
             return None
 
-        if resp.cc_type == CCTrustedApi.TYPE_CC_TDX:
+        if resp.cc_type == EvidenceApi.TYPE_CC_TDX:
             return TdxQuote(resp.cc_report)
 
         LOG.error("The SDK does not support %s yet", resp.cc_type)

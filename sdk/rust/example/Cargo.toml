@@ -10,7 +10,7 @@ path = "src/rust-sdk-example.rs"
 
 [dependencies]
 cima = { path = "../cima" }
-cctrusted_base = { git="https://github.com/cc-api/cc-trusted-api" }
+evidence_api = { git="https://github.com/cc-api/evidence-api" }
 anyhow = "1.0"
 log = "0.4.20"
 env_logger = "0.10.1"

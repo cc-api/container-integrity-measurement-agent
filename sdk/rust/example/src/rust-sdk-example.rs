@@ -1,9 +1,9 @@
-use cctrusted_base::api::*;
-use cctrusted_base::api_data::*;
-use cctrusted_base::cc_type::TeeType;
-use cctrusted_base::tcg::EventLogEntry;
-use cctrusted_base::tcg::TcgAlgorithmRegistry;
-use cctrusted_base::tdx::quote::TdxQuote;
+use evidence_api::api::*;
+use evidence_api::api_data::*;
+use evidence_api::cc_type::TeeType;
+use evidence_api::tcg::EventLogEntry;
+use evidence_api::tcg::TcgAlgorithmRegistry;
+use evidence_api::tdx::quote::TdxQuote;
 use cima::sdk::API;
 use log::*;
 use rand::Rng;
@@ -18,7 +18,7 @@ fn get_cc_report() {
     let data = base64::encode(rand::thread_rng().gen::<[u8; 32]>());
 
     // retrieve cc report with API "get_cc_report"
-    info!("call cc trusted API [get_cc_report] to retrieve cc report with nonce and data!");
+    info!("call evidence API [get_cc_report] to retrieve cc report with nonce and data!");
     let report = match API::get_cc_report(Some(nonce), Some(data), ExtraArgs {}) {
         Ok(q) => q,
         Err(e) => {
@@ -30,7 +30,7 @@ fn get_cc_report() {
     info!("length of the cc report: {}", report.cc_report.len());
 
     // dump the cc report with API "dump_cc_report"
-    //info!("call cc trusted API [dump_cc_report] to dump cc report!");
+    //info!("call evidence API [dump_cc_report] to dump cc report!");
     //API::dump_cc_report(&report.cc_report);
 
     // parse the cc report with API "parse_cc_report"
@@ -54,7 +54,7 @@ fn get_cc_report() {
     }
 
     // retrieve cc report with API "get_cc_report"
-    info!("call cc trusted API [get_cc_report] to retrieve cc report with no nonce and data!");
+    info!("call evidence API [get_cc_report] to retrieve cc report with no nonce and data!");
     let report1 = match API::get_cc_report(None, None, ExtraArgs {}) {
         Ok(q) => q,
         Err(e) => {
@@ -88,7 +88,7 @@ fn get_cc_report() {
 
 fn get_cc_measurement() {
     // get default algorithm with API "get_default_algorithm"
-    info!("call cc trusted API [get_default_algorithm] to get supported algorithm!");
+    info!("call evidence API [get_default_algorithm] to get supported algorithm!");
     let defalt_algo = match API::get_default_algorithm() {
         Ok(algorithm) => {
             info!("supported algorithm: {}", algorithm.algo_id_str);
@@ -101,7 +101,7 @@ fn get_cc_measurement() {
     };
 
     // get number of measurement registers
-    info!("call cc trusted API [get_measurement_count] to get number of measurement registers!");
+    info!("call evidence API [get_measurement_count] to get number of measurement registers!");
     let _count = match API::get_measurement_count() {
         Ok(count) => {
             info!("measurement registers count: {}", count);
@@ -114,7 +114,7 @@ fn get_cc_measurement() {
     };
 
     // retrive and show measurement registers
-    info!("call cc trusted API [get_cc_measurement] to get measurement register content!");
+    info!("call evidence API [get_cc_measurement] to get measurement register content!");
     for index in [0, 1, 3] {
         let tcg_digest = match API::get_cc_measurement(index, defalt_algo.algo_id) {
             Ok(tcg_digest) => tcg_digest,
@@ -134,7 +134,7 @@ fn get_cc_measurement() {
 
 fn get_cc_eventlog() {
     // retrieve cc eventlog with API "get_cc_eventlog"
-    info!("call cc trusted API [get_cc_eventlog] to get container related eventlog without count!");
+    info!("call evidence API [get_cc_eventlog] to get container related eventlog without count!");
     let eventlogs1 = match API::get_cc_eventlog(Some(0), None) {
         Ok(q) => q,
         Err(e) => {
@@ -146,7 +146,7 @@ fn get_cc_eventlog() {
     info!("container event log count: {}", eventlogs1.len());
 
     // retrieve cc eventlog with API "get_cc_eventlog"
-    info!("call cc trusted API [get_cc_eventlog] to get container related eventlog with count number!");
+    info!("call evidence API [get_cc_eventlog] to get container related eventlog with count number!");
     let eventlogs = match API::get_cc_eventlog(Some(0), Some(101)) {
         Ok(q) => q,
         Err(e) => {
@@ -161,7 +161,7 @@ fn get_cc_eventlog() {
     // }
 
     // retrieve cc eventlog in batch
-    info!("call cc trusted API [get_cc_eventlog] to get container related eventlog in 10 batches!");
+    info!("call evidence API [get_cc_eventlog] to get container related eventlog in 10 batches!");
     let mut eventlogs2: Vec<EventLogEntry> = Vec::new();
     let mut start = 0;
     let batch_size = (eventlogs1.len() / 10) as u32;
@@ -187,7 +187,7 @@ fn get_cc_eventlog() {
     info!("event log count: {}", eventlogs2.len());
 
     // replay cc eventlog with API "replay_cc_eventlog"
-    info!("call cc trusted API [replay_cc_eventlog] to replay container related eventlog!");
+    info!("call evidence API [replay_cc_eventlog] to replay container related eventlog!");
     let replay_results = match API::replay_cc_eventlog(eventlogs) {
         Ok(q) => q,
         Err(e) => {
