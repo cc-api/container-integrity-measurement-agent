@@ -19,7 +19,7 @@ type SDK struct {
 }
 
 // GetCCReport implements EvidenceAPI
-func (s *SDK) GetCCReport(nonce string, userData string, _ any) (evidence_api.Report, error) {
+func (s *SDK) GetCCReport(nonce, userData string, extraArgs map[string]any) (evidence_api.Report, error) {
 	client, err := NewClient()
 	if err != nil {
 		log.Fatalf("[GetCCReport] failed to connect to client with error %v", err)
