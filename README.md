@@ -1,12 +1,12 @@
-# Confidential Cloud-Native Primitives (CCNP)
+# Container Integrity Measurement Agent (CIMA)
 
-![CI Check License](https://github.com/cc-api/confidential-cloud-native-primitives/actions/workflows/pr-license-python.yaml/badge.svg)
-![CI Check Spelling](https://github.com/cc-api/confidential-cloud-native-primitives/actions/workflows/pr-doclint.yaml/badge.svg)
-![CI Check Python](https://github.com/cc-api/confidential-cloud-native-primitives/actions/workflows/pr-pylint.yaml/badge.svg)
-![CI Check Shell](https://github.com/cc-api/confidential-cloud-native-primitives/actions/workflows/pr-shell-check.yaml/badge.svg)
-![CI Check Rust](https://github.com/cc-api/confidential-cloud-native-primitives/actions/workflows/pr-check-rust.yaml/badge.svg)
-![CI Check Golang](https://github.com/cc-api/confidential-cloud-native-primitives/actions/workflows/pr-golang-check.yaml/badge.svg)
-![CI Check Container](https://github.com/cc-api/confidential-cloud-native-primitives/actions/workflows/pr-container-check.yaml/badge.svg)
+![CI Check License](https://github.com/cc-api/container-integrity-measurement-agent/actions/workflows/pr-license-python.yaml/badge.svg)
+![CI Check Spelling](https://github.com/cc-api/container-integrity-measurement-agent/actions/workflows/pr-doclint.yaml/badge.svg)
+![CI Check Python](https://github.com/cc-api/container-integrity-measurement-agent/actions/workflows/pr-pylint.yaml/badge.svg)
+![CI Check Shell](https://github.com/cc-api/container-integrity-measurement-agent/actions/workflows/pr-shell-check.yaml/badge.svg)
+![CI Check Rust](https://github.com/cc-api/container-integrity-measurement-agent/actions/workflows/pr-check-rust.yaml/badge.svg)
+![CI Check Golang](https://github.com/cc-api/container-integrity-measurement-agent/actions/workflows/pr-golang-check.yaml/badge.svg)
+![CI Check Container](https://github.com/cc-api/container-integrity-measurement-agent/actions/workflows/pr-container-check.yaml/badge.svg)
 [![OpenSSF Best Practices](https://www.bestpractices.dev/projects/8325/badge)](https://www.bestpractices.dev/projects/8325)
 
 ## Introduction
@@ -17,34 +17,34 @@ It requires a full chain integrity measurement on the launch-time or runtime env
 to guarantee "consistent behavior in an expected way" of confidential
 computing environment for tenant's zero-trust use case.
 
-CCNP aims to help users establish a chain of trust for cloud-native workloads by providing
-cloud-native level confidential computing primitives, including container measurements,
+CIMA aims to help users establish a chain of trust for cloud-native workloads by providing
+container level evidence, including container measurements,
 event logs, and confidential computing (CC) reports.
 
-Find out more in [CCNP Design and Architecture](https://cc-api.github.io/confidential-cloud-native-primitives/) and [Container Measurement Design](docs/container-measurement-design.md).
+Find out more in [CIMA Design and Architecture](https://cc-api.github.io/container-integrity-measurement-agent/) and [Container Measurement Design](docs/container-measurement-design.md).
 
 
-## How to Install CCNP
+## How to Install CIMA
 
 ### Configuration
 
-CCNP support to run on Intel® TDX guest. Thus, you will need TDX host and guest for CCNP deployment and usage. Please see below recommended configuration. 
+CIMA support to run on Intel® TDX guest. Thus, you will need TDX host and guest for CIMA deployment and usage. Please see below recommended configuration. 
 
-|  CPU | Host OS  | Host packages  | Guest OS  | Guest packages  | Attestation packages | CCNP Tag |
+|  CPU | Host OS  | Host packages  | Guest OS  | Guest packages  | Attestation packages | CIMA Tag |
 |---|---|---|---|---|---|---|
-|  Intel 4th Gen (only TDX SKUs) and 5th Gen Xeon Scalable Processors | Ubuntu 23.10| TDX early preview referring to [here](https://github.com/canonical/tdx?tab=readme-ov-file#4-setup-tdx-host) | Ubuntu 23.10 | Build a guest image for CCNP using [CVM image rewriter](https://github.com/cc-api/confidential-cloud-native-primitives/tree/v0.4.0/deployment#prepare-tdx-guest-image) | Setup remote attestation on host referring to [here](https://github.com/canonical/tdx?tab=readme-ov-file#8-setup-remote-attestation-on-host-and-td-guest)| [v0.4.0](https://github.com/cc-api/confidential-cloud-native-primitives/releases/tag/v0.4.0)
-|  Intel 4th Gen (only TDX SKUs) and 5th Gen Xeon Scalable Processors | Ubuntu 24.04| TDX early preview referring to [here](https://github.com/canonical/tdx/tree/2.0?tab=readme-ov-file#setup-tdx-host) | Ubuntu 24.04 | Build a guest image for CCNP using [CVM image rewriter](https://github.com/cc-api/confidential-cloud-native-primitives/tree/v0.5.0/deployment#prepare-tdx-guest-image) | Setup remote attestation on host referring to [here](https://github.com/cc-api/confidential-cloud-native-primitives/blob/v0.5.0/container/pccs/README.md) and [here](https://github.com/cc-api/confidential-cloud-native-primitives/blob/v0.5.0/container/qgs/README.md)| [v0.5.0](https://github.com/cc-api/confidential-cloud-native-primitives/releases/tag/v0.5.0)
+|  Intel 4th Gen (only TDX SKUs) and 5th Gen Xeon Scalable Processors | Ubuntu 23.10| TDX early preview referring to [here](https://github.com/canonical/tdx?tab=readme-ov-file#4-setup-tdx-host) | Ubuntu 23.10 | Build a guest image for CIMA using [CVM image rewriter](https://github.com/cc-api/container-integrity-measurement-agent/tree/v0.4.0/deployment#prepare-tdx-guest-image) | Setup remote attestation on host referring to [here](https://github.com/canonical/tdx?tab=readme-ov-file#8-setup-remote-attestation-on-host-and-td-guest)| [v0.4.0](https://github.com/cc-api/container-integrity-measurement-agent/releases/tag/v0.4.0)
+|  Intel 4th Gen (only TDX SKUs) and 5th Gen Xeon Scalable Processors | Ubuntu 24.04| TDX early preview referring to [here](https://github.com/canonical/tdx/tree/2.0?tab=readme-ov-file#setup-tdx-host) | Ubuntu 24.04 | Build a guest image for CIMA using [CVM image rewriter](https://github.com/cc-api/container-integrity-measurement-agent/tree/v0.5.0/deployment#prepare-tdx-guest-image) | Setup remote attestation on host referring to [here](https://github.com/cc-api/container-integrity-measurement-agent/blob/v0.5.0/container/pccs/README.md) and [here](https://github.com/cc-api/container-integrity-measurement-agent/blob/v0.5.0/container/qgs/README.md)| [v0.5.0](https://github.com/cc-api/container-integrity-measurement-agent/releases/tag/v0.5.0)
 
 
 
-### CCNP Service Deployment in Confidential VM
+### CIMA Service Deployment in Confidential VM
 
-CCNP will run as a DaemonSet in a Kubernetes cluster or as a container in a docker environment on a single confidential VM (CVM).
-Refer to [CCNP deployment guide](deployment/README.md) and choose a deployment model.
+CIMA will run as a DaemonSet in a Kubernetes cluster or as a container in a docker environment on a single confidential VM (CVM).
+Refer to [CIMA deployment guide](deployment/README.md) and choose a deployment model.
 
-### CCNP SDK Usage
+### CIMA SDK Usage
 
-If you want to integrate CCNP SDK in the workload to get measurement and event logs, refer to [py_sdk_example.py](/sdk/python3/example/py_sdk_example.py). It is an example of using CCNP Python SDK. There are also Golang SDK and Rust SDK. Please see more details in [CCNP SDK](https://cc-api.github.io/confidential-cloud-native-primitives/sdk.html).
+If you want to integrate CIMA SDK in the workload to get measurement and event logs, refer to [py_sdk_example.py](/sdk/python3/example/py_sdk_example.py). It is an example of using CIMA Python SDK. There are also Golang SDK and Rust SDK. Please see more details in [CIMA SDK](https://cc-api.github.io/container-integrity-measurement-agent/sdk.html).
 
 
 ## Contributing
@@ -71,7 +71,7 @@ _Note: This is pre-production software. As such, it may be substantially modifie
 
 ## Reference
 
-[CCNP Design and Architecture](https://cc-api.github.io/confidential-cloud-native-primitives/)
+[CIMA Design and Architecture](https://cc-api.github.io/container-integrity-measurement-agent/)
 
 [Container Measurement Design](docs/container-measurement-design.md)
 

@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cima-example
+  namespace: cima
+spec:
+  selector:
+    matchLabels:
+      app: cima-example
+  template:
+    metadata:
+      labels:
+        app: cima-example
+      annotations:
+        "cima.cc-api/require": "true"
+    spec:
+      containers:
+      - name: cima-example
+        image: "docker.io/library/cima-example:latest"
+        imagePullPolicy: Always
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "100m"
+      nodeSelector:
+        "feature.node.kubernetes.io/cpu-security.tdx.protected": "true"

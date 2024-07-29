@@ -1,6 +1,6 @@
-# Confidential Cloud-Native Primitives SDK for Golang
+# Container Integrity Measurement Agent SDK for Golang
 
-The Confidential Cloud-Native Primitives (CCNP) project is the solution targeted on simplifying the use of Trusted Execution Environment (TEE) in cloud-native environment. Currently, there are 2 parts included in CCNP, the services and the SDK.
+The Container Integrity Measurement Agent (CIMA) project is the solution targeted on simplifying the use of Trusted Execution Environment (TEE) in cloud-native environment. Currently, there are 2 parts included in CIMA, the services and the SDK.
 
 - Service is designed to hide the complexity of different TEE platforms and provides common interfaces and scalability for cloud-native environment.
 - SDK is to simplify the use of the service interface for development, it covers communication to the service and parses the results from the services.
@@ -9,10 +9,10 @@ The service supports attestation, measurement fetching and event log collecting 
 
 Attestation is a common process within TEE platform and TPM to verify if the software binaries were properly instantiated on a trusted platform. Third parties can leverage the attestation process to identify the trustworthiness of the platform (by checking the measurements or event logs) as well as the software running on it, in order to decide whether they shall put their confidential information/workload onto the platform.
 
-CCNP, as the overall framework for attestation, measurement and event log fetching, provides user with both customer-facing SDK and overall framework. By leveraging this SDK, user can easily retrieve different kinds of measurements or evidence such as event logs. Working along with different verification services (such as Amber) and configurable policies, user can validate the trustworthiness of the  platform and make further decision.
+CIMA, as the overall framework for attestation, measurement and event log fetching, provides user with both customer-facing SDK and overall framework. By leveraging this SDK, user can easily retrieve different kinds of measurements or evidence such as event logs. Working along with different verification services (such as Amber) and configurable policies, user can validate the trustworthiness of the  platform and make further decision.
 
 [Source code][source_code]
-| [Package (Go package)][ccnp_golang]
+| [Package (Go package)][cima_golang]
 | [API reference documentation][api_doc]
 
 ## Getting started
@@ -21,10 +21,10 @@ CCNP, as the overall framework for attestation, measurement and event log fetchi
 In order to work properly, user need to have the backend services ready on the TEE or TPM enabled platform first. Please refer to each deployment guide reside in the [service](../../service/) folder to install the backend services.
 
 ### Install the package
-User can install the CCNP client library for Golang:
+User can install the CIMA client library for Golang:
 
 ```
-go get github.com/cc-api/confidential-cloud-native-primitives/sdk/golang/ccnp
+go get github.com/cc-api/container-integrity-measurement-agent/sdk/golang/cima
 ```
 
 ## Key concepts and usage
@@ -54,11 +54,11 @@ import (
     "os"
 
     "github.com/cc-api/cc-trusted-api/common/golang/cctrusted_base"
-	"github.com/cc-api/confidential-cloud-native-primitives/sdk/golang/ccnp"
+	"github.com/cc-api/container-integrity-measurement-agent/sdk/golang/cima"
 )
 
 func testGetCCReport() {
-    sdk := ccnp.SDK{}
+    sdk := cima.SDK{}
 
     num := uint64(rand.Int63n(math.MaxInt64))
     b := make([]byte, 8)
@@ -97,11 +97,11 @@ import(
     "fmt"
 
     "github.com/cc-api/cc-trusted-api/common/golang/cctrusted_base"
-    "github.com/cc-api/confidential-cloud-native-primitives/sdk/golang/ccnp"
+    "github.com/cc-api/container-integrity-measurement-agent/sdk/golang/cima"
 )
 
 func testGetCCMeasurement() {
-    sdk := ccnp.SDK{}
+    sdk := cima.SDK{}
 
     // set the imr index to 0
     imr_index := 0
@@ -136,11 +136,11 @@ import(
     "fmt"
 
     "github.com/cc-api/cc-trusted-api/common/golang/cctrusted_base"
-    "github.com/cc-api/confidential-cloud-native-primitives/sdk/golang/ccnp"
+    "github.com/cc-api/container-integrity-measurement-agent/sdk/golang/cima"
 )
 
 func testGetCCEventLog() {
-    sdk := ccnp.SDK{}
+    sdk := cima.SDK{}
 
     /*
         Another example to set start to 0 and count to 10 for event log retrieval
@@ -169,11 +169,11 @@ import(
     "fmt"
 
     "github.com/cc-api/cc-trusted-api/common/golang/cctrusted_base"
-    "github.com/cc-api/confidential-cloud-native-primitives/sdk/golang/ccnp"
+    "github.com/cc-api/container-integrity-measurement-agent/sdk/golang/cima"
 )
 
 func testReplayCCEventLog() {
-    sdk := ccnp.SDK{}
+    sdk := cima.SDK{}
 
     eventLogs, err := sdk.GetCCEventLog()
     if err != nil {
@@ -197,10 +197,10 @@ TBA.
 
 ## Troubleshooting
 
-Troubleshooting information for the CCNP SDK can be found here.
+Troubleshooting information for the CIMA SDK can be found here.
 
 ## Next steps
-For more information about the Confidential Cloud-Native Primitives, please see our documentation page.
+For more information about the Container Integrity Measurement Agent, please see our documentation page.
 
 ## Contributing
 This project welcomes contributions and suggestions. Most contributions require you to agree to a Contributor License Agreement (CLA) declaring that you have the right to, and actually do, grant us the rights to use your contribution. For details, visit the Contributor License Agreement site.
@@ -213,6 +213,6 @@ See [CONTRIBUTING.md](../../CONTRIBUTING.md) for details on building, testing, a
 If you encounter any bugs or have suggestions, please file an issue in the Issues section of the project.
 
 <!-- LINKS -->
-[source_code]: https://github.com/cc-api/confidential-cloud-native-primitives/tree/main/sdk/golang
-[ccnp_golang]: https://pkg.go.dev/github.com/cc-api/confidential-cloud-native-primitives/sdk/golang/ccnp
+[source_code]: https://github.com/cc-api/container-integrity-measurement-agent/tree/main/sdk/golang
+[cima_golang]: https://pkg.go.dev/github.com/cc-api/container-integrity-measurement-agent/sdk/golang/cima
 [api_doc]: https://github.com/cc-api/cc-trusted-api?tab=readme-ov-file#3-apis

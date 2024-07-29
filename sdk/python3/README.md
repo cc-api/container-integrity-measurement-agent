@@ -1,6 +1,6 @@
-# Confidential Cloud-Native Primitives SDK for Python
+# Container Integrity Measurement Agent SDK for Python
 
-The Confidential Cloud-Native Primitives (CCNP) project is the solution targeted on simplifying the use of Trusted Execution Environment (TEE) in cloud-native environment. Currently, there are 2 parts included in CCNP, the services and the SDK.
+The Container Integrity Measurement Agent (CIMA) project is the solution targeted on simplifying the use of Trusted Execution Environment (TEE) in cloud-native environment. Currently, there are 2 parts included in CIMA, the services and the SDK.
 
 - Service is designed to hide the complexity of different TEE platforms and provides common interfaces and scalability for cloud-native environment.
 - SDK is to simplify the use of the service interface for development, it covers communication to the service and parses the results from the services.
@@ -9,10 +9,10 @@ The service supports attestation, measurement fetching and event log collecting 
 
 Attestation is a common process within TEE platform and TPM to verify if the software binaries were properly instantiated on a trusted platform. Third parties can leverage the attestation process to identify the trustworthiness of the platform (by checking the measurements or event logs) as well as the software running on it, in order to decide whether they shall put their confidential information/workload onto the platform.
 
-CCNP, as the overall framework for attestation, measurement and event log fetching, provides user with both customer-facing SDK and overall framework. By leveraging this SDK, user can easily retrieve different kinds of measurements or evidence such as event logs. Working along with different verification services (such as Amber) and configurable policies, user can validate the trustworthiness of the  platform and make further decision.
+CIMA, as the overall framework for attestation, measurement and event log fetching, provides user with both customer-facing SDK and overall framework. By leveraging this SDK, user can easily retrieve different kinds of measurements or evidence such as event logs. Working along with different verification services (such as Amber) and configurable policies, user can validate the trustworthiness of the  platform and make further decision.
 
 [Source code][source_code]
-| [Package (PyPI)][ccnp_pypi]
+| [Package (PyPI)][cima_pypi]
 | [API reference documentation][api_doc]
 
 ## Getting started
@@ -21,10 +21,10 @@ CCNP, as the overall framework for attestation, measurement and event log fetchi
 In order to work properly, user need to have the backend services ready on the TEE or TPM enabled platform first. Please refer to each deployment guide reside in the [service](../../service/) folder to install the backend services.
 
 ### Install the package
-User can install the CCNP client library for Python with PyPI:
+User can install the CIMA client library for Python with PyPI:
 
 ```
-pip install ccnp
+pip install cima
 ```
 
 To install from source code, user can use the following command:
@@ -51,9 +51,9 @@ Here are the example usages of the SDK:
 
 * Fetch report without any inputs
 ```python
-from ccnp import CcnpSdk
+from cima import CimaSdk
 
-CcnpSdk.inst().get_cc_report().dump()
+CimaSdk.inst().get_cc_report().dump()
 
 ```
 
@@ -61,10 +61,10 @@ CcnpSdk.inst().get_cc_report().dump()
 ```python
 import base64
 import secrets
-from ccnp import CcnpSdk
+from cima import CimaSdk
 
 nonce = base64.b64encode(secrets.token_urlsafe().encode())
-CcnpSdk.inst().get_cc_report(nonce=nonce).dump()
+CimaSdk.inst().get_cc_report(nonce=nonce).dump()
 
 ```
 
@@ -72,11 +72,11 @@ CcnpSdk.inst().get_cc_report(nonce=nonce).dump()
 ```python
 import base64
 import secrets
-from ccnp import CcnpSdk
+from cima import CimaSdk
 
 nonce = base64.b64encode(secrets.token_urlsafe().encode())
 user_data = base64.b64encode(b'This data should be measured.')
-CcnpSdk.inst().get_cc_report(nonce=nonce, data=user_data).dump()
+CimaSdk.inst().get_cc_report(nonce=nonce, data=user_data).dump()
 
 ```
 
@@ -92,10 +92,10 @@ Here are the example usages for measurement SDK:
 
 * Fetch TEE measurement base on platform
 ```python
-from ccnp import CcnpSdk
+from cima import CimaSdk
 
 for i in [0, 1, 3]:
-    m = CcnpSdk.inst().get_cc_measurement([i, 12])
+    m = CimaSdk.inst().get_cc_measurement([i, 12])
     print("IMR index: %d, hash: %s"%(i, m.hash.hex()))
 
 ```
@@ -111,9 +111,9 @@ Here are the example usages of the SDK:
 
 * Fetch event log of platform and check the information inside
 ```python
-from ccnp import CcnpSdk
+from cima import CimaSdk
 
-evt = CcnpSdk.inst().get_cc_eventlog()
+evt = CimaSdk.inst().get_cc_eventlog()
 for e in evt:
     e.dump()
 
@@ -121,13 +121,13 @@ for e in evt:
 
 * Replay the event logs
 ```python
-from ccnp import CcnpSdk
+from cima import CimaSdk
 
-evt = CcnpSdk.inst().get_cc_eventlog()
-replay = CcnpSdk.inst().replay_cc_eventlog(evt)
+evt = CimaSdk.inst().get_cc_eventlog()
+replay = CimaSdk.inst().replay_cc_eventlog(evt)
 for r in replay:
     print("Replay IMR[%d]: %s"%(r, replay[r][12].hex()))
-    m = CcnpSdk.inst().get_cc_measurement([r, 12])
+    m = CimaSdk.inst().get_cc_measurement([r, 12])
     print("Read IMR[%d]: %s"%(r, m.hash.hex()))
     if m.hash != replay[r][12]:
         print("Replay IMR value does not match real IMR.")
@@ -141,10 +141,10 @@ TBA.
 
 ## Troubleshooting
 
-Troubleshooting information for the CCNP SDK can be found here.
+Troubleshooting information for the CIMA SDK can be found here.
 
 ## Next steps
-For more information about the Confidential Cloud-Native Primitives, please see our documentation page.
+For more information about the Container Integrity Measurement Agent, please see our documentation page.
 
 ## Contributing
 This project welcomes contributions and suggestions. Most contributions require you to agree to a Contributor License Agreement (CLA) declaring that you have the right to, and actually do, grant us the rights to use your contribution. For details, visit the Contributor License Agreement site.
@@ -157,6 +157,6 @@ See [CONTRIBUTING.md](../../CONTRIBUTING.md) for details on building, testing, a
 If you encounter any bugs or have suggestions, please file an issue in the Issues section of the project.
 
 <!-- LINKS -->
-[source_code]: https://github.com/cc-api/confidential-cloud-native-primitives/tree/main/sdk/python3
-[ccnp_pypi]: https://pypi.org/project/ccnp/
+[source_code]: https://github.com/cc-api/container-integrity-measurement-agent/tree/main/sdk/python3
+[cima_pypi]: https://pypi.org/project/cima/
 [api_doc]: https://github.com/cc-api/cc-trusted-api?tab=readme-ov-file#3-apis

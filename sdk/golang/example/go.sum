@@ -1,7 +1,7 @@
 github.com/cc-api/cc-trusted-api/common/golang/cctrusted_base v0.0.0-20240401053915-fe5bfeadd509 h1:Odnr+9Sponu6x5rANn7kAvdF288lcOa/0QQzlhKkfKQ=
 github.com/cc-api/cc-trusted-api/common/golang/cctrusted_base v0.0.0-20240401053915-fe5bfeadd509/go.mod h1:0rggJ3Z7AxSCbOfi2PBO98sAftWWsI39V7v/aG9xPmQ=
-github.com/cc-api/confidential-cloud-native-primitives/sdk/golang/ccnp v0.0.0-20240401063131-998a393b583a h1:1Z+zoOsY6ma58Vn9RgNidXP/tENPIz9LCM//3Hv19Io=
-github.com/cc-api/confidential-cloud-native-primitives/sdk/golang/ccnp v0.0.0-20240401063131-998a393b583a/go.mod h1:PtDzCV0SF6ZI4ofmi07gsjFL6kPpxxZMkt+Uab6kqBM=
+github.com/cc-api/container-integrity-measurement-agent/sdk/golang/cima v0.0.0-20240401063131-998a393b583a h1:1Z+zoOsY6ma58Vn9RgNidXP/tENPIz9LCM//3Hv19Io=
+github.com/cc-api/container-integrity-measurement-agent/sdk/golang/cima v0.0.0-20240401063131-998a393b583a/go.mod h1:PtDzCV0SF6ZI4ofmi07gsjFL6kPpxxZMkt+Uab6kqBM=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/golang/protobuf v1.5.0/go.mod h1:FsONVRAS9T7sI+LIUmWTfcYkHO4aIWwzhcaSAoJOfIk=

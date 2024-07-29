@@ -4,7 +4,7 @@ use cctrusted_base::cc_type::TeeType;
 use cctrusted_base::tcg::EventLogEntry;
 use cctrusted_base::tcg::TcgAlgorithmRegistry;
 use cctrusted_base::tdx::quote::TdxQuote;
-use ccnp::sdk::API;
+use cima::sdk::API;
 use log::*;
 use rand::Rng;
 

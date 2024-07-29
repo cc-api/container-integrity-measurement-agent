@@ -1,4 +1,4 @@
-name: Run CCNP E2E test
+name: Run CIMA E2E test
 on:
   schedule:
     - cron: '0 7 * * *'
@@ -16,15 +16,15 @@ jobs:
     steps: 
       - name: Checkout code
         uses: actions/checkout@v4.1.1
-      - name: Build and push CCNP images
+      - name: Build and push CIMA images
         run: |
           sudo ./container/build.sh -r gar-registry.caas.intel.com/cpio -g latest
-      - name: Deploy CCNP server
+      - name: Deploy CIMA server
         run: |
-          sudo ./deployment/kubernetes/script/deploy-ccnp.sh -r gar-registry.caas.intel.com/cpio -g latest -d
-      - name: Deploy CCNP test pod
+          sudo ./deployment/kubernetes/script/deploy-cima.sh -r gar-registry.caas.intel.com/cpio -g latest -d
+      - name: Deploy CIMA test pod
         run: |
-          sudo ./deployment/kubernetes/script/deploy-ccnp-example.sh -r gar-registry.caas.intel.com/cpio -g latest -d
+          sudo ./deployment/kubernetes/script/deploy-cima-example.sh -r gar-registry.caas.intel.com/cpio -g latest -d
       - name: Run Test
         run: |
            sudo ./test/ci-test/ci-e2e-test.sh

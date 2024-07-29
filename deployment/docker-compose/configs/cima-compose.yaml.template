@@ -1,0 +1,50 @@
+name: cima-server-ctr
+services:
+  init-cima-server:
+    image: busybox
+    deploy:
+      resources:
+        limits:
+          cpus: '0.1'
+          memory: 128M
+    command: >
+      sh -c " chmod -R 0444 /run/firmware/acpi/tables/CCEL &&
+              chmod -R 0444 /run/firmware/acpi/tables/data/CCEL &&
+              chmod -R 0444 /run/kernel/security/integrity/ima/ascii_runtime_measurements &&
+              chmod -R 0757 /run/cima/uds &&
+              chmod -R 0444 /etc/tdx-attest.conf &&
+              chmod -R 0757 /run/kernel/config/tsm/report/cima &&
+              chmod -R 0666 /run/kernel/config/tsm/report/cima/inblob"
+    volumes:
+      - /sys/firmware/acpi/tables/CCEL:/run/firmware/acpi/tables/CCEL
+      - /sys/firmware/acpi/tables/data/CCEL:/run/firmware/acpi/tables/data/CCEL
+      - /sys/kernel/security/integrity/ima/ascii_runtime_measurements:/run/kernel/security/integrity/ima/ascii_runtime_measurements
+      - /run/cima/uds:/run/cima/uds
+      - /etc/tdx-attest.conf:/etc/tdx-attest.conf
+      - /sys/kernel/config/tsm/report/cima:/run/kernel/config/tsm/report/cima
+      - /sys/kernel/config/tsm/report/cima/inblob:/run/kernel/config/tsm/report/cima/inblob
+
+  cima-server:
+    image: #CIMA_SERVER_IMAGE
+    deploy:
+      resources:
+        limits:
+          cpus: '0.1'
+          memory: 128M
+    depends_on:
+      init-cima-server:
+        condition: service_completed_successfully
+    volumes:
+      - /sys/firmware/acpi/tables/CCEL:/run/firmware/acpi/tables/CCEL
+      - /sys/firmware/acpi/tables/data/CCEL:/run/firmware/acpi/tables/data/CCEL
+      - /sys/kernel/security/integrity/ima/ascii_runtime_measurements:/run/kernel/security/integrity/ima/ascii_runtime_measurements
+      - /run/cima/uds:/run/cima/uds
+      - /etc/tdx-attest.conf:/etc/tdx-attest.conf
+      - /sys/kernel/config/tsm/report/cima:/run/kernel/config/tsm/report/cima
+      - /sys/kernel/config/tsm/report/cima/inblob:/run/kernel/config/tsm/report/cima/inblob
+    environment:
+      - TSM_REPORT=/run/kernel/config/tsm/report/cima
+    devices:
+      - #DEV_TDX:#DEV_TDX
+    security_opt:
+      - seccomp:unconfined

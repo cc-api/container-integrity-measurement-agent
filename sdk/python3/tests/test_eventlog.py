@@ -10,7 +10,7 @@ import logging
 import pytest
 import grpc
 
-from ccnp.eventlog.eventlog_sdk import (
+from cima.eventlog.eventlog_sdk import (
     EventlogType,
     EventlogUtility,
 )

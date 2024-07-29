@@ -75,8 +75,8 @@ while getopts ":a:r:c:g:hf" option; do
 
 function build_a_image {
     local img_container=$1
-    if [[ ! $img_container =~ "ccnp" ]];then
-        img_name="ccnp-${img_container}"
+    if [[ ! $img_container =~ "cima" ]];then
+        img_name="cima-${img_container}"
     else
         img_name=$img_container
     fi
@@ -127,8 +127,8 @@ function build_images {
 
 function publish_a_image {
     local img_container=$1
-    if [[ ! $img_container =~ "ccnp" ]];then
-        img_name="ccnp-${img_container}"
+    if [[ ! $img_container =~ "cima" ]];then
+        img_name="cima-${img_container}"
     else
         img_name=$img_container
     fi

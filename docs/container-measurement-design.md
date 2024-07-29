@@ -70,7 +70,7 @@ From these typical usages, it is evident that for container measurement after bo
   * etcd/kube-apiserver
   * kube-controller-manager/kube-scheduler
   * kubeproxy/...
-  * measurement daemonset(CCNP)
+  * measurement daemonset(CIMA)
 * Versions/Configurations/Parameters/Status
 
 ## Container Measurement Architecture

@@ -72,11 +72,11 @@ function process_args {
     fi
 
     if [[ "$registry" == "" ]]; then
-        if [[ -z "$CCNP_REGISTRY" ]]; then
-            echo "Error: Please specify your docker registry via -r <registry prefix> or set environment variable CCNP_REGISTRY."
+        if [[ -z "$CIMA_REGISTRY" ]]; then
+            echo "Error: Please specify your docker registry via -r <registry prefix> or set environment variable CIMA_REGISTRY."
             exit 1
         else
-            registry=$CCNP_REGISTRY
+            registry=$CIMA_REGISTRY
         fi
     fi
 }
@@ -147,7 +147,7 @@ function build_images {
 }
 
 #
-# Publish a container image to given registry via "-r" or environment variable CCNP_REGISTRY
+# Publish a container image to given registry via "-r" or environment variable CIMA_REGISTRY
 #
 # @param $1 the name of container
 #

@@ -1,6 +1,6 @@
-CCNP_VERSION noble; urgency=medium
+CIMA_VERSION noble; urgency=medium
 
-  * [CCNP] Add CCNP kernel patches
+  * [CIMA] Add CIMA kernel patches
 
     - IMA: support extending measurements to TDX RTMR
     - IMA: create new IMA template ima-dep-cgn and ima-cgpath

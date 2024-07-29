@@ -9,7 +9,7 @@ This file contains the test cases against the get_measurement API
 import logging
 import pytest
 
-from ccnp.measurement.measurement_sdk import (
+from cima.measurement.measurement_sdk import (
     MeasurementType,
     MeasurementUtility,
 )

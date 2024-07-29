@@ -1,0 +1,85 @@
+syntax = "proto3";
+
+package cima_server_pb;
+
+message HealthCheckRequest {
+  string service = 1;
+}
+
+message HealthCheckResponse {
+  enum ServingStatus {
+    UNKNOWN = 0;
+    SERVING = 1;
+    NOT_SERVING = 2;
+    SERVICE_UNKNOWN = 3;
+  }
+  ServingStatus status = 1;
+}
+
+service cima {
+    rpc GetDefaultAlgorithm(GetDefaultAlgorithmRequest) returns (GetDefaultAlgorithmResponse);
+    rpc GetMeasurementCount(GetMeasurementCountRequest) returns (GetMeasurementCountResponse);
+    rpc GetCcReport (GetCcReportRequest) returns (GetCcReportResponse);
+    rpc GetCcMeasurement (GetCcMeasurementRequest) returns (GetCcMeasurementResponse) {}
+    rpc GetCcEventlog (GetCcEventlogRequest) returns (GetCcEventlogResponse) {}
+}
+
+message GetDefaultAlgorithmRequest {
+}
+
+message GetDefaultAlgorithmResponse {
+    uint32 algo_id = 1;
+}
+
+message GetMeasurementCountRequest {
+}
+
+message GetMeasurementCountResponse {
+    uint32 count = 1;
+}
+
+message GetCcReportRequest {
+    string container_id = 1;
+    optional string user_data = 2;
+    optional string nonce = 3;
+}
+
+message GetCcReportResponse {
+    int32 cc_type = 1;
+    bytes cc_report = 2;
+}
+
+message GetCcMeasurementRequest {
+    string container_id = 1;
+    uint32 index = 2;
+    uint32 algo_id = 3;
+}
+
+message GetCcMeasurementResponse {
+    TcgDigest measurement = 1;
+}
+
+message GetCcEventlogRequest {
+    string container_id = 1;
+    optional uint32 start = 2;
+    optional uint32 count = 3;
+}
+
+message TcgDigest {
+    uint32  algo_id = 1;
+    bytes   hash = 2;
+}
+
+message TcgEventlog {
+    uint32 rec_num = 1;
+    uint32  imr_index = 2;
+    uint32  event_type = 3;
+    repeated TcgDigest digests = 4;
+    uint32  event_size = 5;
+    bytes   event = 6;
+    map<string, string> extra_info = 7;
+}
+
+message GetCcEventlogResponse {
+    repeated TcgEventlog event_logs = 1;
+}

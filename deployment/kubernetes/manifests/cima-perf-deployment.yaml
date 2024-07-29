@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cima-perf
+  namespace: cima
+spec:
+  selector:
+    matchLabels:
+      app: cima-perf
+  template:
+    metadata:
+      labels:
+        app: cima-perf
+      annotations:
+        "cima.cc-api/require": "true"
+    spec:
+      containers:
+      - name: cima-perf
+        image: "docker.io/library/cima-perf:latest"
+        imagePullPolicy: IfNotPresent
+        resources:
+          limits:
+            memory: 100M
+            cpu: 1
+      nodeSelector:
+        intel.feature.node.kubernetes.io/tdx-guest: enabled

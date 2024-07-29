@@ -4,7 +4,7 @@ go 1.22.1
 
 require (
 	github.com/cc-api/cc-trusted-api/common/golang/cctrusted_base v0.0.0-20240401053915-fe5bfeadd509
-	github.com/cc-api/confidential-cloud-native-primitives/sdk/golang/ccnp v0.0.0-20240401063131-998a393b583a
+	github.com/cc-api/container-integrity-measurement-agent/sdk/golang/cima v0.0.0-20240401063131-998a393b583a
 )
 
 require (

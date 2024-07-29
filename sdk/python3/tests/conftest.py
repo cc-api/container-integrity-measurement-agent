@@ -1,5 +1,5 @@
 """
-    Dummy conftest.py for ccnp.
+    Dummy conftest.py for cima.
 
     If you don't know what this is for, just leave it empty.
     Read more about conftest.py under:

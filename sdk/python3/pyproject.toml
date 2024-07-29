@@ -1,5 +1,5 @@
 [project]
-name = "ccnp"
+name = "cima"
 version = "0.4.0"
 authors = [
   { name="Lu, Ken", email="ken.lu@intel.com" },
@@ -22,8 +22,8 @@ dependencies = [
 ]
 
 [project.urls]
-"Homepage" = "https://github.com/cc-api/confidential-cloud-native-primitives"
-"Bug Tracker" = "https://github.com/cc-api/confidential-cloud-native-primitives/issues"
+"Homepage" = "https://github.com/cc-api/container-integrity-measurement-agent"
+"Bug Tracker" = "https://github.com/cc-api/container-integrity-measurement-agent/issues"
 
 [build-system]
 requires = ["setuptools", "wheel"]
