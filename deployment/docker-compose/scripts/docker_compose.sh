@@ -7,14 +7,14 @@ DIR=$(dirname "$(readlink -f "$0")")
 CONFIG_DIR="$DIR/configs"
 
 create_composes() {
-    CCNP_SERVER_IMAGE=$1
+    CIMA_SERVER_IMAGE=$1
 
     DEV_TDX=$(check_dev_tdx)
 
-    sed "s@\#CCNP_SERVER_IMAGE@$CCNP_SERVER_IMAGE@g" "$CONFIG_DIR"/ccnp-compose.yaml.template \
-        > "$COMPOSE_CACHE_DIR"/ccnp-compose.yaml
+    sed "s@\#CIMA_SERVER_IMAGE@$CIMA_SERVER_IMAGE@g" "$CONFIG_DIR"/cima-compose.yaml.template \
+        > "$COMPOSE_CACHE_DIR"/cima-compose.yaml
     
-    sed -i "s@\#DEV_TDX@$DEV_TDX@g" "$COMPOSE_CACHE_DIR"/ccnp-compose.yaml
+    sed -i "s@\#DEV_TDX@$DEV_TDX@g" "$COMPOSE_CACHE_DIR"/cima-compose.yaml
 
 }
 

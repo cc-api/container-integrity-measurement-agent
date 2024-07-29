@@ -2,7 +2,7 @@
 
 set -e
 
-CCNP_VERSION_SUFFIX="+ccnp1"
+CIMA_VERSION_SUFFIX="+cima1"
 BASE_KERNEL_VERSION="6.8.0-31-generic"
 if [ -n "${TDX_SETUP_INTEL_KERNEL}" ]; then
   BASE_KERNEL_VERSION="6.8.0-1001-intel"
@@ -10,7 +10,7 @@ fi
 
 CUR_DIR=$(dirname "$(readlink -f "$0")")
 KERNEL_DIR=${CUR_DIR}/kernel
-TMP_DIR=$(mktemp -d /tmp/ccnp_build.XXXXXX)
+TMP_DIR=$(mktemp -d /tmp/cima_build.XXXXXX)
 OUT_DIR=${CUR_DIR}/output
 
 patch_kernel() {
@@ -47,12 +47,12 @@ build_ubuntu_kernel() {
     fi
 
     # For generic kernel, the default version in changelog is linux (6.8.0-31.31),
-    #   we want to change to ccnp version linux (6.8.0-31.31+ccnp1)
+    #   we want to change to cima version linux (6.8.0-31.31+cima1)
     # For intel kernel, the default version in changelog is linux-intel (6.8.0-1001.7)
-    #   we want to change it to linux-intel (6.8.0-1001.7+ccnp1)
+    #   we want to change it to linux-intel (6.8.0-1001.7+cima1)
     LATEST_VERSION=$(sed -n '1 s/\(linux.*(.*\)) noble.*$/\1/p' ${CHANGELOG})
-    CCNP_VERSION="${LATEST_VERSION}${CCNP_VERSION_SUFFIX})"
-    sed "s/CCNP_VERSION/${CCNP_VERSION}/" \
+    CIMA_VERSION="${LATEST_VERSION}${CIMA_VERSION_SUFFIX})"
+    sed "s/CIMA_VERSION/${CIMA_VERSION}/" \
         "${KERNEL_DIR}/ubuntu/changelog" > "${KERNEL_DIR}/ubuntu/changelog.tmp"
     sed -i "0 r ${KERNEL_DIR}/ubuntu/changelog.tmp" debian/changelog ${CHANGELOG}
     rm "${KERNEL_DIR}/ubuntu/changelog.tmp"

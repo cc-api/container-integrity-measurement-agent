@@ -1,6 +1,6 @@
-# Confidential Cloud-Native Primitives SDK for Rust
+# Container Integrity Measurement Agent SDK for Rust
 
-The Confidential Cloud-Native Primitives (CCNP) project is the solution targeted on simplifying the use of Trusted Execution Environment (TEE) in cloud-native environment. Currently, there are 2 parts included in CCNP, the services and the SDK.
+The Container Integrity Measurement Agent (CIMA) project is the solution targeted on simplifying the use of Trusted Execution Environment (TEE) in cloud-native environment. Currently, there are 2 parts included in CIMA, the services and the SDK.
 
 - Service is designed to hide the complexity of different TEE platforms and provides common interfaces and scalability for cloud-native environment.
 - SDK is to simplify the use of the service interface for development, it covers communication to the service and parses the results from the services.
@@ -9,7 +9,7 @@ The service supports attestation, measurement fetching and event log collecting 
 
 Attestation is a common process within TEE platform and TPM to verify if the software binaries were properly instantiated on a trusted platform. Third parties can leverage the attestation process to identify the trustworthiness of the platform (by checking the measurements or event logs) as well as the software running on it, in order to decide whether they shall put their confidential information/workload onto the platform.
 
-CCNP, as the overall framework for attestation, measurement and event log fetching, provides user with both customer-facing SDK and overall framework. By leveraging this SDK, user can easily retrieve different kinds of measurements or evidence such as event logs. Working along with different verification services (such as Amber) and configurable policies, user can validate the trustworthiness of the  platform and make further decision.
+CIMA, as the overall framework for attestation, measurement and event log fetching, provides user with both customer-facing SDK and overall framework. By leveraging this SDK, user can easily retrieve different kinds of measurements or evidence such as event logs. Working along with different verification services (such as Amber) and configurable policies, user can validate the trustworthiness of the  platform and make further decision.
 
 [Source code][source_code]
 | [API reference documentation][api_doc]
@@ -20,10 +20,10 @@ CCNP, as the overall framework for attestation, measurement and event log fetchi
 In order to work properly, user need to have the backend services ready on the TEE or TPM enabled platform first. Please refer to each deployment guide reside in the [service](../../service/) folder to install the backend services.
 
 ### Use the package
-User can include CCNP client library for Rust in the `Cargo.toml` of their rust project:
+User can include CIMA client library for Rust in the `Cargo.toml` of their rust project:
 
 ```
-ccnp = { git="https://github.com/cc-api/confidential-cloud-native-primitives"}
+cima = { git="https://github.com/cc-api/container-integrity-measurement-agent"}
 ```
 
 ## Key concepts and usage
@@ -48,7 +48,7 @@ use cctrusted_base::api::*;
 use cctrusted_base::api_data::*;
 use cctrusted_base::cc_type::TeeType;
 use cctrusted_base::tdx::quote::TdxQuote;
-use ccnp::sdk::API;
+use cima::sdk::API;
 use log::*;
 use rand::Rng;
 
@@ -148,7 +148,7 @@ Here are the example usages for measurement SDK:
 use cctrusted_base::api::*;
 use cctrusted_base::api_data::*;
 use cctrusted_base::tcg::TcgAlgorithmRegistry;
-use ccnp::sdk::API;
+use cima::sdk::API;
 use log::*;
 
 fn get_cc_measurement() {
@@ -212,7 +212,7 @@ Here are the example usages of the SDK:
 ```rust
 use cctrusted_base::api::*;
 use cctrusted_base::api_data::*;
-use ccnp::sdk::API;
+use cima::sdk::API;
 use log::*;
 
 fn get_cc_eventlog() {
@@ -267,10 +267,10 @@ TBA.
 
 ## Troubleshooting
 
-Troubleshooting information for the CCNP SDK can be found here.
+Troubleshooting information for the CIMA SDK can be found here.
 
 ## Next steps
-For more information about the Confidential Cloud-Native Primitives, please see our documentation page.
+For more information about the Container Integrity Measurement Agent, please see our documentation page.
 
 ## Contributing
 This project welcomes contributions and suggestions. Most contributions require you to agree to a Contributor License Agreement (CLA) declaring that you have the right to, and actually do, grant us the rights to use your contribution. For details, visit the Contributor License Agreement site.
@@ -283,5 +283,5 @@ See [CONTRIBUTING.md](../../CONTRIBUTING.md) for details on building, testing, a
 If you encounter any bugs or have suggestions, please file an issue in the Issues section of the project.
 
 <!-- LINKS -->
-[source_code]: https://github.com/cc-api/confidential-cloud-native-primitives/tree/main/sdk/rust
+[source_code]: https://github.com/cc-api/container-integrity-measurement-agent/tree/main/sdk/rust
 [api_doc]: https://github.com/cc-api/cc-trusted-api?tab=readme-ov-file#3-apis

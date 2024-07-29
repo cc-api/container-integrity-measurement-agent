@@ -15,6 +15,6 @@ tools/cvm-image-rewriter/pre-stage/05-readonly-data/cloud-init/x-shellscript/01-
 tools/cvm-image-rewriter/pre-stage/07-install-mvp-guest/cloud-init/
 tools/cvm-image-rewriter/pre-stage/07-install-mvp-guest/artifacts/*
 
-service/ccnp-server/target/
-service/ccnp-server/Cargo.lock
-service/ccnp-server/.cargo
+service/cima-server/target/
+service/cima-server/Cargo.lock
+service/cima-server/.cargo

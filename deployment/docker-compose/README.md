@@ -1,18 +1,18 @@
 # Docker Compose Deployment
 
-The CCNP can be deployed in the confidential VMs using docker compose. In this document, it will use Intel TDX guest(TD) as an example of CVM and deploy CCNP on the TD using docker compose.
+The CIMA can be deployed in the confidential VMs using docker compose. In this document, it will use Intel TDX guest(TD) as an example of CVM and deploy CIMA on the TD using docker compose.
 
-![Deployment diagram](../../docs/ccnp-deployment-docker.png)
+![Deployment diagram](../../docs/cima-deployment-docker.png)
 
 
-## Deploy CCNP
+## Deploy CIMA
 
-The following scripts can help to generate CCNP images and deploy them in the TD nodes. `build.sh` can run on either host or TD. Other scripts are supposed to run in the TD.
+The following scripts can help to generate CIMA images and deploy them in the TD nodes. `build.sh` can run on either host or TD. Other scripts are supposed to run in the TD.
 
 - [build.sh](../../container/build.sh): The tool will build docker images and push them to remote registry if required. Skip it if you already have docker images prepared.
-- [prerequisite.sh](./prerequisite.sh): This tool will complete the prerequisites for deploying CCNP on Ubuntu.
-- [deploy-ccnp.sh](./deploy-ccnp.sh): The tool will deploy CCNP service using docker compose.
-- [exec-ccnp-example.sh](./exec-ccnp-example.sh): The tool will create a docker container, getting container event logs, measurement and performing verification using CCNP SDK.
+- [prerequisite.sh](./prerequisite.sh): This tool will complete the prerequisites for deploying CIMA on Ubuntu.
+- [deploy-cima.sh](./deploy-cima.sh): The tool will deploy CIMA service using docker compose.
+- [exec-cima-example.sh](./exec-cima-example.sh): The tool will create a docker container, getting container event logs, measurement and performing verification using CIMA SDK.
 
 ### Prerequisite
 
@@ -22,14 +22,14 @@ Run the script `prerequisite.sh` as below.
 $ sudo ./prerequisite.sh
 ```
 
-### Deploy CCNP Service
+### Deploy CIMA Service
 
-Use the script [deploy-ccnp.sh](./depoly-ccnp.sh) to deploy the CCNP services. 
+Use the script [deploy-cima.sh](./depoly-cima.sh) to deploy the CIMA services. 
 ```
-# Deploy CCNP with user specified remote registry and image tag
-$ sudo ./deploy-ccnp.sh -r <remote registry> -g <tag>
+# Deploy CIMA with user specified remote registry and image tag
+$ sudo ./deploy-cima.sh -r <remote registry> -g <tag>
 e.g.
-$ sudo ./deploy-ccnp.sh -r test-registry.intel.com/test -g 0.5
+$ sudo ./deploy-cima.sh -r test-registry.intel.com/test -g 0.5
 ```
 
 This script has some options as below.
@@ -44,16 +44,16 @@ You will see below container running after the deployment.
 ```
 $ sudo docker ps
 CONTAINER ID   IMAGE             COMMAND               CREATED        STATUS      PORTS     NAMES
-3a9de1a9c7d7  ccnp-server:0.5  "/usr/bin/ccnp_serve…" 36 seconds ago  Up 34 seconds  ccnp-server-ctr-ccnp-server-1
+3a9de1a9c7d7  cima-server:0.5  "/usr/bin/cima_serve…" 36 seconds ago  Up 34 seconds  cima-server-ctr-cima-server-1
 ```
 
-### Deploy CCNP Usage Example 
+### Deploy CIMA Usage Example 
 
-The script [exec-ccnp-example.sh](./exec-ccnp-example.sh) will launch a container `ccnp-example`.
-It will get measurement, event logs and cc_report using CCNP SDK and save the output in `/tmp/docker_ccnp/example.log`.
+The script [exec-cima-example.sh](./exec-cima-example.sh) will launch a container `cima-example`.
+It will get measurement, event logs and cc_report using CIMA SDK and save the output in `/tmp/docker_cima/example.log`.
 
 ```
-$ sudo ./exec-ccnp-example.sh -r test-registry.intel.com/test -g 0.5
+$ sudo ./exec-cima-example.sh -r test-registry.intel.com/test -g 0.5
 ```
 
 This script has some options as below.
@@ -70,7 +70,7 @@ You will see below container running after the deployment.
 ```
 $ sudo docker ps
 CONTAINER ID   IMAGE               COMMAND            CREATED          STATUS       PORTS     NAMES
-e815b6edafcb   ccnp-example:0.5  "tail -f /dev/null"  17 seconds ago  Up 15 seconds ccnp-example-ctr-ccnp-example-1
+e815b6edafcb   cima-example:0.5  "tail -f /dev/null"  17 seconds ago  Up 15 seconds cima-example-ctr-cima-example-1
 ```
 
 ### Clean Up

@@ -1,9 +1,9 @@
 #!/bin/bash
 
 
-CCNP_CACHE_DIR=/tmp/docker_ccnp
+CIMA_CACHE_DIR=/tmp/docker_cima
 # shellcheck disable=SC2034
-COMPOSE_CACHE_DIR=$CCNP_CACHE_DIR/composes
+COMPOSE_CACHE_DIR=$CIMA_CACHE_DIR/composes
 
 info() {
     echo -e "\e[1;33mINFO: $*\e[0;0m"

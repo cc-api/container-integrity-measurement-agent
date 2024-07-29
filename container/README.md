@@ -4,11 +4,11 @@ There are several docker image files in the sub directories of current directory
 
 |  Sub directory | Image name  | Description  | 
 |---|---|---|
-|  ccnp-webhook | ccnp-webhook | CCNP webhook |
-|  ccnp-server | ccnp-server | CCNP server |
-|  ccnp-example | ccnp-example  | Example image of getting eventlog and measurement using CCNP SDK |
-|  pccs | pccs  | PCCS docker image for Intel® TDX remote attestation. Not required for CCNP usage.|
-|  qgs | qgs  | QGS docker image for Intel® TDX remote attestation. Not required for CCNP usage. |
+|  cima-webhook | cima-webhook | CIMA webhook |
+|  cima-server | cima-server | CIMA server |
+|  cima-example | cima-example  | Example image of getting eventlog and measurement using CIMA SDK |
+|  pccs | pccs  | PCCS docker image for Intel® TDX remote attestation. Not required for CIMA usage.|
+|  qgs | qgs  | QGS docker image for Intel® TDX remote attestation. Not required for CIMA usage. |
 
 
 ### Build Docker images
@@ -33,14 +33,14 @@ _NOTE: please set `HTTP_PROXY`, `HTTPS_PROXY`, `NO_PROXY` in docker daemon if th
 Below are usage examples for different scenarios. Please replace the parameters with your input.
 
 ```
-# Build all CCNP images with tag latest and push them to remote registry test-registry.intel.com
+# Build all CIMA images with tag latest and push them to remote registry test-registry.intel.com
 $ sudo ./build.sh -r test-registry.intel.com/test -g latest
 
 # Build images only with tag latest
 $ sudo ./build.sh -a build -g latest
 
-# Build ccnp-measurement-server image with tag latest and push them to remote registry test-registry.intel.com
-$ sudo ./build.sh -c ccnp-measurement-server -r test-registry.intel.com/test -g latest
+# Build cima-measurement-server image with tag latest and push them to remote registry test-registry.intel.com
+$ sudo ./build.sh -c cima-measurement-server -r test-registry.intel.com/test -g latest
 
 # Build pccs image with tag latest and push it to remote registry test-registry.intel.com
 $ sudo ./build.sh -c pccs -r test-registry.intel.com/test -g latest -p
@@ -51,11 +51,11 @@ $ sudo ./build.sh -c qgs -r test-registry.intel.com/test -g latest -q
 
 Note: For detailed PCCS and QGS service usage guide, please refer [PCCS Guide](pccs/README.md) and [QGS Guide](qgs/README.md).
 
-After the script is running successfully, it's supposed to see corresponding CCNP docker images.
+After the script is running successfully, it's supposed to see corresponding CIMA docker images.
 
 ```
 $ sudo docker images
-ccnp-example                    <your image tag>
-ccnp-server                     <your image tag>
-ccnp-webhook                    <your image tag>
+cima-example                    <your image tag>
+cima-server                     <your image tag>
+cima-webhook                    <your image tag>
 ```

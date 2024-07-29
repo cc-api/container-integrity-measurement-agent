@@ -9,11 +9,11 @@ import (
 	"os"
 
 	"github.com/cc-api/cc-trusted-api/common/golang/cctrusted_base"
-	"github.com/cc-api/confidential-cloud-native-primitives/sdk/golang/ccnp"
+	"github.com/cc-api/container-integrity-measurement-agent/sdk/golang/cima"
 )
 
 // func to test GetCCReport()
-func testGetCCReport(sdk ccnp.SDK, logger *log.Logger) {
+func testGetCCReport(sdk cima.SDK, logger *log.Logger) {
 	logger.Println("Call [GetCCReport] to fetch attestation report...")
 
 	num := uint64(rand.Int63n(math.MaxInt64))
@@ -35,7 +35,7 @@ func testGetCCReport(sdk ccnp.SDK, logger *log.Logger) {
 }
 
 // func to test GetCCMeasurement()
-func testGetCCMeasurement(sdk ccnp.SDK, logger *log.Logger) {
+func testGetCCMeasurement(sdk cima.SDK, logger *log.Logger) {
 	logger.Println("Call [GetCCMeasurement] to fetch measurement for specific IMR[0]...")
 
 	imr_index := 0
@@ -55,7 +55,7 @@ func testGetCCMeasurement(sdk ccnp.SDK, logger *log.Logger) {
 }
 
 // func to test GetCCEventLog()
-func testGetCCEventLog(sdk ccnp.SDK, logger *log.Logger) {
+func testGetCCEventLog(sdk cima.SDK, logger *log.Logger) {
 	logger.Println("Call [GetCCEventLog] to fetch cc event logs...")
 	/*
 	   Another example to set start to 0 and count to 10 for event log retrieval
@@ -79,7 +79,7 @@ func testGetCCEventLog(sdk ccnp.SDK, logger *log.Logger) {
 
 func main() {
 	logger := log.Default()
-	sdk := ccnp.SDK{}
+	sdk := cima.SDK{}
 
 	logger.Println("Call [GetDefaultAlgorithm] to fetch default algorithm...")
 	defaultAlg, err := sdk.GetDefaultAlgorithm()

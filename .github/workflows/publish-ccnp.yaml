@@ -1,11 +1,11 @@
-name: Publish ccnp package to PyPI
+name: Publish cima package to PyPI
 
 on:
   workflow_dispatch:
 
 jobs:
   publish_pypi:
-    name: Publish ccnp package
+    name: Publish cima package
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code

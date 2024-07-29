@@ -1,5 +1,5 @@
 [package]
-name = "cctrusted-ccnp-sample"
+name = "cctrusted-cima-sample"
 version = "0.1.0"
 edition = "2021"
 license = "Apache-2.0"
@@ -9,7 +9,7 @@ name = "rust-sdk-example"
 path = "src/rust-sdk-example.rs"
 
 [dependencies]
-ccnp = { path = "../ccnp" }
+cima = { path = "../cima" }
 cctrusted_base = { git="https://github.com/cc-api/cc-trusted-api" }
 anyhow = "1.0"
 log = "0.4.20"

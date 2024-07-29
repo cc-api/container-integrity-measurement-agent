@@ -5,11 +5,11 @@ on:
     branches:
       - main
     paths:
-      - 'service/ccnp-server/**.rs'
+      - 'service/cima-server/**.rs'
       - '.github/workflows/pr-check-rust.yaml'
   pull_request:
     paths:
-      - 'service/ccnp-server/**.rs'
+      - 'service/cima-server/**.rs'
       - '.github/workflows/pr-check-rust.yaml'
   workflow_dispatch:
 
@@ -32,7 +32,7 @@ jobs:
           sudo mv bin/protoc /usr/bin/protoc && sudo mv include/google/protobuf/* /usr/include/google/protobuf/
       - name: Run cargo check
         run: |
-          cd service/ccnp-server
+          cd service/cima-server
           cargo check
           cargo fmt -- --check
           cargo clippy

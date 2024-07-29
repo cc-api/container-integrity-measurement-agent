@@ -1,19 +1,19 @@
 #!/bin/bash
 
-# This script implements the prerequisites for deploying CCNP, including installing docker, helm, python3-pip, 
-# and setting the access permissions of the TD device node and the ccnp working directory on the TD node.
+# This script implements the prerequisites for deploying CIMA, including installing docker, helm, python3-pip, 
+# and setting the access permissions of the TD device node and the cima working directory on the TD node.
 
 set -e
 
 INSTALL_DOCKER=true
 INSTALL_HELM=true
 INSTALL_PIP=true
-CCNP_UDEV=true
-CCNP_UDS=true
+CIMA_UDEV=true
+CIMA_UDS=true
 
 UDEV_FILE=/etc/udev/rules.d
 TDX_RULES_FILE=${UDEV_FILE}/90-tdx.rules
-CCNP_CONF=/usr/lib/tmpfiles.d/ccnp.conf
+CIMA_CONF=/usr/lib/tmpfiles.d/cima.conf
 
 function check_env {
     if command -v docker &> /dev/null; then
@@ -32,13 +32,13 @@ function check_env {
     fi
 
     if [ -e "$TDX_RULES_FILE" ]; then
-        CCNP_UDEV=flase
-        echo "Skip: CCNP udev rules has been set."
+        CIMA_UDEV=flase
+        echo "Skip: CIMA udev rules has been set."
     fi
 
-    if [ -e "$CCNP_CONF" ]; then
-        CCNP_UDS=flase
-        echo "Skip: CCNP uds dir has been prepared."
+    if [ -e "$CIMA_CONF" ]; then
+        CIMA_UDS=flase
+        echo "Skip: CIMA uds dir has been prepared."
     fi
 }
 
@@ -83,7 +83,7 @@ function install_pip {
     apt install -y python3-pip 
 }
 
-function ccnp_udev_rules { 
+function cima_udev_rules { 
     mkdir -p ${UDEV_FILE}
     touch ${TDX_RULES_FILE}
 
@@ -103,9 +103,9 @@ function ccnp_udev_rules {
     udevadm trigger
 }
 
-function ccnp_uds_dir {
-    touch ${CCNP_CONF}
-    echo "D /run/ccnp/uds 0757 - - -">${CCNP_CONF}
+function cima_uds_dir {
+    touch ${CIMA_CONF}
+    echo "D /run/cima/uds 0757 - - -">${CIMA_CONF}
 
     # make the directory setup effective
     systemd-tmpfiles --create
@@ -130,14 +130,14 @@ function install_prereqs {
         install_pip
     fi
 
-    if [[ "$CCNP_UDEV" = true ]]; then
-        echo "-----------Setup udev rules for CCNP device plugin..."
-        ccnp_udev_rules
+    if [[ "$CIMA_UDEV" = true ]]; then
+        echo "-----------Setup udev rules for CIMA device plugin..."
+        cima_udev_rules
     fi
 
-    if [[ "$CCNP_UDS" = true ]]; then
-        echo "-----------Prepare the shared Unix Domain Socket directory for CCNP..."
-        ccnp_uds_dir
+    if [[ "$CIMA_UDS" = true ]]; then
+        echo "-----------Prepare the shared Unix Domain Socket directory for CIMA..."
+        cima_uds_dir
     fi
 }
 

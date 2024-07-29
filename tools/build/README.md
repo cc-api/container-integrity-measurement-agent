@@ -1,7 +1,7 @@
 # Build Tool
 
 This tool is used to build or rebuild the packages with some customized patches or configurations.
-It also provides some additional patches for CCNP container measurement.
+It also provides some additional patches for CIMA container measurement.
 
 ## Prerequisite
 Intel TDX 1.0 technology preview is available, and [this Github repository](https://github.com/canonical/tdx/tree/noble-24.04) 
@@ -10,7 +10,7 @@ Please follow the instructions to create a guest image and set up the TDX enviro
 
 Ubuntu 24.04 is targeted as the default base for this build tool, and the default kernel version is
 v6.8.0, some additional patches are provided in [kernel/patches](kernel/patches) directory for
-CCNP container measurement, here is the information about the patches:
+CIMA container measurement, here is the information about the patches:
 
 | Patch Number | Comments |
 | ------------ | -------- |

@@ -1,0 +1,124 @@
+---
+
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: selfsigned
+  namespace: cima
+spec:
+  selfSigned: {}
+
+---
+
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: cima-webhook
+  namespace: cima
+spec:
+  secretName: cima-webhook-tls
+  dnsNames:
+    - cima-webhook.cima.svc
+  issuerRef:
+    name: selfsigned
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cima-webhook
+  namespace: cima
+spec:
+  selector:
+    matchLabels:
+      app: cima-webhook
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: cima-webhook
+    spec:
+      containers:
+      - name: cima-webhook
+        image: docker.io/library/cima-webhook:latest
+        imagePullPolicy: IfNotPresent
+        resources:
+          limits:
+            memory: 100M
+            cpu: 1
+        volumeMounts:
+        - name: tls
+          # the tls certificates automatically get mounted into the correct path
+          mountPath: "/tmp/k8s-webhook-server/serving-certs"
+          readOnly: true
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 8081
+          initialDelaySeconds: 15
+          periodSeconds: 20
+        readinessProbe:
+          httpGet:
+            path: /readyz
+            port: 8081
+          initialDelaySeconds: 5
+          periodSeconds: 10
+      terminationGracePeriodSeconds: 10
+      volumes:
+        - name: tls
+          secret:
+            secretName: cima-webhook-tls
+            # the pod only gets created if the secret exists
+            # so it waits until the cert-manager is done
+            optional: false
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: cima-webhook
+  namespace: cima
+spec:
+  ports:
+    - name: https
+      port: 9443
+      protocol: TCP
+  selector:
+    # IMPORTANT:
+    # this has to match the selector in our Deployment later
+    app: cima-webhook
+
+---
+
+apiVersion: admissionregistration.k8s.io/v1
+kind: MutatingWebhookConfiguration
+metadata:
+  name: cima-webhook
+  namespace: cima
+  annotations:
+    cert-manager.io/inject-ca-from: cima/cima-webhook
+webhooks:
+- admissionReviewVersions:
+  - v1
+  clientConfig:
+    service:
+      # has to match the service we created
+      namespace: cima
+      name: cima-webhook
+      port: 9443
+      path: "/mutate"
+  failurePolicy: Fail
+  name: mpod.kb.io
+  rules:
+  - apiGroups:
+    - ""
+    apiVersions:
+    - v1
+    operations:
+    - CREATE
+    - UPDATE
+    resources:
+    - pods
+  sideEffects: None
