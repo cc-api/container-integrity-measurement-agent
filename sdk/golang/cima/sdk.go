@@ -9,17 +9,17 @@ import (
 	"errors"
 	"log"
 
-	"github.com/cc-api/cc-trusted-api/common/golang/cctrusted_base"
-	"github.com/cc-api/cc-trusted-api/common/golang/cctrusted_base/tdx"
+	"github.com/cc-api/evidence-api/common/golang/evidence_api"
+	"github.com/cc-api/evidence-api/common/golang/evidence_api/tdx"
 )
 
-var _ cctrusted_base.CCTrustedAPI = (*SDK)(nil)
+var _ evidence_api.EvidenceAPI = (*SDK)(nil)
 
 type SDK struct {
 }
 
-// GetCCReport implements CCTrustedAPI
-func (s *SDK) GetCCReport(nonce string, userData string, _ any) (cctrusted_base.Report, error) {
+// GetCCReport implements EvidenceAPI
+func (s *SDK) GetCCReport(nonce string, userData string, _ any) (evidence_api.Report, error) {
 	client, err := NewClient()
 	if err != nil {
 		log.Fatalf("[GetCCReport] failed to connect to client with error %v", err)
@@ -31,8 +31,8 @@ func (s *SDK) GetCCReport(nonce string, userData string, _ any) (cctrusted_base.
 		return nil, err
 	}
 
-	switch cctrusted_base.CC_Type(result.CcType) {
-	case cctrusted_base.TYPE_CC_TDX:
+	switch evidence_api.CC_Type(result.CcType) {
+	case evidence_api.TYPE_CC_TDX:
 		report, err := tdx.NewTdxReportFromBytes(result.CcReport)
 		if err != nil {
 			return nil, err
@@ -43,27 +43,27 @@ func (s *SDK) GetCCReport(nonce string, userData string, _ any) (cctrusted_base.
 	return nil, errors.New("[GetCCReport] get CC report failed")
 }
 
-// DumpCCReport implements cctrusted_base.CCTrustedAPI.
+// DumpCCReport implements evidence_api.EvidenceAPI.
 func (s *SDK) DumpCCReport(reportBytes []byte) error {
 	return nil
 }
 
-// GetCCMeasurement implements cctrusted_base.CCTrustedAPI.
-func (s *SDK) GetCCMeasurement(index int, alg cctrusted_base.TCG_ALG) (cctrusted_base.TcgDigest, error) {
+// GetCCMeasurement implements evidence_api.EvidenceAPI.
+func (s *SDK) GetCCMeasurement(index int, alg evidence_api.TCG_ALG) (evidence_api.TcgDigest, error) {
 	client, err := NewClient()
 	if err != nil {
 		log.Fatalf("[GetCCMeasurement] failed to connect to client with error %v", err)
-		return cctrusted_base.TcgDigest{}, err
+		return evidence_api.TcgDigest{}, err
 	}
 
 	result, err := client.GetCCMeasurementFromServer(index, alg)
 	if err != nil {
-		return cctrusted_base.TcgDigest{}, err
+		return evidence_api.TcgDigest{}, err
 	}
-	return cctrusted_base.TcgDigest{AlgID: cctrusted_base.TCG_ALG(result.Measurement.AlgoId), Hash: result.Measurement.Hash}, nil
+	return evidence_api.TcgDigest{AlgID: evidence_api.TCG_ALG(result.Measurement.AlgoId), Hash: result.Measurement.Hash}, nil
 }
 
-// GetMeasurementCount implements cctrusted_base.CCTrustedAPI.
+// GetMeasurementCount implements evidence_api.EvidenceAPI.
 func (s *SDK) GetMeasurementCount() (int, error) {
 	client, err := NewClient()
 	if err != nil {
@@ -78,28 +78,28 @@ func (s *SDK) GetMeasurementCount() (int, error) {
 	return int(result.Count), nil
 }
 
-// ReplayCCEventLog implements cctrusted_base.CCTrustedAPI.
-func (s *SDK) ReplayCCEventLog(formatedEventLogs []cctrusted_base.FormatedTcgEvent) map[int]map[cctrusted_base.TCG_ALG][]byte {
-	return cctrusted_base.ReplayFormatedEventLog(formatedEventLogs)
+// ReplayCCEventLog implements evidence_api.EvidenceAPI.
+func (s *SDK) ReplayCCEventLog(formatedEventLogs []evidence_api.FormatedTcgEvent) map[int]map[evidence_api.TCG_ALG][]byte {
+	return evidence_api.ReplayFormatedEventLog(formatedEventLogs)
 }
 
-// GetDefaultAlgorithm implements cctrusted_base.CCTrustedAPI.
-func (s *SDK) GetDefaultAlgorithm() (cctrusted_base.TCG_ALG, error) {
+// GetDefaultAlgorithm implements evidence_api.EvidenceAPI.
+func (s *SDK) GetDefaultAlgorithm() (evidence_api.TCG_ALG, error) {
 	client, err := NewClient()
 	if err != nil {
 		log.Fatalf("[GetDefaultAlgorithm] failed to connect to client with error %v", err)
-		return cctrusted_base.TPM_ALG_ERROR, err
+		return evidence_api.TPM_ALG_ERROR, err
 	}
 
 	result, err := client.GetDefaultAlgorithmFromServer()
 	if err != nil {
-		return cctrusted_base.TPM_ALG_ERROR, err
+		return evidence_api.TPM_ALG_ERROR, err
 	}
-	return cctrusted_base.TCG_ALG(result.AlgoId), nil
+	return evidence_api.TCG_ALG(result.AlgoId), nil
 }
 
-// GetCCEventlog implements CCTrustedAPI.
-func (s *SDK) GetCCEventLog(params ...int32) ([]cctrusted_base.FormatedTcgEvent, error) {
+// GetCCEventlog implements EvidenceAPI.
+func (s *SDK) GetCCEventLog(params ...int32) ([]evidence_api.FormatedTcgEvent, error) {
 	if len(params) > 2 {
 		log.Fatalf("Invalid params specified for [GetCCEventlog].")
 		return nil, errors.New("Invalid params.")
@@ -116,19 +116,19 @@ func (s *SDK) GetCCEventLog(params ...int32) ([]cctrusted_base.FormatedTcgEvent,
 		return nil, err
 	}
 
-	formatted_log_list := make([]cctrusted_base.FormatedTcgEvent, len(result))
+	formatted_log_list := make([]evidence_api.FormatedTcgEvent, len(result))
 	for idx, log := range result {
-		digests := make([]cctrusted_base.TcgDigest, len(log.Digests))
+		digests := make([]evidence_api.TcgDigest, len(log.Digests))
 		for idx, digest := range log.Digests {
-			formattedData := cctrusted_base.TcgDigest{AlgID: cctrusted_base.TCG_ALG(digest.AlgoId), Hash: digest.Hash}
+			formattedData := evidence_api.TcgDigest{AlgID: evidence_api.TCG_ALG(digest.AlgoId), Hash: digest.Hash}
 			digests[idx] = formattedData
 		}
-		logParser := cctrusted_base.TcgEventLogParser{RecNum: int(log.RecNum), ImrIndex: int(log.ImrIndex), EventType: cctrusted_base.TcgEventType(log.EventType), Digests: digests, EventSize: int(log.EventSize), Event: log.Event, ExtraInfo: log.ExtraInfo}
-		if cctrusted_base.TcgEventType(log.EventType) != cctrusted_base.IMA_MEASUREMENT_EVENT {
-			formattedLog := logParser.Format(cctrusted_base.TCG_PCCLIENT_FORMAT)
+		logParser := evidence_api.TcgEventLogParser{RecNum: int(log.RecNum), ImrIndex: int(log.ImrIndex), EventType: evidence_api.TcgEventType(log.EventType), Digests: digests, EventSize: int(log.EventSize), Event: log.Event, ExtraInfo: log.ExtraInfo}
+		if evidence_api.TcgEventType(log.EventType) != evidence_api.IMA_MEASUREMENT_EVENT {
+			formattedLog := logParser.Format(evidence_api.TCG_PCCLIENT_FORMAT)
 			formatted_log_list[idx] = formattedLog
 		} else {
-			formattedLog := logParser.Format(cctrusted_base.TCG_PCCLIENT_FORMAT)
+			formattedLog := logParser.Format(evidence_api.TCG_PCCLIENT_FORMAT)
 			formatted_log_list[idx] = formattedLog
 		}
 	}

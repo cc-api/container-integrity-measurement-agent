@@ -159,4 +159,4 @@ If you encounter any bugs or have suggestions, please file an issue in the Issue
 <!-- LINKS -->
 [source_code]: https://github.com/cc-api/container-integrity-measurement-agent/tree/main/sdk/python3
 [cima_pypi]: https://pypi.org/project/cima/
-[api_doc]: https://github.com/cc-api/cc-trusted-api?tab=readme-ov-file#3-apis
+[api_doc]: https://github.com/cc-api/evidence-api?tab=readme-ov-file#3-apis

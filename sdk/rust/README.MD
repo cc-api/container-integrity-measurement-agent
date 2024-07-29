@@ -44,10 +44,10 @@ Here are the example usages of the SDK:
 
 * Fetch report with a `nonce` and `user_data`
 ```rust
-use cctrusted_base::api::*;
-use cctrusted_base::api_data::*;
-use cctrusted_base::cc_type::TeeType;
-use cctrusted_base::tdx::quote::TdxQuote;
+use evidence_api::api::*;
+use evidence_api::api_data::*;
+use evidence_api::cc_type::TeeType;
+use evidence_api::tdx::quote::TdxQuote;
 use cima::sdk::API;
 use log::*;
 use rand::Rng;
@@ -62,7 +62,7 @@ fn get_cc_report() {
     let data = base64::encode(rand::thread_rng().gen::<[u8; 32]>());
 
     // retrieve cc report with API "get_cc_report"
-    info!("call cc trusted API [get_cc_report] to retrieve cc report with nonce and data!");
+    info!("call evidence API [get_cc_report] to retrieve cc report with nonce and data!");
     let report = match API::get_cc_report(Some(nonce), Some(data), ExtraArgs {}) {
         Ok(q) => q,
         Err(e) => {
@@ -74,7 +74,7 @@ fn get_cc_report() {
     info!("length of the cc report: {}", report.cc_report.len());
 
     // dump the cc report with API "dump_cc_report"
-    //info!("call cc trusted API [dump_cc_report] to dump cc report!");
+    //info!("call evidence API [dump_cc_report] to dump cc report!");
     //API::dump_cc_report(&report.cc_report);
 
     // parse the cc report with API "parse_cc_report"
@@ -98,7 +98,7 @@ fn get_cc_report() {
     }
 
     // retrieve cc report with API "get_cc_report"
-    info!("call cc trusted API [get_cc_report] to retrieve cc report with no nonce and data!");
+    info!("call evidence API [get_cc_report] to retrieve cc report with no nonce and data!");
     let report1 = match API::get_cc_report(None, None, ExtraArgs {}) {
         Ok(q) => q,
         Err(e) => {
@@ -145,15 +145,15 @@ Here are the example usages for measurement SDK:
 
 * Fetch TEE measurement of the current pod(Fetch measurements of all IMR index)
 ```rust
-use cctrusted_base::api::*;
-use cctrusted_base::api_data::*;
-use cctrusted_base::tcg::TcgAlgorithmRegistry;
+use evidence_api::api::*;
+use evidence_api::api_data::*;
+use evidence_api::tcg::TcgAlgorithmRegistry;
 use cima::sdk::API;
 use log::*;
 
 fn get_cc_measurement() {
     // get default algorithm with API "get_default_algorithm"
-    info!("call cc trusted API [get_default_algorithm] to get supported algorithm!");
+    info!("call evidence API [get_default_algorithm] to get supported algorithm!");
     let defalt_algo = match API::get_default_algorithm() {
         Ok(algorithm) => {
             info!("supported algorithm: {}", algorithm.algo_id_str);
@@ -166,7 +166,7 @@ fn get_cc_measurement() {
     };
 
     // get number of measurement registers
-    info!("call cc trusted API [get_measurement_count] to get number of measurement registers!");
+    info!("call evidence API [get_measurement_count] to get number of measurement registers!");
     let _count = match API::get_measurement_count() {
         Ok(count) => {
             info!("measurement registers count: {}", count);
@@ -179,7 +179,7 @@ fn get_cc_measurement() {
     };
 
     // retrive and show measurement registers
-    info!("call cc trusted API [get_cc_measurement] to get measurement register content!");
+    info!("call evidence API [get_cc_measurement] to get measurement register content!");
     for index in [0, 1, 3] {
         let tcg_digest = match API::get_cc_measurement(index, defalt_algo.algo_id) {
             Ok(tcg_digest) => tcg_digest,
@@ -210,14 +210,14 @@ Here are the example usages of the SDK:
 
 * Fetch event log of platform and check the information inside, then replay event logs
 ```rust
-use cctrusted_base::api::*;
-use cctrusted_base::api_data::*;
+use evidence_api::api::*;
+use evidence_api::api_data::*;
 use cima::sdk::API;
 use log::*;
 
 fn get_cc_eventlog() {
     // retrieve cc eventlog with API "get_cc_eventlog"
-    info!("call cc trusted API [get_cc_eventlog] to get container related eventlog without count!");
+    info!("call evidence API [get_cc_eventlog] to get container related eventlog without count!");
     let eventlogs1 = match API::get_cc_eventlog(Some(0), None) {
         Ok(q) => q,
         Err(e) => {
@@ -229,7 +229,7 @@ fn get_cc_eventlog() {
     info!("container event log count: {}", eventlogs1.len());
 
     // retrieve cc eventlog with API "get_cc_eventlog"
-    info!("call cc trusted API [get_cc_eventlog] to get container related eventlog with count number!");
+    info!("call evidence API [get_cc_eventlog] to get container related eventlog with count number!");
     let eventlogs = match API::get_cc_eventlog(Some(0), Some(101)) {
         Ok(q) => q,
         Err(e) => {
@@ -244,7 +244,7 @@ fn get_cc_eventlog() {
     }
 
     // replay cc eventlog with API "replay_cc_eventlog"
-    info!("call cc trusted API [replay_cc_eventlog] to replay container related eventlog!");
+    info!("call evidence API [replay_cc_eventlog] to replay container related eventlog!");
     let replay_results = match API::replay_cc_eventlog(eventlogs) {
         Ok(q) => q,
         Err(e) => {
@@ -284,4 +284,4 @@ If you encounter any bugs or have suggestions, please file an issue in the Issue
 
 <!-- LINKS -->
 [source_code]: https://github.com/cc-api/container-integrity-measurement-agent/tree/main/sdk/rust
-[api_doc]: https://github.com/cc-api/cc-trusted-api?tab=readme-ov-file#3-apis
+[api_doc]: https://github.com/cc-api/evidence-api?tab=readme-ov-file#3-apis

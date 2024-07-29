@@ -1,6 +1,6 @@
 use crate::cima_pb::{TcgDigest, TcgEventlog};
 use anyhow::{anyhow, Error};
-use cctrusted_base::tcg;
+use evidence_api::tcg;
 use openssl::hash::{Hasher, MessageDigest};
 use regex::Regex;
 

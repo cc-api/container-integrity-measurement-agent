@@ -13,8 +13,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/cc-api/cc-trusted-api/common/golang/cctrusted_base"
 	pb "github.com/cc-api/container-integrity-measurement-agent/sdk/golang/cima/proto"
+	"github.com/cc-api/evidence-api/common/golang/evidence_api"
 	"google.golang.org/grpc"
 )
 
@@ -129,7 +129,7 @@ func (cc *Client) GetMeasurementCountFromServer() (pb.GetMeasurementCountRespons
 	return *response, nil
 }
 
-func (cc *Client) GetCCMeasurementFromServer(index int, alg cctrusted_base.TCG_ALG) (pb.GetCcMeasurementResponse, error) {
+func (cc *Client) GetCCMeasurementFromServer(index int, alg evidence_api.TCG_ALG) (pb.GetCcMeasurementResponse, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
 	defer cancel()
 

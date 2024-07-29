@@ -4,8 +4,8 @@ use crate::client::cima_server_pb::{
     GetDefaultAlgorithmResponse, GetMeasurementCountRequest, GetMeasurementCountResponse,
 };
 use anyhow::anyhow;
-use cctrusted_base::api_data::ExtraArgs;
-use cctrusted_base::cc_type::TeeType;
+use evidence_api::api_data::ExtraArgs;
+use evidence_api::cc_type::TeeType;
 use core::result::Result::Ok;
 use hashbrown::HashMap;
 use std::fs::read_to_string;

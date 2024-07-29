@@ -1,17 +1,17 @@
 use crate::client::CimaServiceClient;
 use anyhow::*;
-use cctrusted_base::api::CCTrustedApi;
-use cctrusted_base::api_data::{Algorithm, CcReport, ExtraArgs};
-use cctrusted_base::binary_blob::dump_data;
-use cctrusted_base::tcg::*;
+use evidence_api::api::EvidenceApi;
+use evidence_api::api_data::{Algorithm, CcReport, ExtraArgs};
+use evidence_api::binary_blob::dump_data;
+use evidence_api::tcg::*;
 use core::result::Result::Ok;
 
 const UDS_PATH: &str = "/run/cima/uds/cima-server.sock";
 
 pub struct API {}
 
-impl CCTrustedApi for API {
-    // CCTrustedApi trait function: get cc report from CIMA server
+impl EvidenceApi for API {
+    // EvidenceApi trait function: get cc report from CIMA server
     fn get_cc_report(
         nonce: Option<String>,
         data: Option<String>,
@@ -36,12 +36,12 @@ impl CCTrustedApi for API {
         })
     }
 
-    // CCTrustedApi trait function: dump report of in hex and char format
+    // EvidenceApi trait function: dump report of in hex and char format
     fn dump_cc_report(report: &Vec<u8>) {
         dump_data(report)
     }
 
-    // CCTrustedApi trait function: get max number of IMRs
+    // EvidenceApi trait function: get max number of IMRs
     fn get_measurement_count() -> Result<u8, anyhow::Error> {
         let mut cima_service_client = CimaServiceClient {
             cima_uds_path: UDS_PATH.to_string(),
@@ -60,7 +60,7 @@ impl CCTrustedApi for API {
         Ok(response.count.try_into().unwrap())
     }
 
-    // CCTrustedApi trait function: get measurements
+    // EvidenceApi trait function: get measurements
     fn get_cc_measurement(index: u8, algo_id: u16) -> Result<TcgDigest, anyhow::Error> {
         let mut cima_service_client = CimaServiceClient {
             cima_uds_path: UDS_PATH.to_string(),
@@ -87,7 +87,7 @@ impl CCTrustedApi for API {
         })
     }
 
-    // CCTrustedApi trait function: get eventlogs
+    // EvidenceApi trait function: get eventlogs
     fn get_cc_eventlog(
         start: Option<u32>,
         count: Option<u32>,
@@ -135,7 +135,7 @@ impl CCTrustedApi for API {
         Ok(event_logs)
     }
 
-    // CCTrustedApi trait function: get default algorithm
+    // EvidenceApi trait function: get default algorithm
     fn get_default_algorithm() -> Result<Algorithm, anyhow::Error> {
         let mut cima_service_client = CimaServiceClient {
             cima_uds_path: UDS_PATH.to_string(),

@@ -53,7 +53,7 @@ import (
     "fmt"
     "os"
 
-    "github.com/cc-api/cc-trusted-api/common/golang/cctrusted_base"
+    "github.com/cc-api/evidence-api/common/golang/evidence_api"
 	"github.com/cc-api/container-integrity-measurement-agent/sdk/golang/cima"
 )
 
@@ -74,7 +74,7 @@ func testGetCCReport() {
     }
 
     fmt.Println("Dump the attestation report fetched.")
-    report.Dump(cctrusted_base.QuoteDumpFormat(cctrusted_base.QuoteDumpFormatRaw))
+    report.Dump(evidence_api.QuoteDumpFormat(evidence_api.QuoteDumpFormatRaw))
 }
 
 ```
@@ -96,7 +96,7 @@ import(
     "os"
     "fmt"
 
-    "github.com/cc-api/cc-trusted-api/common/golang/cctrusted_base"
+    "github.com/cc-api/evidence-api/common/golang/evidence_api"
     "github.com/cc-api/container-integrity-measurement-agent/sdk/golang/cima"
 )
 
@@ -105,7 +105,7 @@ func testGetCCMeasurement() {
 
     // set the imr index to 0
     imr_index := 0
-    alg := cctrusted_base.TPM_ALG_SHA384
+    alg := evidence_api.TPM_ALG_SHA384
 
     measurement, err := sdk.GetCCMeasurement(imr_index, alg)
     if err != nil {
@@ -135,7 +135,7 @@ import(
     "os"
     "fmt"
 
-    "github.com/cc-api/cc-trusted-api/common/golang/cctrusted_base"
+    "github.com/cc-api/evidence-api/common/golang/evidence_api"
     "github.com/cc-api/container-integrity-measurement-agent/sdk/golang/cima"
 )
 
@@ -168,7 +168,7 @@ import(
     "os"
     "fmt"
 
-    "github.com/cc-api/cc-trusted-api/common/golang/cctrusted_base"
+    "github.com/cc-api/evidence-api/common/golang/evidence_api"
     "github.com/cc-api/container-integrity-measurement-agent/sdk/golang/cima"
 )
 
@@ -215,4 +215,4 @@ If you encounter any bugs or have suggestions, please file an issue in the Issue
 <!-- LINKS -->
 [source_code]: https://github.com/cc-api/container-integrity-measurement-agent/tree/main/sdk/golang
 [cima_golang]: https://pkg.go.dev/github.com/cc-api/container-integrity-measurement-agent/sdk/golang/cima
-[api_doc]: https://github.com/cc-api/cc-trusted-api?tab=readme-ov-file#3-apis
+[api_doc]: https://github.com/cc-api/evidence-api?tab=readme-ov-file#3-apis

@@ -1,6 +1,6 @@
 # CIMA Service
 
-This service will provide CC event log/CC measurement/CC report by [CC Trusted API](https://github.com/cc-api/cc-trusted-api) for remote attestation service to verify the integrity and confidentiality of the trusted computing environment and required software environment.
+This service will provide CC event log/CC measurement/CC report by [Evidence API](https://github.com/cc-api/evidence-api) for remote attestation service to verify the integrity and confidentiality of the trusted computing environment and required software environment.
 
 ## Start Service
 
