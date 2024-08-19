@@ -80,10 +80,10 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 mod cima_server_test {
     use super::*;
     use crate::agent::IMR;
-    use evidence_api::{cc_type::TeeType, tcg};
     use cima_pb::{
         cima_client::CimaClient, GetCcEventlogRequest, GetCcMeasurementRequest, GetCcReportRequest,
     };
+    use evidence_api::{cc_type::TeeType, tcg};
     use policy::PolicyConfig;
     use rand::Rng;
     use serial_test::serial;

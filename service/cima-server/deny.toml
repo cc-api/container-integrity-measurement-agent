@@ -1,11 +1,9 @@
 [advisories]
-vulnerability = "deny"
-unmaintained = "warn"
-yanked = "warn"
-notice = "warn"
+# https://github.com/EmbarkStudios/cargo-deny/pull/611
+version = 2
 
 [licenses]
-unlicensed = "warn"
+version = 2
 allow = [
     "MIT",
     "Apache-2.0",
@@ -13,10 +11,6 @@ allow = [
     "BSD-3-Clause",
     "Unicode-DFS-2016",
 ]
-
-copyleft = "warn"
-allow-osi-fsf-free = "neither"
-default = "deny"
 confidence-threshold = 0.8
 
 [[licenses.clarify]]
