@@ -1,9 +1,10 @@
 use anyhow::{anyhow, Error};
-use evidence_api::{api::EvidenceApi, api_data::ExtraArgs, tcg};
 use cctrusted_vm::sdk::API;
+use evidence_api::{api::EvidenceApi, api_data::ExtraArgs, tcg};
 use log::info;
 use std::cmp::Ordering;
 use std::collections::HashMap;
+use std::fs::read_to_string;
 
 use crate::{
     cima_pb::{TcgDigest, TcgEventlog},
@@ -11,6 +12,8 @@ use crate::{
     measurement::Measurement,
     policy::PolicyConfig,
 };
+
+pub const IMA_PATTERN: &str = "ima_template=ima-cgpath";
 
 pub enum IMR {
     FIRMWARE = 0,
@@ -23,6 +26,7 @@ pub struct Agent {
     measurement: Option<Measurement>,
     containers: HashMap<String, Container>,
     event_logs: Vec<TcgEventlog>,
+    ima_enabled: bool,
 }
 
 impl Default for Agent {
@@ -37,20 +41,27 @@ impl Agent {
             measurement: None,
             containers: HashMap::new(),
             event_logs: vec![],
+            ima_enabled: false,
         }
     }
 
     pub fn init(&mut self, policy: PolicyConfig) -> Result<(), Error> {
-        // Measure the system when Agent initialization
-        self.measurement = Some(Measurement::new(policy));
-        match self
-            .measurement
-            .as_mut()
-            .expect("The measurement was not initialized.")
-            .measure()
-        {
-            Ok(_) => info!("The system has been measured as the policy defined."),
-            Err(e) => return Err(e),
+        let cmdline = read_to_string("/proc/cmdline").expect("Failed to read /proc/cmdline.");
+        if !cmdline.contains(IMA_PATTERN) {
+            self.ima_enabled = false;
+        } else {
+            self.ima_enabled = true;
+            // Measure the system when Agent initialization
+            self.measurement = Some(Measurement::new(policy));
+            match self
+                .measurement
+                .as_mut()
+                .expect("The measurement was not initialized.")
+                .measure()
+            {
+                Ok(_) => info!("The system has been measured as the policy defined."),
+                Err(e) => return Err(e),
+            }
         }
 
         self.fetch_all_event_logs()
@@ -198,26 +209,30 @@ impl Agent {
         let _ = self.fetch_all_event_logs();
         let mut event_logs = vec![];
 
-        let measurement = match self.measurement.as_mut() {
-            Some(v) => v,
-            None => return Err(anyhow!("The measurement was not initialized.")),
-        };
+        if self.ima_enabled {
+            let measurement = match self.measurement.as_mut() {
+                Some(v) => v,
+                None => return Err(anyhow!("The measurement was not initialized.")),
+            };
 
-        if measurement.container_isolated() {
-            if !self.containers.contains_key(&container_id) {
-                return Err(anyhow!("Container cannot be found."));
-            }
-
-            for event_log in &self.event_logs {
-                if event_log.imr_index == IMR::FIRMWARE as u32
-                    || event_log.imr_index == IMR::KERNEL as u32
-                {
-                    event_logs.push(event_log.clone());
+            if measurement.container_isolated() {
+                if !self.containers.contains_key(&container_id) {
+                    return Err(anyhow!("Container cannot be found."));
                 }
-            }
 
-            let container = &self.containers[&container_id];
-            event_logs.extend(container.event_logs().clone());
+                for event_log in &self.event_logs {
+                    if event_log.imr_index == IMR::FIRMWARE as u32
+                        || event_log.imr_index == IMR::KERNEL as u32
+                    {
+                        event_logs.push(event_log.clone());
+                    }
+                }
+
+                let container = &self.containers[&container_id];
+                event_logs.extend(container.event_logs().clone());
+            } else {
+                event_logs.extend(self.event_logs.to_vec());
+            }
         } else {
             event_logs.extend(self.event_logs.to_vec());
         }
@@ -262,23 +277,27 @@ impl Agent {
     ) -> Result<(Vec<u8>, i32), Error> {
         let _ = self.fetch_all_event_logs();
 
-        let measurement = match self.measurement.as_mut() {
-            Some(v) => v,
-            None => return Err(anyhow!("The measurement was not initialized.")),
-        };
+        let new_nonce = if self.ima_enabled {
+            let measurement = match self.measurement.as_mut() {
+                Some(v) => v,
+                None => return Err(anyhow!("The measurement was not initialized.")),
+            };
 
-        let new_nonce = if measurement.container_isolated() {
-            if !self.containers.contains_key(&container_id) {
-                return Err(anyhow!("Container cannot be found."));
-            }
+            if measurement.container_isolated() {
+                if !self.containers.contains_key(&container_id) {
+                    return Err(anyhow!("Container cannot be found."));
+                }
 
-            let container = &self.containers[&container_id];
-            match nonce {
-                Some(v) => match base64::decode(v) {
-                    Ok(v) => Some(base64::encode([container.imr().hash.to_vec(), v].concat())),
-                    Err(e) => return Err(anyhow!("nonce is not base64 encoded: {:?}", e)),
-                },
-                None => None,
+                let container = &self.containers[&container_id];
+                match nonce {
+                    Some(v) => match base64::decode(v) {
+                        Ok(v) => Some(base64::encode([container.imr().hash.to_vec(), v].concat())),
+                        Err(e) => return Err(anyhow!("nonce is not base64 encoded: {:?}", e)),
+                    },
+                    None => None,
+                }
+            } else {
+                nonce.clone()
             }
         } else {
             nonce.clone()
@@ -300,28 +319,32 @@ impl Agent {
     ) -> Result<TcgDigest, Error> {
         let _ = self.fetch_all_event_logs();
 
-        let measurement = match self.measurement.as_mut() {
-            Some(v) => v,
-            None => return Err(anyhow!("The measurement was not initialized.")),
-        };
+        if self.ima_enabled {
+            let measurement = match self.measurement.as_mut() {
+                Some(v) => v,
+                None => return Err(anyhow!("The measurement was not initialized.")),
+            };
 
-        if measurement.container_isolated() {
-            if !self.containers.contains_key(&container_id) {
-                return Err(anyhow!("Container cannot be found."));
-            }
+            if measurement.container_isolated() {
+                if !self.containers.contains_key(&container_id) {
+                    return Err(anyhow!("Container cannot be found."));
+                }
 
-            if index == IMR::SYSTEM as u32 {
-                return Err(anyhow!("Cannot access IMR according to the policy."));
-            }
+                if index == IMR::SYSTEM as u32 {
+                    return Err(anyhow!("Cannot access IMR according to the policy."));
+                }
 
-            if index == IMR::CONTAINER as u32 {
-                let container = match self.containers.get_mut(&container_id) {
-                    Some(v) => v,
-                    None => {
-                        return Err(anyhow!("The container is on the list but fails to get it."))
-                    }
-                };
-                return Ok(container.imr().clone());
+                if index == IMR::CONTAINER as u32 {
+                    let container = match self.containers.get_mut(&container_id) {
+                        Some(v) => v,
+                        None => {
+                            return Err(anyhow!(
+                                "The container is on the list but fails to get it."
+                            ))
+                        }
+                    };
+                    return Ok(container.imr().clone());
+                }
             }
         }
 
