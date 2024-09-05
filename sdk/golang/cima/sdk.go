@@ -6,6 +6,7 @@
 package cima
 
 import (
+	b64 "encoding/base64"
 	"errors"
 	"log"
 
@@ -19,14 +20,17 @@ type SDK struct {
 }
 
 // GetCCReport implements EvidenceAPI
-func (s *SDK) GetCCReport(nonce, userData string, extraArgs map[string]any) (evidence_api.Report, error) {
+func (s *SDK) GetCCReport(nonce, userData []byte, extraArgs map[string]any) (evidence_api.Report, error) {
 	client, err := NewClient()
 	if err != nil {
 		log.Fatalf("[GetCCReport] failed to connect to client with error %v", err)
 		return nil, err
 	}
 
-	result, err := client.GetCCReportFromServer(userData, nonce)
+	nonceStr := b64.StdEncoding.EncodeToString(nonce)
+	userDataStr := b64.StdEncoding.EncodeToString(userData)
+
+	result, err := client.GetCCReportFromServer(userDataStr, nonceStr)
 	if err != nil {
 		return nil, err
 	}

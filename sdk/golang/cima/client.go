@@ -90,7 +90,7 @@ func GetContainerId() string {
 	return ""
 }
 
-func (cc *Client) GetCCReportFromServer(userData string, nonce string) (pb.GetCcReportResponse, error) {
+func (cc *Client) GetCCReportFromServer(userData, nonce string) (pb.GetCcReportResponse, error) {
 	var ContainerId = GetContainerId()
 	ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
 	defer cancel()

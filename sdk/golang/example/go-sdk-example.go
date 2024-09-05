@@ -1,7 +1,6 @@
 package main
 
 import (
-	b64 "encoding/base64"
 	"encoding/binary"
 	"log"
 	"math"
@@ -17,12 +16,10 @@ func testGetCCReport(sdk cima.SDK, logger *log.Logger) {
 	logger.Println("Call [GetCCReport] to fetch attestation report...")
 
 	num := uint64(rand.Int63n(math.MaxInt64))
-	b := make([]byte, 8)
-	binary.LittleEndian.PutUint64(b, num)
-	nonce := b64.StdEncoding.EncodeToString(b)
+	nonce := make([]byte, 8)
+	binary.LittleEndian.PutUint64(nonce, num)
 
-	rawBytes := []byte("demo user data")
-	userData := b64.StdEncoding.EncodeToString(rawBytes)
+	userData := []byte("demo user data")
 	report, err := sdk.GetCCReport(nonce, userData, nil)
 	if err != nil {
 		logger.Println("Error in fetching cc report.")
